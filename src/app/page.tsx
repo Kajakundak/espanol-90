@@ -61,13 +61,20 @@ export default function Dashboard() {
     if (willBeCompleted) {
       soundEngine.playVictoryFanfare();
       try {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
       } catch {
         // ignore
       }
     }
 
     await toggleTask(key as TaskKey);
+  };
+
+  const handleAvatarClick = () => {
+    soundEngine.playSuccessTone();
+    try {
+      confetti({ particleCount: 40, spread: 50, origin: { y: 0.35, x: 0.25 } });
+    } catch {}
   };
 
   const startingLevel = currentUser.startingLevel || 'A1';
@@ -77,6 +84,11 @@ export default function Dashboard() {
   const phaseSubtitle =
     phase === 1 ? t.phase1Subtitle : phase === 2 ? t.phase2Subtitle : t.phase3Subtitle;
 
+  const isCustomAiAvatar = Boolean(
+    currentUser.avatar &&
+      (currentUser.avatar.startsWith('data:image') || currentUser.avatar.startsWith('http'))
+  );
+
   return (
     <div className="min-h-screen flex flex-col font-sans relative overflow-x-hidden">
       <Navbar
@@ -84,11 +96,11 @@ export default function Dashboard() {
         onSwitchUser={(id) => setActiveUserId(id)}
       />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 md:px-8 py-6 sm:py-8 md:py-10 space-y-8 sm:space-y-10 md:space-y-12 relative z-10">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 md:px-8 py-6 sm:py-8 md:py-10 pb-24 sm:pb-10 space-y-8 sm:space-y-10 md:space-y-12 relative z-10">
 
-        {/* ── 1. Hero sekce (Jednorázové ikony v tlačítkách) ── */}
+        {/* ── 1. Hero sekce s Animovaným AI Avatarem ── */}
         <ScrollReveal animation="fade-up">
-          <section className="apple-glass p-4 sm:p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 md:gap-10 relative overflow-hidden">
+          <section className="apple-glass p-5 sm:p-7 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 md:gap-10 relative overflow-hidden">
             <div className="space-y-3 sm:space-y-4 text-center md:text-left z-10 max-w-xl">
               <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-2">
                 <span className="apple-pill-badge bg-[var(--accent-emerald)]/15 text-[var(--accent-emerald)] border border-[var(--accent-emerald)]/30 text-xs sm:text-sm">
@@ -99,9 +111,43 @@ export default function Dashboard() {
                 </span>
               </div>
 
-              <h1 className="apple-heading-xl text-[var(--text-primary)]">
-                {t.greeting}, {currentUser.displayName}! 👋
-              </h1>
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+                {isCustomAiAvatar ? (
+                  <div
+                    onClick={handleAvatarClick}
+                    className="relative group cursor-pointer shrink-0 transition-transform active:scale-95"
+                    title="¡Hola!"
+                  >
+                    <div className="w-18 h-18 sm:w-22 sm:h-22 rounded-full p-1 bg-gradient-to-tr from-emerald-400 via-teal-300 to-cyan-400 shadow-xl hover:scale-105 transition duration-300">
+                      <img
+                        src={currentUser.avatar}
+                        alt={currentUser.displayName}
+                        className="w-full h-full object-cover rounded-full bg-slate-950"
+                      />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 text-base group-hover:scale-125 transition">
+                      ✨
+                    </span>
+                  </div>
+                ) : (
+                  <div
+                    onClick={handleAvatarClick}
+                    className="text-4xl sm:text-5xl cursor-pointer hover:scale-125 transition active:scale-95 shrink-0 select-none"
+                    title="¡Hola!"
+                  >
+                    {currentUser.avatar || '👨‍💻'}
+                  </div>
+                )}
+
+                <div>
+                  <h1 className="apple-heading-xl text-[var(--text-primary)]">
+                    {t.greeting}, {currentUser.displayName}!
+                  </h1>
+                  <p className="text-xs font-mono text-[var(--accent-emerald)] font-bold mt-0.5">
+                    🇪🇸 ¡Vamos a dominar el español!
+                  </p>
+                </div>
+              </div>
 
               <p className="apple-text-subhead max-w-md">
                 {t.todayWorkingOn}{' '}
@@ -236,19 +282,22 @@ export default function Dashboard() {
 
       </main>
 
-      {/* ── Anki tréninkový modal ── */}
+      {/* Anki modal */}
       <AnkiPracticeModal
         isOpen={isAnkiModalOpen}
         onClose={() => setIsAnkiModalOpen(false)}
         currentDay={currentDay}
       />
 
-      {/* ── Detailní průvodce knihou Prokopové ── */}
+      {/* Textbook modal */}
       <TextbookModal
         isOpen={isTextbookModalOpen}
         onClose={() => setIsTextbookModalOpen(false)}
         dayNumber={currentDay}
         bookMeta={todayPlan.bookMeta}
+        userName={currentUser.displayName}
+        userId={currentUser.uid}
+        userAvatar={currentUser.avatar}
       />
     </div>
   );

@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 'use client';
 
 import Link from 'next/link';
@@ -40,7 +41,6 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
 
   const profileOptions = profiles.length > 0 ? profiles : [activeUser];
 
-  // Synchronizace tématu a jazyka POUZE při změně uživatele (userId)
   useEffect(() => {
     const selectedProfile = profiles.find((p) => p.uid === userId);
     if (selectedProfile) {
@@ -51,16 +51,14 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
         setLanguage(selectedProfile.preferredBaseLanguage);
       }
     }
-  }, [userId]); // Záměrně pouze [userId], aby se neblokovalo manuální přepínání
+  }, [userId]);
 
-  // Přepnutí tématu + uložení do profilu
   const handleThemeToggle = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     toggleTheme();
     updateProfile(userId, { theme: nextTheme });
   };
 
-  // Přepnutí jazyka + uložení do profilu
   const handleLanguageChange = (code: AppLanguage) => {
     setLanguage(code);
     updateProfile(userId, { preferredBaseLanguage: code });
@@ -79,7 +77,6 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
     setIsProfileMenuOpen(false);
   };
 
-  // Bezpečný render emoji i SVG avatara
   const renderAvatar = (avatarValue?: string, className = 'text-base') => {
     if (!avatarValue) return <span className={className}>👤</span>;
     if (avatarValue.startsWith('data:image') || avatarValue.startsWith('http')) {
@@ -110,7 +107,7 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
 
   return (
     <>
-      <header className="sticky top-0 z-[60] w-full backdrop-blur-2xl bg-[var(--nav-bg)] border-b border-[var(--nav-border)] transition-colors duration-300">
+      <header className="sticky top-0 z-[90] w-full backdrop-blur-2xl bg-[var(--nav-bg)] border-b border-[var(--nav-border)] transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Logo */}
@@ -144,17 +141,17 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
           {/* Ovládací prvky */}
           <div className="flex items-center gap-1 sm:gap-2">
             
-            {/* Tlačítko přepnutí tématu (Světlý / Tmavý) */}
+            {/* Přepnutí tématu (Světlý / Tmavý) */}
             <button
               onClick={handleThemeToggle}
-              className="p-2.5 sm:p-2 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-xs text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-auto sm:min-w-auto flex items-center justify-center"
+              className="p-2.5 sm:p-2 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-xs text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-auto sm:min-w-auto flex items-center justify-center shadow-sm"
               title={theme === 'dark' ? t.themeLight : t.themeDark}
             >
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
 
             {/* Přepínač jazyků */}
-            <div className="flex items-center p-0.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-full min-h-[44px]">
+            <div className="flex items-center p-0.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-full min-h-[44px] shadow-sm">
               {languages.map((l) => (
                 <button
                   key={l.code}
@@ -181,7 +178,7 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
             <div className="relative">
               <button
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                className="px-3 py-2.5 sm:py-1 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition flex items-center justify-center gap-2 cursor-pointer shrink-0 min-h-[44px] sm:min-h-auto"
+                className="px-3 py-2.5 sm:py-1 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition flex items-center justify-center gap-2 cursor-pointer shrink-0 min-h-[44px] sm:min-h-auto shadow-sm"
                 title={t.profileSwitch}
               >
                 <span className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -190,12 +187,14 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
                 <span className="font-bold hidden sm:inline">{activeUser.displayName}</span>
               </button>
 
+              {/* ── DROPDOWN STYLOVANÝ PŘESNĚ JAKO PROFILE MANAGER (REAGUJE NA SVĚTLÝ I TMAVÝ REŽIM) ── */}
               {isProfileMenuOpen && (
-                <div className="absolute right-0 top-[calc(100%+10px)] w-64 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] shadow-2xl backdrop-blur-2xl z-50 overflow-hidden animate-scale-in">
-                  <div className="border-b border-[var(--card-border)] px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                <div className="absolute right-0 top-[calc(100%+10px)] w-64 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] shadow-2xl backdrop-blur-2xl z-[120] overflow-hidden animate-scale-in">
+                  <div className="border-b border-[var(--card-border)] px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)] bg-[var(--card-bg-hover)]">
                     {t.profilesTitle}
                   </div>
-                  <div className="max-h-64 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+                  
+                  <div className="max-h-64 overflow-y-auto p-2 space-y-1 custom-scrollbar bg-[var(--card-bg)]">
                     {profileOptions.map((profile) => (
                       <button
                         key={profile.uid}
@@ -203,8 +202,8 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
                         onClick={() => handleSelectProfile(profile.uid)}
                         className={`w-full flex items-center gap-3 rounded-xl p-2 text-left transition cursor-pointer ${
                           profile.uid === activeUser.uid
-                            ? 'bg-[var(--accent-emerald)]/15 border border-[var(--accent-emerald)]'
-                            : 'hover:bg-[var(--card-bg-hover)]'
+                            ? 'bg-[var(--accent-emerald)]/15 border border-[var(--accent-emerald)] shadow-sm'
+                            : 'hover:bg-[var(--card-bg-hover)] border border-transparent'
                         }`}
                       >
                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--card-bg-hover)] text-base shrink-0 overflow-hidden border border-[var(--card-border)]">
@@ -215,19 +214,20 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
                             {profile.displayName}
                           </div>
                           <div className="text-[9px] uppercase tracking-wider text-[var(--text-muted)] font-mono">
-                            {profile.startingLevel || 'A1'} • {profile.preferredBaseLanguage || 'CS'}
+                            {profile.startingLevel || 'A1'} • {profile.preferredBaseLanguage?.toUpperCase() || 'CS'}
                           </div>
                         </div>
                       </button>
                     ))}
                   </div>
+
                   <button
                     type="button"
                     onClick={() => {
                       setIsProfileMenuOpen(false);
                       setIsProfileModalOpen(true);
                     }}
-                    className="w-full border-t border-[var(--card-border)] bg-[var(--card-bg-hover)] hover:bg-white/10 px-4 py-2.5 text-left text-xs font-bold text-[var(--text-primary)] transition cursor-pointer flex items-center gap-2"
+                    className="w-full border-t border-[var(--card-border)] bg-[var(--card-bg-hover)] hover:opacity-90 px-4 py-2.5 text-left text-xs font-bold text-[var(--text-primary)] transition cursor-pointer flex items-center gap-2"
                   >
                     <span>{t.manageProfiles}</span>
                   </button>
@@ -244,7 +244,7 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
       />
 
       {/* Mobilní spodní lišta */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--nav-bg)] backdrop-blur-2xl border-t border-[var(--nav-border)] px-3 py-2 flex items-center justify-around shadow-2xl">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[110] bg-[var(--nav-bg)] backdrop-blur-2xl border-t border-[var(--nav-border)] px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 flex items-center justify-around shadow-2xl">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (

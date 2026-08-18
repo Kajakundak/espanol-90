@@ -94,13 +94,12 @@ export default function TutorPage() {
     setNativeLanguage(language as NativeLanguage);
   }, [currentUser.uid, currentUser.startingLevel, language]);
 
-  // Synchronizace názvu výchozího tématu při přepnutí jazyka
   useEffect(() => {
     const matched = PRESET_TOPICS.find((p) => p.prompt === selectedTopicPrompt);
     if (matched) {
       setSelectedTopicTitle(matched.title);
     }
-  }, [language]);
+  }, [language, selectedTopicPrompt]);
 
   const [customTopics, setCustomTopics] = useState<CustomTutorTopic[]>([]);
   const [newTopicTitle, setNewTopicTitle] = useState('');
@@ -245,7 +244,6 @@ export default function TutorPage() {
               </button>
             </div>
 
-            {/* Formulář pro uložení vlastního tématu – plně lokalizovaný */}
             {showCustomForm && (
               <form onSubmit={handleSaveCustomTopic} className="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--card-border)] space-y-4 animate-fade-in">
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">
@@ -363,6 +361,7 @@ export default function TutorPage() {
           level={selectedLevel}
           nativeLanguage={nativeLanguage}
           userName={currentUser.displayName}
+          userAvatar={currentUser.avatar}
           userId={currentUser.uid}
           totalPoints={currentUser.totalPoints}
           currentStreak={currentUser.currentStreak}

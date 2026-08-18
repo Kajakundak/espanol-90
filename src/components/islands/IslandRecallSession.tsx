@@ -1,27 +1,68 @@
-// src/components/islands/IslandRecallSession.tsx
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { LiveTutorSession, LiveStatus, LIVE_MODEL, LIVE_VOICES } from '@/lib/ai/live-session';
+import { LiveTutorSession, LiveStatus, LIVE_MODEL, LIVE_VOICES, sanitizeTranscript } from '@/lib/ai/live-session';
 import { IslandCategory } from '@/lib/data/islands-parser';
 import { useAppLanguage } from '@/lib/context/LanguageContext';
 import { getTranslation } from '@/lib/translations';
 import { soundEngine } from '@/lib/audio/sound-engine';
 
+interface Message {
+  id: string;
+  role: 'user' | 'model';
+  text: string;
+  ts: number;
+}
+
 interface IslandRecallSessionProps {
   category: IslandCategory;
   onClose: () => void;
+  userName?: string;
+  userAvatar?: string;
 }
 
-export default function IslandRecallSession({ category, onClose }: IslandRecallSessionProps) {
+function mergeTranscriptChunks(prevText: string, newChunk: string): string {
+  const prev = prevText.trim();
+  const next = newChunk.trim();
+  if (!prev) return next;
+  if (!next) return prev;
+
+  if (prev.endsWith(next) || prev === next) return prev;
+
+  if (next.toLowerCase().includes(prev.toLowerCase())) {
+    return next;
+  }
+
+  if (next.toLowerCase().startsWith(prev.toLowerCase())) {
+    return next;
+  }
+
+  const prevWords = prev.split(/\s+/);
+  const nextWords = next.split(/\s+/);
+  for (let overlapLen = Math.min(prevWords.length, nextWords.length); overlapLen > 0; overlapLen--) {
+    const prevEnd = prevWords.slice(-overlapLen).join(' ').toLowerCase();
+    const nextStart = nextWords.slice(0, overlapLen).join(' ').toLowerCase();
+    if (prevEnd === nextStart) {
+      return `${prevWords.slice(0, -overlapLen).join(' ')} ${next}`.trim();
+    }
+  }
+
+  return `${prev} ${next}`.replace(/\s+/g, ' ').trim();
+}
+
+export default function IslandRecallSession({
+  category,
+  onClose,
+  userName = 'Karel',
+  userAvatar,
+}: IslandRecallSessionProps) {
   const { language } = useAppLanguage();
   const t = getTranslation(language);
   const [status, setStatus] = useState<LiveStatus>('idle');
-  const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [voiceId, setVoiceId] = useState<(typeof LIVE_VOICES)[number]['id']>('Aoede');
   
-  // Kapesní režim + WakeLock
   const [pocketMode, setPocketMode] = useState(false);
   const wakeLockRef = useRef<any>(null);
 
@@ -60,13 +101,13 @@ export default function IslandRecallSession({ category, onClose }: IslandRecallS
   }, [pocketMode, status, requestWakeLock, releaseWakeLock]);
 
   const STATUS_CONFIG: Record<LiveStatus, { label: string; color: string; pulse: boolean }> = {
-    idle:       { label: t.idleStatus,        color: 'text-[var(--text-secondary)]',  pulse: false },
-    connecting: { label: t.connectingStatus,  color: 'text-amber-400',                pulse: true  },
-    ready:      { label: t.ready,             color: 'text-emerald-400',              pulse: false },
-    listening:  { label: t.listeningStatus,  color: 'text-rose-400',                 pulse: true  },
-    speaking:   { label: t.speakingStatus,   color: 'text-cyan-400',                 pulse: true  },
-    error:      { label: t.error,             color: 'text-rose-400',                 pulse: false },
-    closed:     { label: t.close,             color: 'text-[var(--text-secondary)]',  pulse: false },
+    idle:       { label: t.idleStatus,        color: 'text-[var(--text-secondary)]', pulse: false },
+    connecting: { label: t.connectingStatus,  color: 'text-amber-500 dark:text-amber-400', pulse: true },
+    ready:      { label: t.ready,             color: 'text-emerald-500 dark:text-emerald-400', pulse: false },
+    listening:  { label: t.listeningStatus,   color: 'text-rose-500 dark:text-rose-400', pulse: true },
+    speaking:   { label: t.speakingStatus,    color: 'text-cyan-500 dark:text-cyan-400', pulse: true },
+    error:      { label: t.error,             color: 'text-rose-500 dark:text-rose-400', pulse: false },
+    closed:     { label: t.close,             color: 'text-[var(--text-secondary)]', pulse: false },
   };
 
   useEffect(() => {
@@ -77,14 +118,39 @@ export default function IslandRecallSession({ category, onClose }: IslandRecallS
     return () => { sessionRef.current?.disconnect(); };
   }, []);
 
+  const handleTurnStart = useCallback((role: 'user' | 'model') => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        role,
+        text: '',
+        ts: Date.now(),
+      },
+    ]);
+  }, []);
+
   const handleTranscript = useCallback((role: 'user' | 'model', text: string) => {
-    setMessages(prev => {
-      if (prev.length > 0 && prev[prev.length - 1].role === role) {
-        const updated = [...prev];
-        updated[updated.length - 1] = { ...updated[updated.length - 1], text: updated[updated.length - 1].text + ' ' + text };
-        return updated;
+    const cleanText = sanitizeTranscript(text);
+    if (!cleanText) return;
+
+    setMessages((prev) => {
+      if (prev.length === 0 || prev[prev.length - 1].role !== role) {
+        return [
+          ...prev,
+          {
+            id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            role,
+            text: cleanText,
+            ts: Date.now(),
+          },
+        ];
       }
-      return [...prev, { role, text }];
+
+      const updated = [...prev];
+      const lastMsg = updated[updated.length - 1];
+      lastMsg.text = mergeTranscriptChunks(lastMsg.text, cleanText);
+      return updated;
     });
   }, []);
 
@@ -116,6 +182,7 @@ YOUR JOB:
     const session = new LiveTutorSession(apiKey, {
       onStatusChange: setStatus,
       onTranscript: handleTranscript,
+      onTurnStart: handleTurnStart,
       onError: setErrorMsg,
     });
     sessionRef.current = session;
@@ -127,8 +194,9 @@ YOUR JOB:
       level: (category.difficulty as any) || 'A1',
       voiceId,
       situation: systemInstruction,
+      userName,
     });
-  }, [apiKey, language, category, handleTranscript, systemInstruction, voiceId]);
+  }, [apiKey, language, category, handleTranscript, handleTurnStart, systemInstruction, voiceId, userName]);
 
   const stopSession = useCallback(async () => {
     soundEngine.playUntick();
@@ -141,23 +209,36 @@ YOUR JOB:
   const isActive = status === 'listening' || status === 'speaking';
   const statusCfg = STATUS_CONFIG[status];
 
+  const renderUserAvatar = () => {
+    if (userAvatar && (userAvatar.startsWith('data:image') || userAvatar.startsWith('http'))) {
+      return (
+        <img
+          src={userAvatar}
+          alt={userName || 'Me'}
+          className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-emerald-500/40"
+        />
+      );
+    }
+    return <span className="text-base select-none">{userAvatar || '🧑‍🎓'}</span>;
+  };
+
   return (
     <div className="fixed inset-0 z-[130] flex items-center justify-center p-2 sm:p-4 bg-[var(--nav-bg)]/70 backdrop-blur-xl animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-lg apple-glass bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl flex flex-col my-auto max-h-[96vh] sm:max-h-[90vh] overflow-hidden animate-scale-in">
+      <div className="relative w-full max-w-lg bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl flex flex-col my-auto max-h-[96vh] sm:max-h-[90vh] overflow-hidden animate-scale-in">
         
-        {/* ── KAPESNÍ REŽIM PROTI USNUTÍ IPHONE / ANDROIDU ── */}
+        {/* Kapesní režim */}
         {pocketMode && (
           <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-between p-8 text-center animate-fade-in select-none">
             <div className="pt-8">
               <span className="text-5xl block mb-2">📱</span>
               <span className="text-xs font-mono font-bold tracking-[0.28em] text-emerald-400 uppercase">
-                Kapesní režim aktivní
+                {t.pocketModeTitle}
               </span>
             </div>
 
             <div className="space-y-3 max-w-sm">
               <p className="text-sm font-semibold text-slate-300">
-                Displej zůstane černý, aby telefon neuspal AI Recall do sluchátek.
+                {t.pocketModeDesc}
               </p>
               <div className="p-3 rounded-2xl bg-white/10 border border-white/15 text-xs text-slate-300">
                 Stav: <strong className="text-emerald-400 font-mono">{statusCfg.label}</strong>
@@ -171,7 +252,7 @@ YOUR JOB:
               }}
               className="w-full max-w-xs py-4 rounded-2xl bg-white text-slate-950 font-black text-sm transition cursor-pointer hover:bg-slate-200 active:scale-95 shadow-2xl"
             >
-              ✕ Vypnout kapesní režim
+              {t.pocketModeExit}
             </button>
           </div>
         )}
@@ -181,10 +262,10 @@ YOUR JOB:
           <div>
             <div className="flex items-center gap-2">
               <div className={`w-2.5 h-2.5 rounded-full ${
-                status === 'listening'  ? 'bg-rose-400 animate-pulse' :
-                status === 'speaking'   ? 'bg-cyan-400 animate-pulse' :
-                status === 'connecting' ? 'bg-amber-400 animate-pulse' :
-                status === 'ready'      ? 'bg-emerald-400' : 'bg-[var(--text-muted)]'
+                status === 'listening'  ? 'bg-rose-500 animate-pulse' :
+                status === 'speaking'   ? 'bg-cyan-500 animate-pulse' :
+                status === 'connecting' ? 'bg-amber-500 animate-pulse' :
+                status === 'ready'      ? 'bg-emerald-500' : 'bg-[var(--text-muted)]'
               }`} />
               <h2 className="font-black text-[var(--text-primary)] text-sm sm:text-base">🤖 {t.recallCoachTitle}</h2>
               <span className="text-[9px] sm:text-[10px] font-mono bg-[var(--accent-blue)]/15 text-[var(--accent-blue)] border border-[var(--accent-blue)]/30 px-1.5 py-0.5 rounded-full">
@@ -197,7 +278,6 @@ YOUR JOB:
           </div>
 
           <div className="flex items-center gap-1.5">
-            {/* TLAČÍTKO KAPESNÍHO REŽIMU – POUZE NA MOBILU (sm:hidden) */}
             <button
               onClick={() => {
                 soundEngine.playTick();
@@ -205,7 +285,7 @@ YOUR JOB:
                 if (status === 'idle') startSession();
               }}
               className="sm:hidden p-2 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-bold text-[var(--accent-emerald)] shadow-sm cursor-pointer"
-              title="Kapesní režim proti zhasnutí obrazovky"
+              title={t.pocketModeBtn}
             >
               📱
             </button>
@@ -218,10 +298,10 @@ YOUR JOB:
         </div>
 
         {/* Body Container */}
-        <div className="flex-1 overflow-y-auto space-y-3 p-3.5 sm:p-5 custom-scrollbar">
-          {/* Audio orb */}
-          <div className="flex justify-center py-2 relative">
-            <div className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full transition-all duration-500 ${
+        <div className="flex-1 overflow-y-auto space-y-3.5 p-3.5 sm:p-5 custom-scrollbar">
+          {/* Visual Orb */}
+          <div className="flex justify-center py-1 relative">
+            <div className={`relative flex items-center justify-center w-20 h-20 sm:w-22 sm:h-22 rounded-full transition-all duration-500 ${
               status === 'listening' ? 'bg-rose-500/15 shadow-[0_0_50px_rgba(244,63,94,0.5)]' :
               status === 'speaking'  ? 'bg-cyan-500/15 shadow-[0_0_50px_rgba(6,182,212,0.5)]' :
               'bg-[var(--card-bg-hover)] border border-[var(--card-border)]'
@@ -251,26 +331,57 @@ YOUR JOB:
             </div>
           )}
 
-          {/* Transcript */}
-          <div ref={scrollRef} className="space-y-2.5 min-h-[100px] max-h-[220px] overflow-y-auto p-2 bg-[var(--card-bg-hover)] rounded-2xl border border-[var(--card-border)]">
+          {/* Transcript Log s vlastním avatarem */}
+          <div ref={scrollRef} className="space-y-3 min-h-[120px] max-h-[260px] overflow-y-auto p-3 bg-[var(--card-bg-hover)] rounded-2xl border border-[var(--card-border)]">
             {messages.length === 0 && status === 'connecting' && (
-              <div className="text-center py-4 text-amber-400 text-xs animate-pulse font-mono">{t.connectingStatus}</div>
+              <div className="text-center py-4 text-amber-500 dark:text-amber-400 text-xs animate-pulse font-mono">{t.connectingStatus}</div>
             )}
-            {messages.map((m, i) => (
-              <div key={i} className={`flex gap-2 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className="text-base shrink-0">{m.role === 'user' ? '🧑‍🎓' : '🤖'}</div>
-                <div className={`px-3 py-2 rounded-2xl text-xs sm:text-sm leading-relaxed max-w-[85%] ${
+            {messages.filter(m => m.text.trim().length > 0).map((m) => (
+              <div key={m.id} className={`flex gap-2.5 animate-fade-up ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className="shrink-0 mt-0.5 flex items-center justify-center">
+                  {m.role === 'user' ? renderUserAvatar() : <span className="text-base select-none">🤖</span>}
+                </div>
+                <div className={`px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed max-w-[88%] shadow-sm ${
                   m.role === 'user'
-                    ? 'bg-emerald-500/20 border border-emerald-500/40 text-[var(--text-primary)]'
+                    ? 'bg-emerald-500/15 border border-emerald-500/30 text-[var(--text-primary)] font-medium'
                     : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)]'
-                }`}>{m.text}</div>
+                }`}>
+                  <p className="whitespace-normal leading-relaxed">{m.text}</p>
+                </div>
               </div>
             ))}
           </div>
 
           {errorMsg && (
-            <div className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono">
+            <div className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 dark:text-rose-400 text-xs font-mono">
               ⚠️ {errorMsg}
+            </div>
+          )}
+
+          {/* Rychlá pomocná tlačítka */}
+          {isActive && (
+            <div className="flex flex-wrap gap-2 justify-center py-1">
+              <button
+                onClick={() => sessionRef.current?.sendTextMessage('Skip to next sentence please.')}
+                className="px-3.5 py-2 rounded-2xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[var(--text-primary)] text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+              >
+                <span className="p-1 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 font-extrabold">⏭️</span>
+                <span>{language === 'en' ? 'Skip' : language === 'sk' ? 'Preskočiť' : 'Přeskočit'}</span>
+              </button>
+              <button
+                onClick={() => sessionRef.current?.sendTextMessage('Repeat the sentence please.')}
+                className="px-3.5 py-2 rounded-2xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[var(--text-primary)] text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+              >
+                <span className="p-1 rounded-lg bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-extrabold">🔄</span>
+                <span>{t.repeatBtn}</span>
+              </button>
+              <button
+                onClick={() => sessionRef.current?.sendTextMessage('Give me the answer please.')}
+                className="px-3.5 py-2 rounded-2xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[var(--text-primary)] text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+              >
+                <span className="p-1 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-extrabold">💡</span>
+                <span>{t.hintBtn}</span>
+              </button>
             </div>
           )}
         </div>
@@ -279,7 +390,7 @@ YOUR JOB:
         <div className="p-3.5 sm:p-5 border-t border-[var(--card-border)] bg-[var(--card-bg-hover)] flex flex-col gap-2.5 shrink-0">
           {!isActive && status !== 'connecting' && (
             <div className="flex items-center gap-1.5 flex-wrap justify-center">
-              <span className="text-[11px] text-[var(--text-secondary)] font-mono">{t.voiceLabel}</span>
+              <span className="text-[11px] text-[var(--text-secondary)] font-mono font-semibold">{t.voiceLabel}</span>
               {LIVE_VOICES.map((v) => (
                 <button
                   key={v.id}
@@ -289,7 +400,7 @@ YOUR JOB:
                   }}
                   className={`px-2.5 py-1 rounded-xl text-[11px] font-bold border transition cursor-pointer ${
                     voiceId === v.id
-                      ? 'bg-[var(--accent-blue)] text-white border-[var(--accent-blue)]'
+                      ? 'bg-[var(--accent-blue)] text-white border-[var(--accent-blue)] shadow-sm'
                       : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                   }`}
                 >

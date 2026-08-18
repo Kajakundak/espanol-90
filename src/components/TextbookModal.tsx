@@ -18,6 +18,7 @@ interface TextbookModalProps {
   bookMeta: BookLessonDetail;
   userName?: string;
   userId?: string;
+  userAvatar?: string;
 }
 
 type TabType = 'dialogues' | 'grammar' | 'vocab' | 'exercises';
@@ -36,7 +37,6 @@ const formatTime = (timeInSeconds: number) => {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
-// Pomocná funkce pro bezpečné vytažení textu položky cvičení z libovolného formátu v JSONu
 const getItemText = (item: any): string => {
   if (!item) return '';
   if (typeof item === 'string') return item;
@@ -68,20 +68,18 @@ export default function TextbookModal({
   bookMeta,
   userName = 'Karel',
   userId,
+  userAvatar,
 }: TextbookModalProps) {
   const { language } = useAppLanguage();
   const t = getTranslation(language);
 
-  // Tab State
   const [activeTab, setActiveTab] = useState<TabType>('dialogues');
 
-  // Načtení dat z JSONu podle čísla lekce
   const rawLesson = useMemo(
     () => (bookMeta ? (getProkopovaLessonData(bookMeta.lessonNumber) as any) : null),
     [bookMeta]
   );
 
-  // Převod ID stopy (oddil_1_track_07) na reálný soubor (1_07.mp3)
   const resolveAudioFile = (trackId: string) => {
     const match1 = trackId?.match(/oddil_1_track_(\d+)/);
     if (match1) return `1_${match1[1].padStart(2, '0')}.mp3`;
@@ -90,7 +88,6 @@ export default function TextbookModal({
     return trackId?.endsWith('.mp3') ? trackId : `${trackId}.mp3`;
   };
 
-  // Seznam stop pro přehrávač – čistý název souboru bez přípony .mp3
   const tracksList = useMemo<TrackItem[]>(() => {
     if (rawLesson?.audio_tracks && Array.isArray(rawLesson.audio_tracks) && rawLesson.audio_tracks.length > 0) {
       return rawLesson.audio_tracks.map((tItem: any) => {
@@ -117,7 +114,6 @@ export default function TextbookModal({
     });
   }, [rawLesson, bookMeta]);
 
-  // Audio Player State
   const [activeTrackFile, setActiveTrackFile] = useState<string | null>(tracksList[0]?.file || null);
   const [activeTrackDesc, setActiveTrackDesc] = useState<string>(tracksList[0]?.description || '');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -126,7 +122,6 @@ export default function TextbookModal({
   const [playbackRate, setPlaybackRate] = useState<number>(1.0);
   const [isLooping, setIsLooping] = useState(false);
 
-  // Další stavy
   const [vocabSearch, setVocabSearch] = useState('');
   const [revealedExercises, setRevealedExercises] = useState<Set<number>>(new Set());
   const [userAnswers, setUserAnswers] = useState<{ [key: string]: string }>({});
@@ -135,15 +130,16 @@ export default function TextbookModal({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Bezpečné zastavení přehrávání
   const stopAudio = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     setIsPlayingAudio(false);
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'paused';
+    }
   }, []);
 
-  // Reset a vyčištění POUZE při změně čísla lekce
   useEffect(() => {
     if (tracksList.length > 0) {
       setActiveTrackFile(tracksList[0].file);
@@ -155,7 +151,6 @@ export default function TextbookModal({
     setUserAnswers({});
   }, [bookMeta?.lessonNumber]);
 
-  // Vyčištění při unmountu
   useEffect(() => {
     return () => {
       stopAudio();
@@ -179,6 +174,19 @@ export default function TextbookModal({
     setActiveTrackDesc(description);
     setIsPlayingAudio(true);
 
+    // Synchronizace s Lock Screenem
+    if ('mediaSession' in navigator) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: description || trackFile.replace(/\.mp3$/i, ''),
+          artist: `Lekce ${bookMeta.lessonNumber}: ${bookMeta.title}`,
+          album: 'Španělština pro samouky',
+          artwork: [{ src: '/icon-512.png', sizes: '512x512', type: 'image/png' }],
+        });
+        navigator.mediaSession.playbackState = 'playing';
+      } catch {}
+    }
+
     if (audioRef.current) {
       const urls = resolveAudioCandidateUrls(trackFile);
       audioRef.current.src = urls[0];
@@ -192,9 +200,9 @@ export default function TextbookModal({
         }
       });
     }
-  }, [activeTrackFile, isPlayingAudio, stopAudio, playbackRate, isLooping]);
+  }, [activeTrackFile, isPlayingAudio, stopAudio, playbackRate, isLooping, bookMeta]);
 
-  // ── Přeskočení na další / předchozí nahrávku ──
+  // Přeskočení na další / předchozí nahrávku
   const handleNextTrack = useCallback(() => {
     if (!activeTrackFile || tracksList.length === 0) return;
     const currentIndex = tracksList.findIndex((tItem) => tItem.file === activeTrackFile);
@@ -211,6 +219,23 @@ export default function TextbookModal({
     if (prevTrack) handleSelectTrack(prevTrack.file, prevTrack.description);
   }, [activeTrackFile, tracksList, handleSelectTrack]);
 
+  // Registrace MediaSession akcí pro zamčený displej
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('mediaSession' in navigator)) return;
+
+    try {
+      navigator.mediaSession.setActionHandler('play', () => {
+        audioRef.current?.play().catch(console.warn);
+        setIsPlayingAudio(true);
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        stopAudio();
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => handleNextTrack());
+      navigator.mediaSession.setActionHandler('previoustrack', () => handlePrevTrack());
+    } catch {}
+  }, [handleNextTrack, handlePrevTrack, stopAudio]);
+
   const togglePlayPause = () => {
     soundEngine.playTick();
     if (!audioRef.current) return;
@@ -224,6 +249,7 @@ export default function TextbookModal({
       }
       audioRef.current.play().catch(console.warn);
       setIsPlayingAudio(true);
+      if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
     }
   };
 
@@ -315,11 +341,11 @@ export default function TextbookModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-xl animate-fade-in overflow-hidden">
-        <div className="relative w-full max-w-4xl h-[96vh] sm:h-[92vh] bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl backdrop-blur-2xl flex flex-col overflow-hidden animate-scale-in">
+      <div className="fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/80 backdrop-blur-xl animate-fade-in overflow-hidden">
+        <div className="relative w-full max-w-4xl h-[94vh] sm:h-[90vh] bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl backdrop-blur-3xl flex flex-col overflow-hidden animate-scale-in">
           
           {/* ── 1. HORNÍ LIŠTA ── */}
-          <div className="flex items-center justify-between border-b border-[var(--card-border)] px-4 sm:px-7 py-3 bg-[var(--card-bg-hover)] shrink-0 gap-2 sm:gap-3">
+          <div className="flex items-center justify-between border-b border-[var(--card-border)] px-4 sm:px-7 py-3.5 bg-[var(--card-bg-hover)] shrink-0 gap-2 sm:gap-3">
             <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
               <span className="text-xl sm:text-2xl shrink-0">📖</span>
               <div className="min-w-0">
@@ -361,23 +387,19 @@ export default function TextbookModal({
                   stopAudio();
                   onClose();
                 }}
-                className="w-8 h-8 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition flex items-center justify-center cursor-pointer"
+                className="w-8 h-8 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition flex items-center justify-center cursor-pointer shadow-sm ml-1"
               >
                 ✕
               </button>
             </div>
           </div>
 
-          {/* ── 2. MOBILNĚ ADAPTOVANÝ AUDIO PŘEHRÁVAČ S PŘESKAKOVÁNÍM STOP ── */}
+          {/* ── 2. AUDIO PŘEHRÁVAČ ── */}
           {tracksList.length > 0 && (
             <div className="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-[var(--card-bg)] border-b border-[var(--card-border)] shrink-0 space-y-2">
               
-              {/* Hlavní lišta přehrávače */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3">
-                
-                {/* Tlačítka: Předchozí stopa | Play/Pause | Další stopa + název stopy */}
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  
                   <div className="flex items-center gap-1 shrink-0">
                     <button
                       type="button"
@@ -409,7 +431,6 @@ export default function TextbookModal({
                     </button>
                   </div>
 
-                  {/* Název stopy */}
                   <div className="min-w-0 flex-1 pl-1">
                     <p className="text-xs sm:text-sm font-extrabold text-[var(--text-primary)] truncate">
                       {activeTrackDesc || activeTrackFile}
@@ -420,7 +441,6 @@ export default function TextbookModal({
                   </div>
                 </div>
 
-                {/* Ovladače posunu o 5s, rychlost, smyčka, čas */}
                 <div className="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 shrink-0 border-t sm:border-t-0 border-[var(--card-border)]/40 pt-1.5 sm:pt-0">
                   <div className="flex items-center gap-1">
                     <button
@@ -467,7 +487,6 @@ export default function TextbookModal({
                 </div>
               </div>
 
-              {/* Progress bar */}
               <input
                 type="range"
                 min="0"
@@ -482,7 +501,6 @@ export default function TextbookModal({
                 className="w-full h-1.5 bg-[var(--card-border)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-cyan)] transition"
               />
 
-              {/* Tlačítka pro rychlý výběr konkrétní stopy */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-0.5">
                 {tracksList.map((tItem, idx) => {
                   const isSel = activeTrackFile === tItem.file;
@@ -553,10 +571,10 @@ export default function TextbookModal({
             </button>
           </div>
 
-          {/* ── 4. TĚLO ZÁLOŽEK S BOHATÝM OBSAHEM ── */}
+          {/* ── 4. TĚLO ZÁLOŽEK ── */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-7 space-y-5 sm:space-y-6 custom-scrollbar text-xs sm:text-sm">
             
-            {/* 💬 TAB 1: TEXTY & DIALOGY */}
+            {/* TAB 1: TEXTY & DIALOGY */}
             {activeTab === 'dialogues' && (
               <div className="space-y-5 sm:space-y-6">
                 {rawLesson?.texts && rawLesson.texts.length > 0 ? (
@@ -575,7 +593,6 @@ export default function TextbookModal({
                         </div>
                       )}
 
-                      {/* Odstavce textu */}
                       {sec.paragraphs && Array.isArray(sec.paragraphs) && (
                         <div className="space-y-3">
                           {sec.paragraphs.map((p: any, pIdx: number) => {
@@ -604,7 +621,6 @@ export default function TextbookModal({
                         </div>
                       )}
 
-                      {/* Repliky v dialogu */}
                       {sec.lines && Array.isArray(sec.lines) && (
                         <div className="space-y-2.5">
                           {sec.lines.map((line: any, lIdx: number) => (
@@ -646,7 +662,6 @@ export default function TextbookModal({
                         </div>
                       )}
 
-                      {/* Divadelní scény */}
                       {sec.scenes && Array.isArray(sec.scenes) && (
                         <div className="space-y-4">
                           {sec.scenes.map((scene: any, sIdx: number) => (
@@ -685,7 +700,6 @@ export default function TextbookModal({
                   </div>
                 )}
 
-                {/* Kulturní a jazykové poznámky */}
                 {rawLesson?.cultural_and_linguistic_notes && rawLesson.cultural_and_linguistic_notes.length > 0 && (
                   <div className="p-4 sm:p-5 rounded-2xl bg-[var(--accent-amber)]/10 border border-[var(--accent-amber)]/30 space-y-3">
                     <h4 className="font-extrabold text-xs uppercase tracking-wider text-[var(--accent-amber)] font-mono flex items-center gap-1.5">
@@ -704,7 +718,7 @@ export default function TextbookModal({
               </div>
             )}
 
-            {/* 💡 TAB 2: KOMPLETNÍ GRAMATIKA */}
+            {/* TAB 2: GRAMATIKA */}
             {activeTab === 'grammar' && (
               <div className="space-y-4">
                 {rawLesson?.grammar && rawLesson.grammar.length > 0 ? (
@@ -724,14 +738,12 @@ export default function TextbookModal({
                           </h4>
                         </div>
 
-                        {/* 1. Výklad / Pravidlo */}
                         {(c.rule || c.explanation || c.definition || g.explanation) && (
                           <p className="text-xs sm:text-sm font-semibold text-[var(--text-primary)] leading-relaxed bg-[var(--card-bg)] p-3 rounded-xl border border-[var(--card-border)]">
                             {c.rule || c.explanation || c.definition || g.explanation}
                           </p>
                         )}
 
-                        {/* 2. Klasifikace samohlásek */}
                         {c.vowel_classification && (
                           <div className="grid grid-cols-2 gap-2">
                             <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs">
@@ -753,7 +765,6 @@ export default function TextbookModal({
                           </div>
                         )}
 
-                        {/* 3. Seznam pravidel v poli rules */}
                         {c.rules && Array.isArray(c.rules) && (
                           <div className="space-y-2">
                             {c.rules.map((rItem: any, rIdx: number) => (
@@ -782,7 +793,6 @@ export default function TextbookModal({
                           </div>
                         )}
 
-                        {/* 4. Příklady s překlady */}
                         {c.examples && Array.isArray(c.examples) && (
                           <div className="space-y-1.5 pt-1">
                             {c.examples.map((exItem: any, exIdx: number) => {
@@ -817,7 +827,6 @@ export default function TextbookModal({
                           </div>
                         )}
 
-                        {/* 5. Kontrastní dvojice */}
                         {(c.pairs || c.contrast_examples) && Array.isArray(c.pairs || c.contrast_examples) && (
                           <div className="space-y-1.5 pt-1">
                             {(c.pairs || c.contrast_examples).map((pair: any, pIdx: number) => (
@@ -833,7 +842,6 @@ export default function TextbookModal({
                           </div>
                         )}
 
-                        {/* 6. Časování sloves */}
                         {c.conjugation && Array.isArray(c.conjugation) && (
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2">
                             {c.conjugation.map((cItem: any, cIdx: number) => (
@@ -846,7 +854,6 @@ export default function TextbookModal({
                           </div>
                         )}
 
-                        {/* 7. Souhrnné tabulky */}
                         {g.summary_table && Array.isArray(g.summary_table) && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                             {g.summary_table.map((sItem: any, sIdx: number) => (
@@ -868,7 +875,7 @@ export default function TextbookModal({
               </div>
             )}
 
-            {/* 📚 TAB 3: SLOVNÍČEK */}
+            {/* TAB 3: SLOVNÍČEK */}
             {activeTab === 'vocab' && (
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -929,7 +936,7 @@ export default function TextbookModal({
               </div>
             )}
 
-            {/* 🎯 TAB 4: CVIČENÍ */}
+            {/* TAB 4: CVIČENÍ */}
             {activeTab === 'exercises' && (
               <div className="space-y-4">
                 <div className="p-4 rounded-2xl border-l-4 border-l-rose-500 bg-rose-500/10 border-y border-r border-rose-500/30 space-y-1 shadow-sm">
@@ -1091,6 +1098,7 @@ export default function TextbookModal({
           bookMeta={bookMeta}
           userName={userName}
           userId={userId}
+          userAvatar={userAvatar}
         />
       )}
     </>

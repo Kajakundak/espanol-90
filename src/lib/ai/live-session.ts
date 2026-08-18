@@ -1,7 +1,9 @@
+// src/lib/ai/live-session.ts
 'use client';
 
 /**
- * LiveTutorSession — Native WebSocket connection to Gemini 3.1 Flash Live API.
+ * LiveTutorSession — Native WebSocket connection to Gemini 3.1 Flash Live API
+ * with turn boundary signals (onTurnStart / onTurnComplete).
  */
 
 import { NativeLanguage, CEFRLevel, SYSTEM_PROMPTS } from './gemini';
@@ -30,10 +32,35 @@ export type LiveStatus =
 export interface LiveSessionCallbacks {
   onStatusChange: (status: LiveStatus) => void;
   onTranscript: (role: 'user' | 'model', text: string) => void;
+  onTurnStart?: (role: 'user' | 'model') => void;
+  onTurnComplete?: () => void;
   onError: (msg: string) => void;
 }
 
-/** Convert Float32 samples to Int16 PCM, return base64 string */
+const WORKLET_CODE = `
+class PCMProcessor extends AudioWorkletProcessor {
+  process(inputs) {
+    const input = inputs[0];
+    if (input && input[0]) {
+      this.port.postMessage(input[0]);
+    }
+    return true;
+  }
+}
+registerProcessor('pcm-recorder-worklet', PCMProcessor);
+`;
+
+export function sanitizeTranscript(text: string): string {
+  if (!text) return '';
+  let cleaned = text
+    .replace(/응/g, '')
+    .replace(/아주/g, 'muy')
+    .replace(/네/g, 'Sí');
+
+  cleaned = cleaned.replace(/[^\w\s\d.,!?'"¿¡áäčďéěíĺľňóôŕřšťúůýžÁÄČĎÉĚÍĹĽŇÓÔŔŘŠŤÚŮÝŽñÑüÜ-]/g, '');
+  return cleaned.replace(/\s+/g, ' ').trim();
+}
+
 function float32ToBase64PCM(float32Array: Float32Array): string {
   const int16 = new Int16Array(float32Array.length);
   for (let i = 0; i < float32Array.length; i++) {
@@ -51,12 +78,13 @@ export class LiveTutorSession {
   private audioCtx: AudioContext | null = null;
   private mediaStream: MediaStream | null = null;
   private sourceNode: MediaStreamAudioSourceNode | null = null;
-  private processorNode: AudioWorkletNode | ScriptProcessorNode | null = null;
+  private workletNode: AudioWorkletNode | null = null;
   private nextPlayTime = 0;
   private activeSources: AudioBufferSourceNode[] = [];
   private status: LiveStatus = 'idle';
   private isClosed = false;
   private isSetupComplete = false;
+  private isModelTurnActive = false;
 
   constructor(
     private apiKey: string,
@@ -67,8 +95,6 @@ export class LiveTutorSession {
     this.status = s;
     this.callbacks.onStatusChange(s);
   }
-
-  // ── Public Connect ─────────────────────────────────────────────────────────
 
   async connect(opts: {
     mode: string;
@@ -85,10 +111,18 @@ export class LiveTutorSession {
     if (this.ws) return;
     this.isClosed = false;
     this.isSetupComplete = false;
+    this.isModelTurnActive = false;
     this.setStatus('connecting');
 
+    const langConfig = {
+      cs: { name: 'CZECH', native: 'Čeština' },
+      sk: { name: 'SLOVAK', native: 'Slovenčina' },
+      en: { name: 'ENGLISH', native: 'English' },
+    };
+    const activeLang = langConfig[opts.nativeLanguage] || langConfig.cs;
+    const studentName = opts.userName || 'Karel';
+
     try {
-      // 1. Initialize Audio Context
       this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({
         sampleRate: 16000,
         latencyHint: 'interactive',
@@ -98,7 +132,6 @@ export class LiveTutorSession {
         await this.audioCtx.resume();
       }
 
-      // 2. Microphone stream
       this.mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           sampleRate: 16000,
@@ -109,63 +142,63 @@ export class LiveTutorSession {
         },
       });
 
-      // 3. Setup system instruction
       const studentCtx = {
-        userName: opts.userName,
+        userName: studentName,
         totalPoints: opts.totalPoints,
         currentStreak: opts.currentStreak,
       };
 
-      let systemInstruction: string;
+      let systemInstruction = `=======================================================
+STRICT TWO-LANGUAGE CONVERSATION & PACING DIRECTIVES:
+You are an AI Spanish Tutor conversing with student: ${studentName}.
+Allowed languages in this session:
+1. SPANISH (Español)
+2. ${activeLang.name} (${activeLang.native})
+
+PACING & CONVERSATIONAL RULES (VERY IMPORTANT):
+- Speak ONLY 1-2 SHORT sentences per turn.
+- Ask ONE clear question at a time and then STOP speaking so the student can reply.
+- NEVER speak long monologues or combine multiple questions into one turn.
+- Student speaks to you in ${activeLang.name} or SPANISH.
+=======================================================\n\n`;
+
       switch (opts.mode) {
         case '__textbook_lesson__':
         case '__island_recall__':
-          systemInstruction = opts.situation || '';
+          systemInstruction += opts.situation || '';
           break;
         case 'travel_mode':
-          systemInstruction = SYSTEM_PROMPTS.TRAVEL_MODE(opts.situation || 'HOTEL', opts.nativeLanguage, opts.level);
+          systemInstruction += SYSTEM_PROMPTS.TRAVEL_MODE(opts.situation || 'HOTEL', opts.nativeLanguage, opts.level);
           break;
         case 'interrogation_mode':
-          systemInstruction = SYSTEM_PROMPTS.INTERROGATION_MODE(opts.nativeLanguage, opts.level);
+          systemInstruction += SYSTEM_PROMPTS.INTERROGATION_MODE(opts.nativeLanguage, opts.level);
           break;
         case 'story_mode':
-          systemInstruction = SYSTEM_PROMPTS.STORY_MODE(opts.nativeLanguage, opts.level);
+          systemInstruction += SYSTEM_PROMPTS.STORY_MODE(opts.nativeLanguage, opts.level);
           break;
         case 'survival_mode':
-          systemInstruction = SYSTEM_PROMPTS.SURVIVAL_MODE(opts.nativeLanguage, opts.level);
+          systemInstruction += SYSTEM_PROMPTS.SURVIVAL_MODE(opts.nativeLanguage, opts.level);
           break;
         case 'weekly_review':
-          systemInstruction = SYSTEM_PROMPTS.WEEKLY_REVIEW(opts.nativeLanguage, opts.level);
+          systemInstruction += SYSTEM_PROMPTS.WEEKLY_REVIEW(opts.nativeLanguage, opts.level);
           break;
         default:
-          systemInstruction = SYSTEM_PROMPTS.BEGINNER_CONVERSATION(opts.topic, opts.nativeLanguage, opts.level, studentCtx);
+          systemInstruction += SYSTEM_PROMPTS.BEGINNER_CONVERSATION(opts.topic, opts.nativeLanguage, opts.level, studentCtx);
       }
 
-      // Append saved memories ONLY for general free conversation (never pollute textbook or recall sessions)
       if (opts.memories && opts.memories.length > 0 && opts.mode !== '__textbook_lesson__' && opts.mode !== '__island_recall__') {
         const memoryText = opts.memories
-          .map((m, idx) => `[Minulá relace ${idx + 1} - ${m.topic}]: ${m.summary}. (Fakta o studentovi: ${m.userFacts.join(', ')})`)
+          .map((m, idx) => `[Minulá relace ${idx + 1} - ${m.topic}]: ${m.summary}. (Fakta: ${m.userFacts.join(', ')})`)
           .join('\n');
 
-        systemInstruction += `\n\n🧠 PAMĚŤ MINULÝCH RELACÍ A FAKTA O STUDENTOVI:\nJako osobní tutor znáš z minulých rozhovorů tyto učené informace o studentovi:\n${memoryText}\nNavazuj na tyto informace přirozeně, když je to vhodné. Netaž se znova na to, co už víš!`;
+        systemInstruction += `\n\n🧠 PAMĚŤ MINULÝCH RELACÍ:\n${memoryText}\nNavazuj na tyto informace přirozeně!`;
       }
 
-      // Generic conversation guidelines (skipped for textbook & recall drills)
-      if (opts.mode !== '__island_recall__' && opts.mode !== '__textbook_lesson__') {
-        const langName = opts.nativeLanguage === 'cs' ? 'Czech' : opts.nativeLanguage === 'sk' ? 'Slovak' : 'English';
-        systemInstruction += `\n\nVOICE INSTRUCTION & ADAPTIVE HINTS (STUDENT LEVEL: ${opts.level}):
-You are speaking aloud in real-time.
-- If student level is A0 (absolute beginner): Speak primarily in ${langName}. Introduce Spanish words one by one very slowly.
-- If student level is A1 or higher: Speak Spanish naturally at an appropriate pace. When explaining grammar or giving corrections, switch to ${langName} naturally.`;
-      }
-
-      // 4. WebSocket URL (v1beta BidiGenerateContent)
       const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${this.apiKey}`;
       const ws = new WebSocket(wsUrl);
       this.ws = ws;
 
       ws.onopen = () => {
-        console.log('Gemini Live: WebSocket connected. Sending setup message...');
         const setupMessage = {
           setup: {
             model: LIVE_MODEL,
@@ -177,6 +210,7 @@ You are speaking aloud in real-time.
                 },
               },
             },
+            outputAudioTranscription: {},
             systemInstruction: {
               parts: [{ text: systemInstruction }],
             },
@@ -200,18 +234,17 @@ You are speaking aloud in real-time.
           const response = JSON.parse(text);
           this.handleServerMessage(response);
         } catch (err) {
-          console.error('Gemini Live: Message parse error', err);
+          console.error('Gemini Live parse error:', err);
         }
       };
 
       ws.onerror = (e: any) => {
-        console.error('Gemini Live: WebSocket error', e);
+        console.error('Gemini Live WS error:', e);
         this.callbacks.onError('Spojení selhalo.');
         this.setStatus('error');
       };
 
       ws.onclose = (e: any) => {
-        console.log('Gemini Live: WebSocket closed', e);
         if (!this.isClosed) {
           const reason = e?.reason || e?.code ? ` (Kód: ${e.code}, Důvod: ${e.reason || 'Bez popisu'})` : '';
           this.callbacks.onError(`Spojení ukončeno serverem${reason}`);
@@ -219,8 +252,7 @@ You are speaking aloud in real-time.
         }
       };
     } catch (err: any) {
-      console.error('Failed to connect to Gemini Live:', err);
-      this.callbacks.onError('Nelze navázat Live WebSocket spojení: ' + (err?.message || String(err)));
+      this.callbacks.onError('Nelze navázat Live spojení: ' + (err?.message || String(err)));
       this.setStatus('error');
     }
   }
@@ -228,6 +260,7 @@ You are speaking aloud in real-time.
   async disconnect() {
     this.isClosed = true;
     this.isSetupComplete = false;
+    this.isModelTurnActive = false;
     this.stopMicrophoneCapture();
     this.stopAudioPlayback();
 
@@ -246,6 +279,7 @@ You are speaking aloud in real-time.
 
   sendTextMessage(text: string) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN && this.isSetupComplete && !this.isClosed) {
+      this.isModelTurnActive = false;
       this.ws.send(
         JSON.stringify({
           clientContent: {
@@ -262,71 +296,58 @@ You are speaking aloud in real-time.
     }
   }
 
-  // ── Audio Input (Microphone → WebSocket) ──────────────────────────────────
-
   private async startMicrophoneCapture() {
     if (!this.audioCtx || !this.mediaStream) return;
 
-    this.sourceNode = this.audioCtx.createMediaStreamSource(this.mediaStream);
-
-    const sendAudioChunk = (pcmB64: string) => {
-      if (this.ws && this.ws.readyState === WebSocket.OPEN && this.isSetupComplete && !this.isClosed) {
-        this.ws.send(
-          JSON.stringify({
-            realtimeInput: {
-              audio: {
-                mimeType: 'audio/pcm;rate=16000',
-                data: pcmB64,
-              },
-            },
-          })
-        );
-      }
-    };
-
     try {
-      if (this.audioCtx.audioWorklet) {
-        await this.audioCtx.audioWorklet.addModule('/pcm-processor.js');
-        const workletNode = new AudioWorkletNode(this.audioCtx, 'pcm-processor');
-        workletNode.port.onmessage = (e) => {
-          sendAudioChunk(float32ToBase64PCM(e.data));
-        };
-        this.sourceNode.connect(workletNode);
-        workletNode.connect(this.audioCtx.destination);
-        this.processorNode = workletNode;
-      } else {
-        const scriptNode = this.audioCtx.createScriptProcessor(4096, 1, 1);
-        scriptNode.onaudioprocess = (e) => {
-          sendAudioChunk(float32ToBase64PCM(e.inputBuffer.getChannelData(0)));
-        };
-        this.sourceNode.connect(scriptNode);
-        scriptNode.connect(this.audioCtx.destination);
-        this.processorNode = scriptNode;
-      }
+      this.sourceNode = this.audioCtx.createMediaStreamSource(this.mediaStream);
+
+      const blob = new Blob([WORKLET_CODE], { type: 'application/javascript' });
+      const workletUrl = URL.createObjectURL(blob);
+      await this.audioCtx.audioWorklet.addModule(workletUrl);
+      URL.revokeObjectURL(workletUrl);
+
+      const workletNode = new AudioWorkletNode(this.audioCtx, 'pcm-recorder-worklet');
+      workletNode.port.onmessage = (e) => {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN && this.isSetupComplete && !this.isClosed) {
+          const pcmBase64 = float32ToBase64PCM(e.data);
+          this.ws.send(
+            JSON.stringify({
+              realtimeInput: {
+                audio: {
+                  mimeType: 'audio/pcm;rate=16000',
+                  data: pcmBase64,
+                },
+              },
+            })
+          );
+        }
+      };
+
+      this.sourceNode.connect(workletNode);
+      workletNode.connect(this.audioCtx.destination);
+      this.workletNode = workletNode;
     } catch (err) {
-      console.error('Microphone capture error:', err);
+      console.error('AudioWorklet initialization error:', err);
     }
   }
 
   private stopMicrophoneCapture() {
     try {
-      this.processorNode?.disconnect();
+      this.workletNode?.disconnect();
       this.sourceNode?.disconnect();
       this.mediaStream?.getTracks().forEach((t) => t.stop());
     } catch {}
-    this.processorNode = null;
+    this.workletNode = null;
     this.sourceNode = null;
     this.mediaStream = null;
   }
-
-  // ── Server Message Handler & Audio Output ─────────────────────────────────
 
   private handleServerMessage(msg: any) {
     const isSetupComplete = msg.setupComplete || msg.setup_complete;
     const serverContent = msg.serverContent || msg.server_content;
 
     if (isSetupComplete) {
-      console.log('Gemini Live: Setup complete confirmed by server.');
       this.isSetupComplete = true;
       this.setStatus('listening');
       this.startMicrophoneCapture();
@@ -334,21 +355,41 @@ You are speaking aloud in real-time.
     }
 
     if (serverContent?.interrupted) {
-      console.log('Gemini Live: Interrupted by user speech');
       this.stopAudioPlayback();
+      this.isModelTurnActive = false;
+      this.callbacks.onTurnComplete?.();
       return;
     }
 
     if (serverContent) {
+      const outputTranscription =
+        serverContent.outputTranscription ||
+        serverContent.output_transcription;
+
       const modelTurn = serverContent.modelTurn || serverContent.model_turn;
-      const inputTranscription = serverContent.inputTranscription || serverContent.input_transcription;
-      const outputTranscription = serverContent.outputTranscription || serverContent.output_transcription;
+
+      // Pokud lektorka začíná novou odpověď, vyšleme signál začátku nového tahu (nová bublina)
+      if ((outputTranscription?.text || modelTurn?.parts) && !this.isModelTurnActive) {
+        this.isModelTurnActive = true;
+        this.callbacks.onTurnStart?.('model');
+      }
+
+      if (outputTranscription?.text) {
+        const cleanModelText = sanitizeTranscript(outputTranscription.text);
+        if (cleanModelText) {
+          this.callbacks.onTranscript('model', cleanModelText);
+        }
+      }
 
       if (modelTurn?.parts) {
         for (const part of modelTurn.parts) {
-          if (part.text) {
-            this.callbacks.onTranscript('model', part.text);
+          if (part.text && !outputTranscription?.text && !part.text.startsWith('data:')) {
+            const cleanPartText = sanitizeTranscript(part.text);
+            if (cleanPartText) {
+              this.callbacks.onTranscript('model', cleanPartText);
+            }
           }
+
           const inlineData = part.inlineData || part.inline_data;
           if (inlineData?.data) {
             this.setStatus('speaking');
@@ -356,22 +397,17 @@ You are speaking aloud in real-time.
           }
         }
       }
-
-      if (inputTranscription?.text) {
-        this.callbacks.onTranscript('user', inputTranscription.text);
-      }
-
-      if (outputTranscription?.text) {
-        this.callbacks.onTranscript('model', outputTranscription.text);
-      }
     }
 
+    // Dokončení odpovědi lektorky -> uzavřeme tah, další odpověď bude v nové bublině
     if (serverContent?.turnComplete || serverContent?.turn_complete) {
+      this.isModelTurnActive = false;
+      this.callbacks.onTurnComplete?.();
       setTimeout(() => {
         if (!this.isClosed && this.status !== 'closed') {
           this.setStatus('listening');
         }
-      }, 400);
+      }, 300);
     }
   }
 

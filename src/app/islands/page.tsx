@@ -62,7 +62,7 @@ export default function IslandsPage() {
     <div className="min-h-screen flex flex-col font-sans relative overflow-x-hidden">
       <Navbar currentUser={currentUser} />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 md:px-8 py-6 sm:py-10 space-y-8 sm:space-y-12 relative z-10">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 md:px-8 py-6 sm:py-10 pb-24 sm:pb-10 space-y-8 sm:space-y-12 relative z-10">
 
         {/* Hero Section */}
         <ScrollReveal animation="fade-up">
@@ -80,7 +80,6 @@ export default function IslandsPage() {
             </p>
 
             <div className="pt-4 flex flex-wrap justify-center gap-2 sm:gap-3">
-              {/* ── 1. Tlačítko Všechny Ostrovy (All Islands) ── */}
               <button
                 onClick={() => { setFilter('all'); soundEngine.playTick(); }}
                 className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-black transition cursor-pointer min-h-[44px] sm:min-h-auto flex items-center justify-center ${
@@ -92,7 +91,6 @@ export default function IslandsPage() {
                 {t.allIslands} ({allCategories.length})
               </button>
 
-              {/* ── 2. Tlačítko Vlastní Ostrovy (Custom Islands) ── */}
               <button
                 onClick={() => { setFilter('custom'); soundEngine.playTick(); }}
                 className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-black transition cursor-pointer min-h-[44px] sm:min-h-auto flex items-center justify-center ${
@@ -162,6 +160,8 @@ export default function IslandsPage() {
         <IslandTrainer
           userId={currentUser.uid}
           category={selectedCategory}
+          userName={currentUser.displayName}
+          userAvatar={currentUser.avatar}
           onClose={() => setSelectedCategory(null)}
         />
       )}
