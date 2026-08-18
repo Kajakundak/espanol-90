@@ -3,7 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Umožní spustit sestavení i ručně tlačítkem na GitHubu
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,36 +13,35 @@ jobs:
       - name: Checkout kódu
         uses: actions/checkout@v4
 
-      - name: Nastavení Node.js
+      - name: Nastavení Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Nastavení Java JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
-      - name: Nastavení Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Instalace závislostí
-        run: npm install
+        run: npm install --legacy-peer-deps
 
-      - name: Sestavení Next.js statického webu
+      - name: Sestavení Next.js (statický export)
+        env:
+          NEXT_PUBLIC_GEMINI_API_KEY: "dummy_build_key"
         run: npm run build
 
-      - name: Příprava Capacitor Android projektu
+      - name: Příprava a synchronizace Capacitoru
         run: |
           npx cap add android || true
           npx cap sync android
 
-      - name: Povolení spuštění Gradle
-        run: chmod +x android/gradlew
-
-      - name: Kompilace APK souboru
-        run: cd android && ./gradlew assembleDebug
+      - name: Oprávnění a sestavení APK
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug --stacktrace
 
       - name: Uložení hotového APK k okamžitému stažení
         uses: actions/upload-artifact@v4
