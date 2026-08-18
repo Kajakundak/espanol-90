@@ -1,3 +1,4 @@
+// src/components/TextbookLiveModal.tsx
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -31,6 +32,10 @@ export default function TextbookLiveModal({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [voiceId, setVoiceId] = useState<(typeof LIVE_VOICES)[number]['id']>('Aoede');
   
+  // Kapesní režim + WakeLock
+  const [pocketMode, setPocketMode] = useState(false);
+  const wakeLockRef = useRef<any>(null);
+  
   const sessionRef = useRef<LiveTutorSession | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
@@ -38,6 +43,36 @@ export default function TextbookLiveModal({
   const isEn = language === 'en';
   const isSk = language === 'sk';
   const langLabel = isSk ? 'slovenčine' : isEn ? 'English' : 'češtine';
+
+  const requestWakeLock = useCallback(async () => {
+    if (typeof window !== 'undefined' && 'wakeLock' in navigator) {
+      try {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      } catch (err) {
+        console.warn('Wake Lock failed:', err);
+      }
+    }
+  }, []);
+
+  const releaseWakeLock = useCallback(async () => {
+    if (wakeLockRef.current) {
+      try {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      } catch (err) {
+        console.warn('Wake Lock release failed:', err);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (pocketMode || status === 'speaking' || status === 'listening') {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    return () => { releaseWakeLock(); };
+  }, [pocketMode, status, requestWakeLock, releaseWakeLock]);
 
   const STATUS_CONFIG: Record<LiveStatus, { label: string; color: string; pulse: boolean }> = {
     idle:       { label: t.idleStatus,        color: 'text-[var(--text-secondary)]', pulse: false },
@@ -68,10 +103,8 @@ export default function TextbookLiveModal({
     });
   }, []);
 
-  // Načtení detailních doslovných dat lekce z knihy
   const rawLessonData = getProkopovaLessonData(bookMeta.lessonNumber);
 
-  // Příprava doslovného textu dialogů z knihy do promptu
   const dialogueContext = rawLessonData?.texts?.map(t => {
     if (t.type === 'dialogue' && t.speakers) {
       return t.speakers.map(s => `${s.speaker}: "${s.text}"`).join('\n');
@@ -82,19 +115,15 @@ export default function TextbookLiveModal({
     return '';
   }).join('\n\n') || 'Úvodní text/dialog lekce';
 
-  // Příprava slovní zásoby z knihy
   const vocabContext = rawLessonData?.vocabulary?.slice(0, 40).map(v => `${v.es} (${v.cs})`).join(', ') || '';
 
-  // Příprava gramatických bodů
   const grammarContext = rawLessonData?.grammar?.map(g => {
     const rules = g.rules ? g.rules.join('; ') : '';
     return `[${g.roman_numeral || g.topic || '•'} ${g.title || ''}]: ${rules}`;
   }).join('\n') || bookMeta.grammarTopics.join(', ');
 
-  // Příprava seznamu cvičení a doporučení k přeskočení
   const exercisesContext = rawLessonData?.exercises?.map(e => `Cvičení ${e.number} (${e.type}): ${e.instruction}`).join('\n') || '';
 
-  // ── NEPRŮSTŘELNÝ UČITELSKÝ PROMPT S DOSLOVNÝM OBSAHEM KNIHY ──
   const textbookSystemPrompt = `
 Jsi osobní lektorka španělštiny (Lektorka Elena).
 Sedíš se studentem (${userName}) a máte před sebou OTEVŘENOU učebnici "Španělština pro samouky" od Lídy Prokopové.
@@ -120,13 +149,6 @@ ${exercisesContext || 'Písemná doplňovací cvičení'}
 - Co má student v knize projít: "${bookMeta.whatToStudy}"
 - CO MÁ STUDENT ROZHODNĚ PŘESKOČIT: "${bookMeta.whatToSkip}"
 - Zlaté pravidlo: "${bookMeta.keyRuleTip}"
-
-STRIKTNÍ PRAVIDLA PROTI VYMEJŠLENÍ (ANTI-HALLUCINATION):
-1. NIKDY SI NEVYMÝŠLEJ texty, slovíčka ani pravidla, která v této lekci nejsou! Máš výše doslovný obsah.
-2. Pokud student zmíní nějaké cvičení nebo větu z tištěné knihy, kterou v datech nevidíš, KLIDNĚ SE HO ZEPTEJ: "Přečti mi prosím, co přesně máš na té stránce napsané, a podíváme se na to spolu."
-3. NIKDY se neptej na obecný small talk (jak se má, jaké je počasí apod.). Celá hodina se točí POUZE kolem této lekce na ${bookMeta.pages}!
-4. VYSVĚTLOVÁNÍ A NAVIGACE: Mluv VÝHRADNĚ v ${langLabel}. Španělsky mluv jen při předčítání vět z knihy nebo zkoušení výslovnosti.
-5. FILTROVÁNÍ: Pokud student chce vyplňovat nudná písemná cvičení, řekni mu: "To přeskoč, je to ztráta času. Raději si pojďme zkusit tuto větu z dialogu říct nahlas."
 
 JAK ZAHÁJIT HOVOR:
 Ihned po připojení začni v ${langLabel} energicky a přesně takto:
@@ -162,6 +184,7 @@ Ihned po připojení začni v ${langLabel} energicky a přesně takto:
     await sessionRef.current?.disconnect();
     sessionRef.current = null;
     setStatus('idle');
+    setPocketMode(false);
   }, []);
 
   const sendQuickPrompt = (promptText: string) => {
@@ -178,6 +201,37 @@ Ihned po připojení začni v ${langLabel} energicky a přesně takto:
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-xl animate-fade-in overflow-y-auto">
       <div className="relative w-full max-w-2xl apple-glass bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl flex flex-col my-auto max-h-[96vh] sm:max-h-[90vh] overflow-hidden animate-scale-in">
+        
+        {/* ── KAPESNÍ REŽIM PROTI USNUTÍ IPHONE / ANDROIDU ── */}
+        {pocketMode && (
+          <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-between p-8 text-center animate-fade-in select-none">
+            <div className="pt-8">
+              <span className="text-5xl block mb-2">📱</span>
+              <span className="text-xs font-mono font-bold tracking-[0.28em] text-emerald-400 uppercase">
+                Kapesní režim aktivní
+              </span>
+            </div>
+
+            <div className="space-y-3 max-w-sm">
+              <p className="text-sm font-semibold text-slate-300">
+                Displej zůstane černý, aby telefon neuspal lekci do sluchátek.
+              </p>
+              <div className="p-3 rounded-2xl bg-white/10 border border-white/15 text-xs text-slate-300">
+                Lekce {bookMeta.lessonNumber}: <strong className="text-white">{bookMeta.title}</strong>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                soundEngine.playTick();
+                setPocketMode(false);
+              }}
+              className="w-full max-w-xs py-4 rounded-2xl bg-white text-slate-950 font-black text-sm transition cursor-pointer hover:bg-slate-200 active:scale-95 shadow-2xl"
+            >
+              ✕ Vypnout kapesní režim
+            </button>
+          </div>
+        )}
 
         {/* Header */}
         <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] shrink-0">
@@ -190,7 +244,7 @@ Ihned po připojení začni v ${langLabel} energicky a přesně takto:
                 status === 'ready'     ? 'bg-emerald-400' : 'bg-gray-400'
               }`} />
               <h2 className="font-black text-[var(--text-primary)] text-sm sm:text-base truncate">
-                📖 Lektorka pro Lekci {bookMeta.lessonNumber}: {bookMeta.title}
+                📖 Lektorka pro Lekci {bookMeta.lessonNumber}
               </h2>
             </div>
             <p className={`text-[11px] sm:text-xs mt-0.5 font-mono ${statusCfg.color} ${statusCfg.pulse ? 'animate-pulse' : ''}`}>
@@ -198,17 +252,31 @@ Ihned po připojení začni v ${langLabel} energicky a přesně takto:
             </p>
           </div>
 
-          <button
-            onClick={() => { stopSession(); onClose(); }}
-            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-2xl leading-none cursor-pointer transition px-2 py-1"
-          >
-            ×
-          </button>
+          <div className="flex items-center gap-1.5">
+            {/* TLAČÍTKO KAPESNÍHO REŽIMU – POUZE NA MOBILU (sm:hidden) */}
+            <button
+              onClick={() => {
+                soundEngine.playTick();
+                setPocketMode(true);
+                if (status === 'idle') startSession();
+              }}
+              className="sm:hidden p-2 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-bold text-[var(--accent-emerald)] shadow-sm cursor-pointer"
+              title="Kapesní režim proti zhasnutí obrazovky"
+            >
+              📱
+            </button>
+
+            <button
+              onClick={() => { stopSession(); onClose(); }}
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-2xl leading-none cursor-pointer transition px-2 py-1"
+            >
+              ×
+            </button>
+          </div>
         </div>
 
         {/* Body Container */}
         <div className="flex-1 overflow-y-auto space-y-3 p-3.5 sm:p-5 custom-scrollbar">
-
           {/* Visual Orb */}
           <div className="flex justify-center py-1 relative">
             <div className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full transition-all duration-500 ${
@@ -232,15 +300,6 @@ Ihned po připojení začni v ${langLabel} energicky a přesně takto:
               </div>
             </div>
           </div>
-
-          {/* Info Badge before start */}
-          {status === 'idle' && (
-            <div className="p-3.5 rounded-2xl bg-[var(--accent-amber)]/10 border border-[var(--accent-amber)]/30 text-xs space-y-1 text-[var(--text-primary)]">
-              <p className="font-bold text-[var(--accent-amber)]">📚 Společné čtení Lekce {bookMeta.lessonNumber}:</p>
-              <p>• Otevři si knížku na <strong className="text-[var(--text-primary)]">{bookMeta.pages}</strong>.</p>
-              <p>• Lektorka má před sebou doslovný text dialogů i slovíčka a přesně ví, co probíráte.</p>
-            </div>
-          )}
 
           {/* Transcript Log */}
           <div ref={scrollRef} className="space-y-2.5 min-h-[110px] max-h-[220px] overflow-y-auto p-3 bg-[var(--card-bg-hover)] rounded-2xl border border-[var(--card-border)]">
@@ -266,9 +325,6 @@ Ihned po připojení začni v ${langLabel} energicky a přesně takto:
           {/* Rychlá interaktivní tlačítka */}
           {isActive && (
             <div className="space-y-1.5 pt-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)] block text-center">
-                Klikni a zeptej se lektorky:
-              </span>
               <div className="flex flex-wrap gap-1.5 justify-center">
                 <button
                   type="button"
@@ -279,17 +335,10 @@ Ihned po připojení začni v ${langLabel} energicky a přesně takto:
                 </button>
                 <button
                   type="button"
-                  onClick={() => sendQuickPrompt(`Vysvětli mi prosím stručně gramatiku této lekce (${bookMeta.grammarTopics[0] || 'gramatiku'}).`)}
+                  onClick={() => sendQuickPrompt(`Vysvětli mi prosím stručně gramatiku této lekce.`)}
                   className="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-bold transition cursor-pointer"
                 >
                   💡 Vysvětlit gramatiku
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sendQuickPrompt(`Která cvičení na straně ${bookMeta.pages} mám přeskočit a co si raději procvičit?`)}
-                  className="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-800 dark:text-rose-300 text-xs font-bold transition cursor-pointer"
-                >
-                  ⛔ Co přeskočit?
                 </button>
                 <button
                   type="button"

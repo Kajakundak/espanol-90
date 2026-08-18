@@ -1,3 +1,4 @@
+// src/app/tutor/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -29,12 +30,48 @@ export default function TutorPage() {
   const isSk = language === 'sk';
 
   const PRESET_TOPICS = [
-    { id: 'free', title: isEn ? 'Free Conversation' : isSk ? 'Voľná Konverzácia' : 'Volná Konverzace', description: isEn ? 'Stress-free chat about anything from your daily life.' : isSk ? 'Bezstresový rozhovor o čomkoľvek z bežného dňa.' : 'Bezstresový rozhovor o čemkoliv z běžného dne.', prompt: 'Volná přátelská konverzace', icon: '💬' },
-    { id: 'travel', title: isEn ? 'Travel & Hotel' : isSk ? 'Cestovanie & Hotel' : 'Cestování & Hotel', description: isEn ? 'Reception, airport, taxi, solving accommodation issues.' : isSk ? 'Recepcia, letisko, taxi, riešenie ubytovania.' : 'Recepce, letiště, taxi, řešení problémů s ubytováním.', prompt: 'Situace v hotelu a na letišti v Madridu', icon: '✈️' },
-    { id: 'restaurant', title: isEn ? 'Restaurant & Ordering' : isSk ? 'Reštaurácia & Objednávanie' : 'Restaurace & Objednávání', description: isEn ? 'Table reservation, ordering tapas, bill and tip.' : isSk ? 'Rezervácia stola, otázky na jedlo, platenie.' : 'Rezervace stolu, dotazy na jídlo, placení a spropitné.', prompt: 'Objednávání v tapas baru v Barceloně', icon: '🍕' },
-    { id: 'interview', title: isEn ? 'Job Interview' : isSk ? 'Pracovný Pohovor' : 'Pracovní Pohovor', description: isEn ? 'Introducing experience, strengths, motivational questions.' : isSk ? 'Predstavenie skúseností, silné stránky.' : 'Představení zkušeností, silné stránky, motivační otázky.', prompt: 'Pracovní pohovor ve španělské firmě', icon: '💼' },
-    { id: 'interrogation', title: isEn ? 'Strict Exam Test' : isSk ? 'Prísny Skúškový Test' : 'Přísný Zkouškový Test', description: isEn ? 'Rigorous grammar, past tenses, and subjunctive test.' : isSk ? 'Dôsledné testovanie gramatiky a časov.' : 'Důsledné testování gramatiky, minulých časů a konjunktivu.', prompt: 'Intenzivní zkoušení gramatiky a časů', icon: '⚔️' },
-    { id: 'story', title: isEn ? 'Storytelling & Scene' : isSk ? 'Storytelling & Popis' : 'Storytelling & Popis', description: isEn ? 'Co-create a story and describe image scenarios.' : isSk ? 'Spoločné rozprávanie príbehu a popis situácií.' : 'Společné vyprávění příběhu a popisování situací.', prompt: 'Vyprávění příběhu podle situace', icon: '📖' },
+    { 
+      id: 'free', 
+      title: isEn ? 'Free Conversation' : isSk ? 'Voľná Konverzácia' : 'Volná Konverzace', 
+      description: isEn ? 'Stress-free chat about anything from your daily life.' : isSk ? 'Bezstresový rozhovor o čomkoľvek z bežného dňa.' : 'Bezstresový rozhovor o čemkoliv z běžného dne.', 
+      prompt: 'Volná přátelská konverzace', 
+      icon: '💬' 
+    },
+    { 
+      id: 'travel', 
+      title: isEn ? 'Travel & Hotel' : isSk ? 'Cestovanie & Hotel' : 'Cestování & Hotel', 
+      description: isEn ? 'Reception, airport, taxi, solving accommodation issues.' : isSk ? 'Recepcia, letisko, taxi, riešenie ubytovania.' : 'Recepce, letiště, taxi, řešení problémů s ubytováním.', 
+      prompt: 'Situace v hotelu a na letišti v Madridu', 
+      icon: '✈️' 
+    },
+    { 
+      id: 'restaurant', 
+      title: isEn ? 'Restaurant & Ordering' : isSk ? 'Reštaurácia & Objednávanie' : 'Restaurace & Objednávání', 
+      description: isEn ? 'Table reservation, ordering tapas, bill and tip.' : isSk ? 'Rezervácia stola, otázky na jedlo, platenie.' : 'Rezervace stolu, dotazy na jídlo, placení a spropitné.', 
+      prompt: 'Objednávání v tapas baru v Barceloně', 
+      icon: '🍕' 
+    },
+    { 
+      id: 'interview', 
+      title: isEn ? 'Job Interview' : isSk ? 'Pracovný Pohovor' : 'Pracovní Pohovor', 
+      description: isEn ? 'Introducing experience, strengths, motivational questions.' : isSk ? 'Predstavenie skúseností, silné stránky.' : 'Představení zkušeností, silné stránky, motivační otázky.', 
+      prompt: 'Pracovní pohovor ve španělské firmě', 
+      icon: '💼' 
+    },
+    { 
+      id: 'interrogation', 
+      title: isEn ? 'Strict Exam Test' : isSk ? 'Prísny Skúškový Test' : 'Přísný Zkouškový Test', 
+      description: isEn ? 'Rigorous grammar, past tenses, and subjunctive test.' : isSk ? 'Dôsledné testovanie gramatiky a časov.' : 'Důsledné testování gramatiky, minulých časů a konjunktivu.', 
+      prompt: 'Intenzivní zkoušení gramatiky a časů', 
+      icon: '⚔️' 
+    },
+    { 
+      id: 'story', 
+      title: isEn ? 'Storytelling & Scene' : isSk ? 'Storytelling & Popis' : 'Storytelling & Popis', 
+      description: isEn ? 'Co-create a story and describe image scenarios.' : isSk ? 'Spoločné rozprávanie príbehu a popis situácií.' : 'Společné vyprávění příběhu a popisování situací.', 
+      prompt: 'Vyprávění příběhu podle situace', 
+      icon: '📖' 
+    },
   ];
 
   const CEFR_LEVELS: { level: CEFRLevel; label: string; desc: string }[] = [
@@ -48,7 +85,7 @@ export default function TutorPage() {
   ];
 
   const [selectedLevel, setSelectedLevel] = useState<CEFRLevel>('A1');
-  const [selectedTopicPrompt, setSelectedTopicPrompt] = useState('Volná přátelská konverzace');
+  const [selectedTopicPrompt, setSelectedTopicPrompt] = useState(PRESET_TOPICS[0].prompt);
   const [selectedTopicTitle, setSelectedTopicTitle] = useState(PRESET_TOPICS[0].title);
   const [nativeLanguage, setNativeLanguage] = useState<NativeLanguage>(language as NativeLanguage);
 
@@ -56,6 +93,14 @@ export default function TutorPage() {
     if (currentUser.startingLevel) setSelectedLevel(currentUser.startingLevel);
     setNativeLanguage(language as NativeLanguage);
   }, [currentUser.uid, currentUser.startingLevel, language]);
+
+  // Synchronizace názvu výchozího tématu při přepnutí jazyka
+  useEffect(() => {
+    const matched = PRESET_TOPICS.find((p) => p.prompt === selectedTopicPrompt);
+    if (matched) {
+      setSelectedTopicTitle(matched.title);
+    }
+  }, [language]);
 
   const [customTopics, setCustomTopics] = useState<CustomTutorTopic[]>([]);
   const [newTopicTitle, setNewTopicTitle] = useState('');
@@ -96,7 +141,7 @@ export default function TutorPage() {
     <div className="min-h-screen flex flex-col font-sans relative overflow-x-hidden">
       <Navbar currentUser={currentUser} />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-8 py-10 space-y-12 relative z-10">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-8 py-10 pb-24 sm:pb-10 space-y-12 relative z-10">
 
         {/* Header Hero */}
         <ScrollReveal animation="fade-up">
@@ -127,7 +172,7 @@ export default function TutorPage() {
           </section>
         </ScrollReveal>
 
-        {/* Level Selection */}
+        {/* Výběr úrovně */}
         <ScrollReveal animation="fade-up" delay={0.1}>
           <section className="apple-glass p-6 md:p-8 space-y-6">
             <div className="flex items-center justify-between">
@@ -176,7 +221,7 @@ export default function TutorPage() {
           </section>
         </ScrollReveal>
 
-        {/* Topics Selection */}
+        {/* Výběr témat */}
         <ScrollReveal animation="fade-up" delay={0.2}>
           <section className="apple-glass p-6 md:p-8 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -200,6 +245,7 @@ export default function TutorPage() {
               </button>
             </div>
 
+            {/* Formulář pro uložení vlastního tématu – plně lokalizovaný */}
             {showCustomForm && (
               <form onSubmit={handleSaveCustomTopic} className="bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--card-border)] space-y-4 animate-fade-in">
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">
@@ -207,22 +253,26 @@ export default function TutorPage() {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-[var(--text-secondary)] mb-1">Název Tématu</label>
+                    <label className="block text-xs text-[var(--text-secondary)] mb-1">
+                      {t.tutorCustomTitleLabel}
+                    </label>
                     <input
                       type="text"
                       required
-                      placeholder="např. Nákup na trhu"
+                      placeholder={t.tutorCustomTitlePlaceholder}
                       value={newTopicTitle}
                       onChange={(e) => setNewTopicTitle(e.target.value)}
                       className="w-full px-3.5 py-2 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-xs text-[var(--text-primary)] focus:outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-[var(--text-secondary)] mb-1">Prompt pro AI</label>
+                    <label className="block text-xs text-[var(--text-secondary)] mb-1">
+                      {t.tutorCustomPromptLabel}
+                    </label>
                     <input
                       type="text"
                       required
-                      placeholder="Chci trénovat smlouvání o ceně ovoce"
+                      placeholder={t.tutorCustomPromptPlaceholder}
                       value={newTopicPrompt}
                       onChange={(e) => setNewTopicPrompt(e.target.value)}
                       className="w-full px-3.5 py-2 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-xs text-[var(--text-primary)] focus:outline-none"
@@ -230,11 +280,11 @@ export default function TutorPage() {
                   </div>
                 </div>
                 <button
-  type="submit"
-  className="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition cursor-pointer hover:scale-105 active:scale-95"
->
-  {t.saveTopicBtn}
-</button>
+                  type="submit"
+                  className="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition cursor-pointer hover:scale-105 active:scale-95"
+                >
+                  {t.saveTopicBtn}
+                </button>
               </form>
             )}
 

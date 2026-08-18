@@ -1,12 +1,13 @@
+// src/components/islands/IslandTrainer.tsx
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { IslandCategory, IslandSentence, getLocalizedIslandTitle } from '@/lib/data/islands-parser';
 import { soundEngine } from '@/lib/audio/sound-engine';
 import { addPointsToUser, getIslandProgressSnapshot, saveIslandProgressSnapshot, saveIslandProgressToFirestore } from '@/lib/firebase/db';
 import { useAppLanguage } from '@/lib/context/LanguageContext';
 import { getTranslation } from '@/lib/translations';
+import { ShadowAudioEngine, ShadowSentenceItem } from '@/lib/audio/shadow-audio-engine';
 import IslandRecallSession from '@/components/islands/IslandRecallSession';
 
 interface IslandTrainerProps {
@@ -15,107 +16,72 @@ interface IslandTrainerProps {
   onClose: () => void;
 }
 
-type TrainerMode = 'shadowing' | 'active_recall';
-type StatsTimeframe = 'today' | 'all_time';
-
 export default function IslandTrainer({ userId, category, onClose }: IslandTrainerProps) {
   const { language } = useAppLanguage();
   const t = getTranslation(language);
 
-  const [mode, setMode] = useState<TrainerMode>('shadowing');
+  const [mode, setMode] = useState<'shadowing' | 'active_recall'>('shadowing');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentRep, setCurrentRep] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentPhase, setCurrentPhase] = useState<'spanish' | 'translation' | 'silence'>('spanish');
+
+  // Kapesní režim (Ztmavení + Screen WakeLock)
+  const [pocketMode, setPocketMode] = useState(false);
+  const wakeLockRef = useRef<any>(null);
+
   const [showTranslation, setShowTranslation] = useState(true);
-  const [audioEnabled, setAudioEnabled] = useState(true);
   const [isShuffled, setIsShuffled] = useState(false);
   const [sentences, setSentences] = useState<IslandSentence[]>(category.sentences);
 
-  // Toggle shuffle state
-  const toggleShuffle = () => {
-    soundEngine.playTick();
-    if (!isShuffled) {
-      const shuffled = [...category.sentences].sort(() => Math.random() - 0.5);
-      setSentences(shuffled);
-      setIsShuffled(true);
-    } else {
-      setSentences(category.sentences);
-      setIsShuffled(false);
-    }
-    setCurrentIndex(0);
-  };
-
-  // Settings & Looper Controls
-  const [isPlaying, setIsPlaying] = useState(false);
   const [pauseDuration, setPauseDuration] = useState<number>(2.5);
   const [repetitions, setRepetitions] = useState<number>(1);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Runtime State
-  const [currentRep, setCurrentRep] = useState<number>(1);
-  const [shadowingCountdown, setShadowingCountdown] = useState<number>(0);
-  const [isShadowingPhase, setIsShadowingPhase] = useState<boolean>(false);
-
-  // Active Recall & Voice Rec State
-  const [isListening, setIsListening] = useState(false);
-  const [spokenTranscript, setSpokenTranscript] = useState('');
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const [aiEvaluation, setAiEvaluation] = useState<{
-    isCorrect: boolean;
-    accuracyScore: number;
-    feedbackText: string;
-    correctSpanish: string;
-  } | null>(null);
-
-  // Stats & Progress Persistence
-  const [statsTimeframe, setStatsTimeframe] = useState<StatsTimeframe>('today');
   const [masteredIds, setMasteredIds] = useState<Set<string>>(new Set());
   const [practicedIds, setPracticedIds] = useState<Set<string>>(new Set());
   const [totalReps, setTotalReps] = useState<number>(0);
   const [stars, setStars] = useState<Record<string, number>>({});
 
-  useEffect(() => {
-    const saved = getIslandProgressSnapshot(userId, category.categoryId);
-    setMasteredIds(new Set(saved.masteredIds));
-    setPracticedIds(new Set(saved.practicedIds));
-    setTotalReps(saved.totalReps || 0);
-    setStars(saved.stars || {});
-  }, [userId, category.categoryId]);
+  const activeCardRef = useRef<HTMLDivElement | null>(null);
+  const engineRef = useRef<ShadowAudioEngine | null>(null);
 
-  useEffect(() => {
-    saveIslandProgressSnapshot(userId, category.categoryId, {
-      masteredIds: Array.from(masteredIds),
-      practicedIds: Array.from(practicedIds),
-      totalReps,
-      stars,
-    });
-  }, [userId, category.categoryId, masteredIds, practicedIds, totalReps, stars]);
-
-  const currentSentence = sentences[currentIndex] || sentences[0];
-  const totalSentences = category.sentences.length;
   const localizedCategoryTitle = getLocalizedIslandTitle(category.categoryId, language);
 
-  // Refs
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const recognitionRef = useRef<any>(null);
-  const activeCardRef = useRef<HTMLDivElement | null>(null);
-
-  // Auto-scroll active sentence card into view
-  useEffect(() => {
-    if (activeCardRef.current) {
-      activeCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [currentIndex]);
-
-  const clearAllTimers = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
+  // ── Wake Lock pro udržení rozsvíceného displeje v kapse ──
+  const requestWakeLock = useCallback(async () => {
+    if (typeof window !== 'undefined' && 'wakeLock' in navigator) {
+      try {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      } catch (err) {
+        console.warn('Wake Lock request failed:', err);
+      }
     }
   }, []);
 
-  // Helper to get clean translation without prefixes
+  const releaseWakeLock = useCallback(async () => {
+    if (wakeLockRef.current) {
+      try {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      } catch (err) {
+        console.warn('Wake Lock release failed:', err);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (pocketMode || isPlaying) {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    return () => {
+      releaseWakeLock();
+    };
+  }, [pocketMode, isPlaying, requestWakeLock, releaseWakeLock]);
+
   const getSentenceTranslation = useCallback(
     (sentence: IslandSentence): string => {
       if (sentence.translations) {
@@ -128,717 +94,352 @@ export default function IslandTrainer({ userId, category, onClose }: IslandTrain
     [language]
   );
 
-  // Speak AI Voice Prompt / Evaluation in User's selected language
-  const speakUserLangPrompt = useCallback(
-    (text: string, onEnd?: () => void) => {
-      if (typeof window === 'undefined' || !window.speechSynthesis || !audioEnabled) {
-        if (onEnd) onEnd();
-        return;
-      }
+  const shadowItems = useMemo<ShadowSentenceItem[]>(() => {
+    const langCode = language === 'sk' ? 'sk' : language === 'en' ? 'en' : 'cs';
+    return sentences.map((sent) => ({
+      id: sent.id,
+      spanish: sent.questionEs ? `${sent.questionEs} ${sent.answerEs || ''}` : sent.es,
+      translation: getSentenceTranslation(sent),
+      langCode,
+    }));
+  }, [sentences, getSentenceTranslation, language]);
 
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-
-      let targetLang = 'cs-CZ';
-      if (language === 'sk') targetLang = 'sk-SK';
-      if (language === 'en') targetLang = 'en-US';
-
-      utterance.lang = targetLang;
-      utterance.rate = playbackSpeed;
-
-      const voices = window.speechSynthesis.getVoices();
-      const targetVoice = voices.find((v) => v.lang.startsWith(targetLang.slice(0, 2)));
-      if (targetVoice) utterance.voice = targetVoice;
-
-      if (onEnd) {
-        utterance.onend = () => onEnd();
-        utterance.onerror = () => onEnd();
-      }
-
-      window.speechSynthesis.speak(utterance);
-    },
-    [audioEnabled, language, playbackSpeed]
-  );
-
-  // Trigger Voice Prompt when entering Active Recall mode or selecting a new sentence
   useEffect(() => {
-    if (mode === 'active_recall' && currentSentence) {
-      const translation = getSentenceTranslation(currentSentence);
-      let promptText = '';
-      if (language === 'sk') {
-        promptText = `Prelož do španielčiny: ${translation}`;
-      } else if (language === 'en') {
-        promptText = `Translate to Spanish: ${translation}`;
-      } else {
-        promptText = `Přelož do španělštiny: ${translation}`;
-      }
-      speakUserLangPrompt(promptText);
-    }
-  }, [mode, currentIndex, currentSentence, language, getSentenceTranslation, speakUserLangPrompt]);
+    const engine = new ShadowAudioEngine();
+    engineRef.current = engine;
+    engine.setSentences(shadowItems, currentIndex);
+    engine.setConfig({ pauseDuration, repetitions, playbackRate: playbackSpeed, readTranslation: showTranslation });
 
-  // Trilingual TTS Player (Spanish -> Foreign Language if translation toggle is ON)
-  const speakSentenceSequence = useCallback(
-    (sentence: IslandSentence, onEnd: () => void) => {
-      if (typeof window === 'undefined' || !window.speechSynthesis || !audioEnabled) {
-        onEnd();
-        return;
-      }
+    engine.subscribe((state) => {
+      setCurrentIndex(state.currentIndex);
+      setCurrentRep(state.currentRep);
+      setIsPlaying(state.isPlaying);
+      setCurrentPhase(state.phase);
 
-      window.speechSynthesis.cancel();
-      const voices = window.speechSynthesis.getVoices();
-
-      const esParts: string[] = [];
-      if (sentence.questionEs) esParts.push(sentence.questionEs);
-      if (sentence.answerEs) esParts.push(sentence.answerEs);
-      if (esParts.length === 0) esParts.push(sentence.es);
-
-      const speakEsPart = (index: number) => {
-        if (index >= esParts.length) {
-          if (showTranslation) {
-            const translationText = getSentenceTranslation(sentence);
-            speakUserLangPrompt(translationText, onEnd);
-          } else {
-            onEnd();
-          }
-          return;
+      if (state.isPlaying && state.phase === 'spanish') {
+        const item = shadowItems[state.currentIndex];
+        if (item) {
+          setPracticedIds((prev) => new Set(prev).add(item.id));
+          setTotalReps((prev) => prev + 1);
         }
-
-        const esUtterance = new SpeechSynthesisUtterance(esParts[index]);
-        esUtterance.lang = 'es-ES';
-        esUtterance.rate = playbackSpeed;
-        const esVoice = voices.find((v) => v.lang.startsWith('es'));
-        if (esVoice) esUtterance.voice = esVoice;
-
-        esUtterance.onend = () => speakEsPart(index + 1);
-        esUtterance.onerror = () => speakEsPart(index + 1);
-
-        window.speechSynthesis.speak(esUtterance);
-      };
-
-      speakEsPart(0);
-    },
-    [audioEnabled, showTranslation, playbackSpeed, getSentenceTranslation, speakUserLangPrompt]
-  );
-
-  // Navigation
-  const handleNext = useCallback(() => {
-    clearAllTimers();
-    setIsShadowingPhase(false);
-    setAiEvaluation(null);
-    setSpokenTranscript('');
-    setCurrentRep(1);
-    setCurrentIndex((prev) => (prev + 1 < totalSentences ? prev + 1 : 0));
-  }, [totalSentences, clearAllTimers]);
-
-  const handlePrev = useCallback(() => {
-    clearAllTimers();
-    setIsShadowingPhase(false);
-    setAiEvaluation(null);
-    setSpokenTranscript('');
-    setCurrentRep(1);
-    setCurrentIndex((prev) => (prev - 1 >= 0 ? prev - 1 : totalSentences - 1));
-  }, [totalSentences, clearAllTimers]);
-
-  // Shadowing Looper Execution
-  const runShadowingLoop = useCallback(() => {
-    if (!isPlaying) return;
-
-    setPracticedIds((prev) => new Set(prev).add(currentSentence.id));
-    setTotalReps((prev) => prev + 1);
-
-    speakSentenceSequence(currentSentence, () => {
-      setIsShadowingPhase(true);
-      setShadowingCountdown(pauseDuration);
-
-      const startTime = Date.now();
-      const durationMs = pauseDuration * 1000;
-
-      intervalRef.current = setInterval(() => {
-        const elapsed = (Date.now() - startTime) / 1000;
-        const remaining = Math.max(0, pauseDuration - elapsed);
-        setShadowingCountdown(remaining);
-      }, 100);
-
-      timeoutRef.current = setTimeout(() => {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        setIsShadowingPhase(false);
-
-        setCurrentRep((prev) => {
-          if (prev < repetitions) {
-            timeoutRef.current = setTimeout(() => {
-              runShadowingLoop();
-            }, 200);
-            return prev + 1;
-          } else {
-            soundEngine.playTick();
-            timeoutRef.current = setTimeout(() => {
-              handleNext();
-            }, 300);
-            return 1;
-          }
-        });
-      }, durationMs);
+      }
     });
-  }, [isPlaying, currentSentence, speakSentenceSequence, pauseDuration, repetitions, handleNext]);
+
+    return () => {
+      engine.destroy();
+      engineRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => { engineRef.current?.setSentences(shadowItems, currentIndex); }, [shadowItems, currentIndex]);
+  useEffect(() => { engineRef.current?.setConfig({ pauseDuration, repetitions, playbackRate: playbackSpeed, readTranslation: showTranslation }); }, [pauseDuration, repetitions, playbackSpeed, showTranslation]);
+  useEffect(() => { if (activeCardRef.current) activeCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, [currentIndex]);
 
   useEffect(() => {
-    if (mode === 'shadowing' && isPlaying) {
-      runShadowingLoop();
+    const saved = getIslandProgressSnapshot(userId, category.categoryId);
+    setMasteredIds(new Set(saved.masteredIds));
+    setPracticedIds(new Set(saved.practicedIds));
+    setTotalReps(saved.totalReps || 0);
+    setStars(saved.stars || {});
+  }, [userId, category.categoryId]);
+
+  const handleTogglePlay = () => {
+    soundEngine.playTick();
+    if (isPlaying) engineRef.current?.pause();
+    else engineRef.current?.start();
+  };
+
+  const toggleShuffle = () => {
+    soundEngine.playTick();
+    engineRef.current?.pause();
+    if (!isShuffled) {
+      setSentences([...category.sentences].sort(() => Math.random() - 0.5));
+      setIsShuffled(true);
     } else {
-      clearAllTimers();
-      setIsShadowingPhase(false);
+      setSentences(category.sentences);
+      setIsShuffled(false);
     }
-    return () => clearAllTimers();
-  }, [isPlaying, mode, currentIndex, runShadowingLoop, clearAllTimers]);
-
-  // Web Speech Recognition for Active Recall
-  const startVoiceRecording = () => {
-    if (typeof window === 'undefined') return;
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert('Váš prohlížeč nepodporuje rozpoznání řeči. Použijte Chrome nebo Safari.');
-      return;
-    }
-
-    try {
-      window.speechSynthesis.cancel();
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'es-ES';
-      recognition.interimResults = true;
-
-      recognition.onstart = () => {
-        setIsListening(true);
-        setSpokenTranscript('');
-      };
-
-      recognition.onresult = (event: any) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
-        }
-        setSpokenTranscript(transcript);
-      };
-
-      recognition.onerror = () => setIsListening(false);
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = recognition;
-      recognition.start();
-    } catch (e) {
-      console.error('Failed speech recognition:', e);
-      setIsListening(false);
-    }
-  };
-
-  const stopVoiceRecordingAndEvaluate = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }
-    setTimeout(() => {
-      handleEvaluateSpeech();
-    }, 400);
-  };
-
-  // Evaluate speech & talk back verbally to user
-  const handleEvaluateSpeech = async () => {
-    const textToEval = spokenTranscript.trim();
-    if (!textToEval) return;
-
-    setIsEvaluating(true);
-    setPracticedIds((prev) => new Set(prev).add(currentSentence.id));
-    setTotalReps((prev) => prev + 1);
-
-    try {
-      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-      let evalResult = {
-        isCorrect: false,
-        accuracyScore: 70,
-        feedbackText: '',
-        correctSpanish: currentSentence.es,
-      };
-
-      if (!apiKey) {
-        const isExact =
-          textToEval.toLowerCase() === currentSentence.es.trim().toLowerCase();
-        evalResult = {
-          isCorrect: isExact,
-          accuracyScore: isExact ? 100 : 75,
-          feedbackText: isExact
-            ? language === 'sk'
-              ? 'Výborne! Vaša výslovnosť je presná.'
-              : language === 'en'
-              ? 'Excellent! Your pronunciation is accurate.'
-              : 'Výborně! Vaše výslovnost je přesná.'
-            : language === 'sk'
-            ? `Povedali ste: "${textToEval}". Správny tvar je: "${currentSentence.es}".`
-            : language === 'en'
-            ? `You said: "${textToEval}". Target is: "${currentSentence.es}".`
-            : `Řekli jste: "${textToEval}". Správný tvar je: "${currentSentence.es}".`,
-          correctSpanish: currentSentence.es,
-        };
-      } else {
-        const ai = new GoogleGenAI({ apiKey });
-        const evalLang = language === 'sk' ? 'Slovak' : language === 'en' ? 'English' : 'Czech';
-
-        const prompt = `Target Spanish sentence: "${currentSentence.es}"
-User spoken Spanish transcript: "${textToEval}"
-
-Evaluate user performance. Respond ONLY in JSON with keys:
-{
-  "isCorrect": boolean,
-  "accuracyScore": number (0-100),
-  "feedbackText": "Concise feedback in ${evalLang} (1-2 sentences)"
-}`;
-
-        let responseText = '';
-        try {
-          const response = await ai.models.generateContent({
-            model: 'gemini-3.1-flash-live-preview',
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            config: { responseMimeType: 'application/json', temperature: 0.2 },
-          });
-          responseText = response.text || '';
-        } catch {
-          const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            config: { responseMimeType: 'application/json', temperature: 0.2 },
-          });
-          responseText = response.text || '';
-        }
-
-        const parsed = JSON.parse(responseText);
-        evalResult = {
-          isCorrect: Boolean(parsed.isCorrect),
-          accuracyScore: Number(parsed.accuracyScore) || 80,
-          feedbackText: String(parsed.feedbackText || 'Dobrá práce!'),
-          correctSpanish: currentSentence.es,
-        };
-      }
-
-      setAiEvaluation(evalResult);
-
-      if (evalResult.isCorrect) {
-        soundEngine.playTick();
-      }
-
-      // AI Voice Assistant talks back the evaluation result in user's main language!
-      speakUserLangPrompt(evalResult.feedbackText);
-    } catch (err) {
-      console.error('Speech evaluation failed:', err);
-    } finally {
-      setIsEvaluating(false);
-    }
+    setCurrentIndex(0);
   };
 
   const handleGradeSentence = async (sentenceId: string, starCount: number) => {
     soundEngine.playTick();
     setStars((prev) => ({ ...prev, [sentenceId]: starCount }));
-
     if (starCount >= 4 && !masteredIds.has(sentenceId)) {
-      const updated = new Set(masteredIds);
-      updated.add(sentenceId);
+      const updated = new Set(masteredIds).add(sentenceId);
       setMasteredIds(updated);
-
       await addPointsToUser(userId, 5);
       await saveIslandProgressToFirestore(userId, category.categoryId, Array.from(updated), {
         practicedIds: Array.from(practicedIds),
         totalReps,
-        stars: { ...stars, [sentenceId]: starCount },
+        stars: { ...stars, [sentenceId]: starCount }
       });
-
-      if (updated.size === totalSentences) {
-        soundEngine.playVictoryFanfare();
-      }
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xl p-2 sm:p-4 overflow-hidden animate-fade-in">
-      <div className="relative w-full max-w-6xl h-[96vh] sm:h-[92vh] apple-glass bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-2xl sm:rounded-3xl shadow-2xl backdrop-blur-2xl flex flex-col overflow-hidden">
-        
-        {/* Top Header Bar */}
-        <div className="flex flex-row items-center justify-between px-3 sm:px-5 py-2 sm:py-3 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] gap-2 shrink-0 overflow-x-auto">
-          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 shrink-0">
-            <button
-              onClick={() => {
-                clearAllTimers();
-                onClose();
-              }}
-              className="p-1.5 px-2 sm:px-2.5 rounded-xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] text-[var(--text-primary)] transition flex items-center space-x-1 text-xs font-bold cursor-pointer shrink-0 border border-[var(--card-border)] min-h-[44px] sm:min-h-auto min-w-[44px] sm:min-w-auto"
-            >
-              <span className="hidden sm:inline">{t.back}</span>
-              <span className="sm:hidden">←</span>
-            </button>
+    // ── Responzivní plné pozadí přizpůsobené světlému i tmavému režimu ──
+    <div className="fixed inset-0 z-[120] flex flex-col bg-[var(--card-bg)] text-[var(--text-primary)] animate-fade-in overflow-hidden">
+      
+      {/* ── KAPESNÍ REŽIM PROTI USNUTÍ IPHONE / ANDROIDU ── */}
+      {pocketMode && (
+        <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-between p-8 text-center animate-fade-in select-none">
+          <div className="pt-6">
+            <span className="text-4xl block mb-2">📱</span>
+            <span className="text-xs font-mono font-bold tracking-[0.25em] text-emerald-400 uppercase">
+              {t.pocketModeTitle}
+            </span>
+          </div>
 
-            <div className="truncate min-w-0">
-              <h2 className="text-xs sm:text-sm md:text-base font-extrabold text-[var(--text-primary)] flex items-center gap-1.5 truncate">
-                <span className="shrink-0">{category.icon}</span>
-                <span className="truncate">{localizedCategoryTitle}</span>
-              </h2>
+          <div className="space-y-4 max-w-sm">
+            <p className="text-sm font-semibold text-slate-300">
+              {t.pocketModeDesc}
+            </p>
+            <div className="p-3 rounded-2xl bg-white/10 border border-white/15 text-xs text-slate-300">
+              <strong className="text-white">#{currentIndex + 1} / {sentences.length}</strong>
             </div>
           </div>
 
-          {/* Mode Pill & Audio Toggles */}
-          <div className="flex items-center justify-end gap-1 sm:gap-1.5 overflow-x-auto pb-0.5 sm:pb-0 shrink-0">
-            {/* Play Button */}
-            <button
-              onClick={() => {
-                soundEngine.playTick();
-                setIsPlaying(!isPlaying);
-              }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition flex items-center space-x-1.5 cursor-pointer shadow-lg shrink-0 ${
-                isPlaying
-                  ? 'bg-amber-500 hover:bg-amber-400 text-slate-950'
-                  : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950'
-              }`}
-            >
-              <span>{isPlaying ? `⏸️ ${t.pauseBtn}` : `▶️ ${t.startBtn}`}</span>
-              <span className="px-1.5 py-0.5 rounded-lg bg-black/20 font-mono text-[10px] text-slate-950 font-bold">
-                {repetitions}x
-              </span>
-            </button>
+          <button
+            onClick={() => {
+              soundEngine.playTick();
+              setPocketMode(false);
+            }}
+            className="w-full max-w-xs py-4 rounded-2xl bg-white text-slate-950 font-black text-sm transition cursor-pointer hover:bg-slate-200 active:scale-95 shadow-2xl"
+          >
+            {t.pocketModeExit}
+          </button>
+        </div>
+      )}
 
-            {/* Mode Switcher */}
-            <div className="p-0.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl flex items-center shrink-0">
-              <button
-                onClick={() => {
-                  soundEngine.playTick();
-                  setIsPlaying(false);
-                  setMode('shadowing');
-                }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 cursor-pointer ${
-                  mode === 'shadowing'
-                    ? 'bg-[var(--accent-blue)] text-white shadow-md'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                <span>{t.shadowMode}</span>
-              </button>
-              <button
-                onClick={() => {
-                  soundEngine.playTick();
-                  setIsPlaying(false);
-                  setMode('active_recall');
-                }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 cursor-pointer ${
-                  mode === 'active_recall'
-                    ? 'bg-emerald-500 text-slate-950 shadow-md font-black'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                <span>{t.recallMode}</span>
-              </button>
-            </div>
-
-            {/* Shuffle Button */}
-            <button
-              onClick={toggleShuffle}
-              className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold transition cursor-pointer shrink-0 flex items-center gap-1 ${
-                isShuffled
-                  ? 'bg-purple-500 text-white border-purple-400 shadow-md'
-                  : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
-              title={isShuffled ? t.originalOrder : t.shuffleOrder}
-            >
-              <span>🔀</span>
-              <span className="hidden md:inline">{isShuffled ? t.shuffleOrder : t.originalOrder}</span>
-            </button>
-
-            {/* Translation Toggle Button */}
-            <button
-              onClick={() => {
-                soundEngine.playTick();
-                setShowTranslation(!showTranslation);
-              }}
-              className={`p-2 rounded-xl border text-xs font-bold transition cursor-pointer shrink-0 ${
-                showTranslation
-                  ? 'bg-[var(--accent-blue)]/20 border-[var(--accent-blue)] text-[var(--accent-blue)]'
-                  : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--text-secondary)]'
-              }`}
-              title="Translation"
-            >
-              🌐
-            </button>
-
-            {/* Audio Toggle Button */}
-            <button
-              onClick={() => {
-                soundEngine.playTick();
-                setAudioEnabled(!audioEnabled);
-              }}
-              className={`p-2 rounded-xl border text-xs font-bold transition cursor-pointer shrink-0 ${
-                audioEnabled
-                  ? 'bg-[var(--accent-blue)]/20 border-[var(--accent-blue)] text-[var(--accent-blue)]'
-                  : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--text-secondary)]'
-              }`}
-              title="Audio"
-            >
-              🎧
-            </button>
-
-            {/* Settings Button */}
-            <button
-              onClick={() => {
-                soundEngine.playTick();
-                setShowSettings(!showSettings);
-              }}
-              className="p-2 rounded-xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer shrink-0"
-              title="Settings"
-            >
-              ⚙️
-            </button>
-          </div>
+      {/* ── 1. HORNÍ LIŠTA ── */}
+      <header className="px-3 sm:px-8 py-3 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] flex items-center justify-between gap-2 sm:gap-4 shrink-0 shadow-sm">
+        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+          <button
+            onClick={() => { engineRef.current?.pause(); onClose(); }}
+            className="px-3 py-1.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] shrink-0 cursor-pointer transition shadow-sm"
+          >
+            {t.back}
+          </button>
+          <h2 className="text-sm sm:text-base font-extrabold truncate flex items-center gap-1.5 text-[var(--text-primary)]">
+            <span className="text-base sm:text-lg">{category.icon}</span>
+            <span className="truncate">{localizedCategoryTitle}</span>
+          </h2>
         </div>
 
-        {/* Looper Settings Bar */}
-        {showSettings && (
-          <div className="px-6 py-3 bg-[var(--card-bg-hover)] border-b border-[var(--card-border)] grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs animate-fadeIn">
-            <div>
-              <label className="block text-[var(--text-secondary)] font-semibold mb-1">
-                ⏱️ {t.shadowPause} <span className="text-[var(--accent-blue)] font-bold">{pauseDuration}s</span>
-              </label>
-              <input
-                type="range"
-                min="1.0"
-                max="5.0"
-                step="0.5"
-                value={pauseDuration}
-                onChange={(e) => setPauseDuration(parseFloat(e.target.value))}
-                className="w-full accent-[var(--accent-blue)] cursor-pointer"
-              />
-            </div>
-            <div>
-              <label className="block text-[var(--text-secondary)] font-semibold mb-1">
-                🔁 {t.repCount} <span className="text-[var(--accent-blue)] font-bold">{repetitions}x</span>
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                step="1"
-                value={repetitions}
-                onChange={(e) => setRepetitions(parseInt(e.target.value))}
-                className="w-full accent-[var(--accent-blue)] cursor-pointer"
-              />
-            </div>
-            <div>
-              <label className="block text-[var(--text-secondary)] font-semibold mb-1">
-                ⏩ {t.voiceSpeed} <span className="text-[var(--accent-blue)] font-bold">{playbackSpeed}x</span>
-              </label>
-              <input
-                type="range"
-                min="0.7"
-                max="1.3"
-                step="0.1"
-                value={playbackSpeed}
-                onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
-                className="w-full accent-[var(--accent-blue)] cursor-pointer"
-              />
-            </div>
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* TLAČÍTKO KAPESNÍHO REŽIMU – POUZE NA MOBILU (sm:hidden) */}
+          <button
+            onClick={() => {
+              soundEngine.playTick();
+              setPocketMode(true);
+              if (!isPlaying) engineRef.current?.start();
+            }}
+            className="sm:hidden p-2 rounded-xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-xs font-bold transition cursor-pointer flex items-center gap-1 text-[var(--accent-emerald)] shadow-sm"
+            title={t.pocketModeBtn}
+          >
+            <span>📱</span>
+          </button>
+
+          <button
+            onClick={() => { soundEngine.playTick(); setShowSettings(!showSettings); }}
+            className={`p-2 sm:px-3 sm:py-1.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-sm ${
+              showSettings
+                ? 'bg-[var(--accent-blue)] text-white border-[var(--accent-blue)]'
+                : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)]'
+            }`}
+            title={t.settings}
+          >
+            <span>⚙️</span>
+            <span className="hidden sm:inline">{t.settings}</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              soundEngine.playTick();
+              engineRef.current?.pause();
+              setMode(mode === 'shadowing' ? 'active_recall' : 'shadowing');
+            }}
+            className={`px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer shadow-sm ${
+              mode === 'active_recall'
+                ? 'bg-emerald-500 text-slate-950 border-emerald-400 font-black'
+                : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)]'
+            }`}
+          >
+            {mode === 'shadowing' ? t.shadowMode : t.recallMode}
+          </button>
+        </div>
+      </header>
+
+      {/* ── 2. NASTAVENÍ PAUZY A RYCHLOSTI ── */}
+      {showSettings && (
+        <div className="px-4 sm:px-8 py-3.5 bg-[var(--card-bg-hover)] border-b border-[var(--card-border)] grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-xs shrink-0 animate-fadeIn shadow-inner">
+          <div>
+            <label className="block text-[var(--text-secondary)] font-semibold mb-1">
+              ⏱️ {t.shadowPauseLabel} <strong className="text-[var(--accent-blue)]">{pauseDuration}s</strong>
+            </label>
+            <input type="range" min="1.0" max="6.0" step="0.5" value={pauseDuration} onChange={(e) => setPauseDuration(parseFloat(e.target.value))} className="w-full accent-[var(--accent-blue)] cursor-pointer" />
+          </div>
+          <div>
+            <label className="block text-[var(--text-secondary)] font-semibold mb-1">
+              🔁 {t.repCountLabel} <strong className="text-[var(--accent-blue)]">{repetitions}x</strong>
+            </label>
+            <input type="range" min="1" max="5" step="1" value={repetitions} onChange={(e) => setRepetitions(parseInt(e.target.value))} className="w-full accent-[var(--accent-blue)] cursor-pointer" />
+          </div>
+          <div>
+            <label className="block text-[var(--text-secondary)] font-semibold mb-1">
+              ⏩ {t.voiceSpeedLabel} <strong className="text-[var(--accent-blue)]">{playbackSpeed}x</strong>
+            </label>
+            <input type="range" min="0.7" max="1.3" step="0.1" value={playbackSpeed} onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))} className="w-full accent-[var(--accent-blue)] cursor-pointer" />
+          </div>
+        </div>
+      )}
+
+      {/* ── 3. HLAVNÍ SEZNAM VĚT ── */}
+      <main className="flex-1 overflow-y-auto p-3 sm:p-8 space-y-3 sm:space-y-4 pb-36 custom-scrollbar max-w-4xl w-full mx-auto">
+        {isPlaying && (
+          <div className={`sticky top-2 z-20 p-3.5 rounded-2xl border backdrop-blur-xl text-center flex items-center justify-center space-x-2 shadow-xl mb-3 sm:mb-4 transition-colors ${
+            currentPhase === 'spanish'
+              ? 'bg-amber-500/15 border-amber-500/40 text-amber-500 dark:text-amber-300'
+              : currentPhase === 'translation'
+              ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-600 dark:text-cyan-300'
+              : 'bg-emerald-500/20 border-emerald-500/50 text-emerald-600 dark:text-emerald-300 animate-pulse'
+          }`}>
+            <span className="font-extrabold text-xs sm:text-base">
+              {currentPhase === 'spanish' ? t.shadowPhaseSpanish :
+               currentPhase === 'translation' ? t.shadowPhaseTranslation :
+               t.shadowPhaseSpeakNow}
+            </span>
           </div>
         )}
 
-        {/* Main Content Layout */}
-        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-          {/* Sentence List View */}
-          <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4 custom-scrollbar">
-            {isShadowingPhase && (
-              <div className="p-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-center animate-pulse flex items-center justify-center space-x-2">
-                <span className="text-[var(--text-primary)] font-bold">{t.speakNowPrompt}</span>
-                <span className="font-mono font-bold text-emerald-400">
-                  ({shadowingCountdown.toFixed(1)}s)
-                </span>
-              </div>
-            )}
-
-            {sentences.map((sent, idx) => {
-              const isActive = idx === currentIndex;
-              const sentenceStars = stars[sent.id] || 0;
-              const isMastered = masteredIds.has(sent.id);
-              const translationText = getSentenceTranslation(sent);
-
-              return (
-                <div
-                  key={sent.id}
-                  ref={isActive ? activeCardRef : null}
-                  onClick={() => {
-                    clearAllTimers();
-                    setCurrentIndex(idx);
-                  }}
-                  className={`relative p-5 rounded-2xl transition duration-200 border cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-4 glass-panel ${
-                    isActive
-                      ? 'border-emerald-500 shadow-xl ring-2 ring-emerald-500/30 bg-emerald-500/10'
-                      : 'hover:border-[var(--card-border-hover)]'
-                  }`}
-                >
-                  <div className="flex items-start space-x-3 flex-1">
-                    <div className="flex flex-col space-y-2 items-center">
-                      <span className="text-[11px] font-mono font-bold text-[var(--accent-blue)] px-2 py-0.5 rounded-md bg-[var(--accent-blue)]/10 border border-[var(--accent-blue)]/20">
-                        #{idx + 1}
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          clearAllTimers();
-                          setCurrentIndex(idx);
-                          speakSentenceSequence(sent, () => {});
-                        }}
-                        className="p-1.5 rounded-lg bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition text-xs cursor-pointer border border-[var(--card-border)]"
-                        title="Přehrát"
-                      >
-                        🔊
-                      </button>
-                    </div>
-
-                    <div className="space-y-1">
-                      {sent.questionEs ? (
-                        <div>
-                          <p className="text-base md:text-lg font-bold text-[var(--text-primary)] leading-relaxed">
-                            {sent.questionEs}
-                          </p>
-                          {sent.answerEs && (
-                            <p className="text-base md:text-lg font-extrabold text-[var(--accent-blue)] leading-relaxed mt-1">
-                              {sent.answerEs}
-                            </p>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-base md:text-lg font-bold text-[var(--text-primary)] leading-relaxed">
-                          {sent.es}
-                        </p>
-                      )}
-
-                      {showTranslation && (
-                        <p className="text-xs md:text-sm font-medium text-[var(--text-secondary)] italic">
-                          {translationText}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-1 self-end md:self-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleGradeSentence(sent.id, star);
-                        }}
-                        className={`text-base md:text-lg transition transform active:scale-90 cursor-pointer ${
-                          star <= sentenceStars
-                            ? 'text-amber-400'
-                            : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
-                        }`}
-                      >
-                        ★
-                      </button>
-                    ))}
-                    {isMastered && (
-                      <span className="ml-1 text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
-                        ✓ {t.mastered}
-                      </span>
+        {sentences.map((sent, idx) => {
+          const isActive = idx === currentIndex;
+          const sentenceStars = stars[sent.id] || 0;
+          return (
+            <div
+              key={sent.id}
+              ref={isActive ? activeCardRef : null}
+              onClick={() => { soundEngine.playTick(); engineRef.current?.selectIndex(idx); }}
+              className={`p-4 sm:p-5 rounded-2xl transition-all duration-200 border cursor-pointer flex flex-col gap-2.5 sm:gap-3 ${
+                isActive
+                  ? 'border-[var(--accent-emerald)] shadow-md ring-2 ring-[var(--accent-emerald)]/30 bg-[var(--accent-emerald)]/10'
+                  : 'bg-[var(--card-bg)] border-[var(--card-border)] hover:border-[var(--card-border-hover)] hover:bg-[var(--card-bg-hover)]'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start space-x-3 flex-1 min-w-0">
+                  <span className="text-xs font-mono font-bold text-[var(--accent-blue)] px-2.5 py-1 rounded-lg bg-[var(--accent-blue)]/10 border border-[var(--accent-blue)]/20 shrink-0">
+                    #{idx + 1}
+                  </span>
+                  <div className="min-w-0 flex-1 space-y-0.5">
+                    <p className="text-base sm:text-lg font-bold text-[var(--text-primary)] leading-snug">
+                      {sent.questionEs ? `${sent.questionEs} ${sent.answerEs || ''}` : sent.es}
+                    </p>
+                    {showTranslation && (
+                      <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] italic">
+                        {getSentenceTranslation(sent)}
+                      </p>
                     )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* Right Info Sidebar */}
-          <div className="w-full lg:w-80 p-3 md:p-5 bg-[var(--card-bg-hover)] border-t lg:border-t-0 lg:border-l border-[var(--card-border)] space-y-4 overflow-y-auto shrink-0">
-            {/* Top Stats Metric Box */}
-            <div className="p-3.5 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[var(--text-primary)]">📊 {t.islandStats}</span>
-                <div className="flex p-0.5 bg-[var(--card-bg-hover)] rounded-xl border border-[var(--card-border)]">
-                  <button
-                    onClick={() => {
-                      soundEngine.playTick();
-                      setStatsTimeframe('today');
-                    }}
-                    className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold transition cursor-pointer ${
-                      statsTimeframe === 'today'
-                        ? 'bg-[var(--accent-blue)] text-white'
-                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                    }`}
-                  >
-                    {t.today}
-                  </button>
-                  <button
-                    onClick={() => {
-                      soundEngine.playTick();
-                      setStatsTimeframe('all_time');
-                    }}
-                    className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold transition cursor-pointer ${
-                      statsTimeframe === 'all_time'
-                        ? 'bg-[var(--accent-blue)] text-white'
-                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                    }`}
-                  >
-                    {t.allTime}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); soundEngine.playTick(); engineRef.current?.playSingle(idx); }}
+                  className="p-2 sm:p-2.5 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-xs sm:text-sm shrink-0 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:scale-105 transition shadow-sm"
+                  title={t.listenPronunciation}
+                >
+                  🔊
+                </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-1.5 text-center">
-                <div className="p-1.5 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)]">
-                  <span className="text-base md:text-lg font-extrabold text-[var(--accent-blue)] block leading-tight">
-                    {practicedIds.size}
-                  </span>
-                  <span className="text-[9px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
-                    {t.practiced}
-                  </span>
+              <div className="flex items-center justify-between border-t border-[var(--card-border)] pt-2 mt-0.5">
+                <div className="flex items-center space-x-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleGradeSentence(sent.id, star); }}
+                      className={`text-lg transition transform active:scale-75 cursor-pointer ${
+                        star <= sentenceStars ? 'text-amber-400 font-bold' : 'text-[var(--text-muted)] hover:text-amber-300'
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                  {masteredIds.has(sent.id) && (
+                    <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30">
+                      ✓ {t.mastered}
+                    </span>
+                  )}
                 </div>
-                <div className="p-1.5 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)]">
-                  <span className="text-base md:text-lg font-extrabold text-amber-400 block leading-tight">
-                    {totalReps}
-                  </span>
-                  <span className="text-[9px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
-                    {t.repetitions}
-                  </span>
-                </div>
-                <div className="p-1.5 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)]">
-                  <span className="text-base md:text-lg font-extrabold text-emerald-400 block leading-tight">
-                    {masteredIds.size}
-                  </span>
-                  <span className="text-[9px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
-                    {t.mastered}
-                  </span>
-                </div>
+                <span className="text-[11px] text-[var(--text-muted)] font-mono">
+                  {category.difficulty || 'A1'}
+                </span>
               </div>
             </div>
+          );
+        })}
+      </main>
 
-            {/* Live Recall Coach Trigger */}
-            {mode === 'active_recall' && (
-              <IslandRecallSession
-                category={category}
-                onClose={() => setMode('shadowing')}
-              />
-            )}
+      {/* ── 4. PLOVOUCÍ PŘEHRÁVAČ DOLE (S JAZYKOVOU KOULÍ 🌐) ── */}
+      <footer className="fixed bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-30 max-w-xl mx-auto p-2 sm:p-2.5 bg-[var(--card-bg)]/95 backdrop-blur-2xl border border-[var(--card-border)] rounded-2xl sm:rounded-3xl flex items-center justify-between gap-1.5 sm:gap-3 shadow-2xl">
+        <button
+          onClick={toggleShuffle}
+          className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border text-xs sm:text-sm font-bold cursor-pointer shrink-0 transition shadow-sm ${
+            isShuffled
+              ? 'bg-purple-600 text-white border-purple-500 shadow-md'
+              : 'bg-[var(--card-bg-hover)] border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+          }`}
+          title={t.shadowShuffleBtn}
+        >
+          🔀
+        </button>
 
-            <div className="hidden md:block space-y-3">
-              <div className="p-3.5 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] space-y-1.5">
-                <div className="flex items-center space-x-2 text-[var(--accent-blue)]">
-                  <span>⚡</span>
-                  <span className="text-xs font-bold uppercase tracking-wider font-mono">
-                    {t.howToPractice}
-                  </span>
-                </div>
-                <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
-                  {t.shadowGuide}<br /><br />
-                  {t.recallGuide}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <button
+          onClick={() => { soundEngine.playTick(); engineRef.current?.previous(); }}
+          className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-xs sm:text-sm cursor-pointer shrink-0 text-[var(--text-primary)] hover:scale-105 transition shadow-sm"
+          title={t.shadowPrevBtn}
+        >
+          ⏮️
+        </button>
+
+        <button
+          onClick={handleTogglePlay}
+          className={`flex-1 py-2.5 sm:py-3 px-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-black transition flex items-center justify-center space-x-1.5 cursor-pointer shadow-lg hover:scale-[1.02] active:scale-[0.98] ${
+            isPlaying ? 'bg-amber-500 text-slate-950' : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950'
+          }`}
+        >
+          <span>{isPlaying ? t.shadowPauseBtn : t.shadowStartBtn}</span>
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-black/20 font-bold hidden sm:inline-block">
+            #{currentIndex + 1}/{sentences.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => { soundEngine.playTick(); engineRef.current?.next(); }}
+          className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-xs sm:text-sm cursor-pointer shrink-0 text-[var(--text-primary)] hover:scale-105 transition shadow-sm"
+          title={t.shadowNextBtn}
+        >
+          ⏭️
+        </button>
+
+        {/* JAZYKOVÁ KOULE 🌐 */}
+        <button
+          onClick={() => { soundEngine.playTick(); setShowTranslation(!showTranslation); }}
+          className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border text-sm sm:text-base font-bold cursor-pointer shrink-0 transition flex items-center justify-center shadow-sm ${
+            showTranslation
+              ? 'bg-blue-600 text-white border-blue-500 shadow-md ring-2 ring-blue-400/40'
+              : 'bg-[var(--card-bg-hover)] border-[var(--card-border)] text-[var(--text-muted)] opacity-60 hover:opacity-100'
+          }`}
+          title={showTranslation ? t.shadowTransOn : t.shadowTransOff}
+        >
+          🌐
+        </button>
+      </footer>
+
+      {mode === 'active_recall' && <IslandRecallSession category={category} onClose={() => setMode('shadowing')} />}
     </div>
   );
 }

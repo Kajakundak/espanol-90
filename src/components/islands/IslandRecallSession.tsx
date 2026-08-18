@@ -1,3 +1,4 @@
+// src/components/islands/IslandRecallSession.tsx
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -19,9 +20,44 @@ export default function IslandRecallSession({ category, onClose }: IslandRecallS
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [voiceId, setVoiceId] = useState<(typeof LIVE_VOICES)[number]['id']>('Aoede');
+  
+  // Kapesní režim + WakeLock
+  const [pocketMode, setPocketMode] = useState(false);
+  const wakeLockRef = useRef<any>(null);
+
   const sessionRef = useRef<LiveTutorSession | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
+
+  const requestWakeLock = useCallback(async () => {
+    if (typeof window !== 'undefined' && 'wakeLock' in navigator) {
+      try {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      } catch (err) {
+        console.warn('Wake Lock failed:', err);
+      }
+    }
+  }, []);
+
+  const releaseWakeLock = useCallback(async () => {
+    if (wakeLockRef.current) {
+      try {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      } catch (err) {
+        console.warn('Wake Lock release failed:', err);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (pocketMode || status === 'speaking' || status === 'listening') {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    return () => { releaseWakeLock(); };
+  }, [pocketMode, status, requestWakeLock, releaseWakeLock]);
 
   const STATUS_CONFIG: Record<LiveStatus, { label: string; color: string; pulse: boolean }> = {
     idle:       { label: t.idleStatus,        color: 'text-[var(--text-secondary)]',  pulse: false },
@@ -99,14 +135,46 @@ YOUR JOB:
     await sessionRef.current?.disconnect();
     sessionRef.current = null;
     setStatus('idle');
+    setPocketMode(false);
   }, []);
 
   const isActive = status === 'listening' || status === 'speaking';
   const statusCfg = STATUS_CONFIG[status];
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-[var(--nav-bg)]/70 backdrop-blur-xl animate-fade-in overflow-y-auto">
+    <div className="fixed inset-0 z-[130] flex items-center justify-center p-2 sm:p-4 bg-[var(--nav-bg)]/70 backdrop-blur-xl animate-fade-in overflow-y-auto">
       <div className="relative w-full max-w-lg apple-glass bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl flex flex-col my-auto max-h-[96vh] sm:max-h-[90vh] overflow-hidden animate-scale-in">
+        
+        {/* ── KAPESNÍ REŽIM PROTI USNUTÍ IPHONE / ANDROIDU ── */}
+        {pocketMode && (
+          <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-between p-8 text-center animate-fade-in select-none">
+            <div className="pt-8">
+              <span className="text-5xl block mb-2">📱</span>
+              <span className="text-xs font-mono font-bold tracking-[0.28em] text-emerald-400 uppercase">
+                Kapesní režim aktivní
+              </span>
+            </div>
+
+            <div className="space-y-3 max-w-sm">
+              <p className="text-sm font-semibold text-slate-300">
+                Displej zůstane černý, aby telefon neuspal AI Recall do sluchátek.
+              </p>
+              <div className="p-3 rounded-2xl bg-white/10 border border-white/15 text-xs text-slate-300">
+                Stav: <strong className="text-emerald-400 font-mono">{statusCfg.label}</strong>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                soundEngine.playTick();
+                setPocketMode(false);
+              }}
+              className="w-full max-w-xs py-4 rounded-2xl bg-white text-slate-950 font-black text-sm transition cursor-pointer hover:bg-slate-200 active:scale-95 shadow-2xl"
+            >
+              ✕ Vypnout kapesní režim
+            </button>
+          </div>
+        )}
 
         {/* Header */}
         <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] shrink-0">
@@ -127,8 +195,26 @@ YOUR JOB:
               {statusCfg.label}
             </p>
           </div>
-          <button onClick={() => { stopSession(); onClose(); }}
-            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-2xl leading-none cursor-pointer transition px-2 py-1">×</button>
+
+          <div className="flex items-center gap-1.5">
+            {/* TLAČÍTKO KAPESNÍHO REŽIMU – POUZE NA MOBILU (sm:hidden) */}
+            <button
+              onClick={() => {
+                soundEngine.playTick();
+                setPocketMode(true);
+                if (status === 'idle') startSession();
+              }}
+              className="sm:hidden p-2 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-bold text-[var(--accent-emerald)] shadow-sm cursor-pointer"
+              title="Kapesní režim proti zhasnutí obrazovky"
+            >
+              📱
+            </button>
+
+            <button onClick={() => { stopSession(); onClose(); }}
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-2xl leading-none cursor-pointer transition px-2 py-1">
+              ×
+            </button>
+          </div>
         </div>
 
         {/* Body Container */}
@@ -187,23 +273,6 @@ YOUR JOB:
               ⚠️ {errorMsg}
             </div>
           )}
-
-          {isActive && (
-            <div className="flex flex-wrap gap-1.5 justify-center py-1">
-              <button onClick={() => sessionRef.current?.sendTextMessage('Skip to next sentence please.')}
-                className="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-[11px] font-bold transition cursor-pointer">
-                ⏭️ {language === 'en' ? 'Skip' : language === 'sk' ? 'Preskočiť' : 'Přeskočit'}
-              </button>
-              <button onClick={() => sessionRef.current?.sendTextMessage('Repeat the sentence please.')}
-                className="px-2.5 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 text-[11px] font-bold transition cursor-pointer">
-                🔄 {t.repeatBtn}
-              </button>
-              <button onClick={() => sessionRef.current?.sendTextMessage('Give me the answer please.')}
-                className="px-2.5 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 text-[11px] font-bold transition cursor-pointer">
-                💡 {t.hintBtn}
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Footer */}
@@ -230,7 +299,7 @@ YOUR JOB:
             </div>
           )}
 
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-2 justify-center flex-wrap">
             {status === 'idle' || status === 'closed' || status === 'error' ? (
               <button
                 onClick={startSession}

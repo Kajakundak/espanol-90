@@ -1,843 +1,876 @@
-import { AppLanguage } from './context/LanguageContext';
+// src/lib/translations.ts
+import { AppLanguage } from '@/lib/context/LanguageContext';
 
-export interface TranslationSchema {
-  // Navigation & Common
-  dashboard: string;
-  islands: string;
-  ankiDeck: string;
-  arena: string;
-  aiTutor: string;
-  streak: string;
-  pts: string;
-  profileSwitch: string;
-  manageProfiles: string;
-  back: string;
-  close: string;
-  cancel: string;
-  save: string;
-  create: string;
-  delete: string;
-  loading: string;
-  ready: string;
-  error: string;
-  themeDark: string;
-  themeLight: string;
-
-  // Dashboard Hero & Missions
-  phase: string;
-  dayOf: string;
-  of90: string;
-  phase1Subtitle: string;
-  phase2Subtitle: string;
-  phase3Subtitle: string;
-  greeting: string;
-  todayWorkingOn: string;
-  and: string;
-  launchAiTutor: string;
-  trainAnki: string;
-  prevDay: string;
-  nextDay: string;
-  daysCount: string;
-  todaysMissions: string;
-  allCompletedBonus: string;
-  loadingMissions: string;
-
-  // Task Actions & Labels
-  taskIsland: string;
-  taskAnki: string;
-  taskBook: string;
-  taskDS: string;
-  taskSpeaking: string;
-  actionPracticeIsland: string;
-  actionTrainAnki: string;
-  actionViewLesson: string;
-  actionOpenYouTube: string;
-  actionTalkAi: string;
-  actionStart: string;
-  actionOpen: string;
-  completedCheck: string;
-  unmarkCheck: string;
-
-  // Schedule
-  scheduleBadge: string;
-  weekTitle: string;
-  dayLabel: string;
-
-  // Profile Manager Modal
-  profilesTitle: string;
-  editProfile: string;
-  addProfile: string;
-  profileName: string;
-  profileNamePlaceholder: string;
-  avatar: string;
-  activeAvatarLabel: string;
-  generateAiAvatar: string;
-  preferredBaseLanguage: string;
-  theme: string;
-  startingLevel: string;
-  deleteProfileConfirm: string;
-  savedSuccessfully: string;
-
-  // Textbook Modal
-  textbookTitle: string;
-  author: string;
-  lessonDetail: string;
-  recommendedLesson: string;
-  grammarFocus: string;
-  audioTrack: string;
-  whatToStudy: string;
-  whatToSkip: string;
-  skipNotice: string;
-  stepRoutineTitle: string;
-  consistencyTag: string;
-  iUnderstandBtn: string;
-  step1Title: string;
-  step1Desc: string;
-  step2Title: string;
-  step2Desc: string;
-  step3Title: string;
-  step3Desc: string;
-  step4Title: string;
-  step4Desc: string;
-
-  // Anki Page & Modal
-  ankiBadge: string;
-  ankiTitle: string;
-  ankiSubtitle: string;
-  startAnkiTraining: string;
-  featureShuffleTitle: string;
-  featureShuffleDesc: string;
-  featureUnlockTitle: string;
-  featureUnlockDesc: string;
-  featureTtsTitle: string;
-  featureTtsDesc: string;
-  cardsCount: string;
-  unlockedCards: string;
-  shuffleOrder: string;
-  originalOrder: string;
-  showAnswer: string;
-  ratingAgain: string;
-  ratingGood: string;
-  ratingEasy: string;
-  productionPrompt: string;
-  clozePrompt: string;
-  recognitionPrompt: string;
-  translationLabel: string;
-
-  // Islands Page & Trainer
-  islandsBadge: string;
-  islandsTitle: string;
-  islandsSubtitle: string;
-  allIslands: string;
-  customIslands: string;
-  createCustomIsland: string;
-  sentencesCount: string;
-  startTraining: string;
-  startBtn: string;
-  pauseBtn: string;
-  shadowMode: string;
-  recallMode: string;
-  shadowPause: string;
-  repCount: string;
-  voiceSpeed: string;
-  speakNowPrompt: string;
-  mastered: string;
-  islandStats: string;
-  today: string;
-  allTime: string;
-  practiced: string;
-  repetitions: string;
-  howToPractice: string;
-  shadowGuide: string;
-  recallGuide: string;
-
-  // AI Recall Coach & Live Session
-  recallCoachTitle: string;
-  recallCoachSubtitle: string;
-  howItWorksTitle: string;
-  howItWorks1: string;
-  howItWorks2: string;
-  howItWorks3: string;
-  startRecallSession: string;
-  voiceLabel: string;
-  voiceFemale: string;
-  voiceMale: string;
-  idleStatus: string;
-  connectingStatus: string;
-  listeningStatus: string;
-  speakingStatus: string;
-  liveConnecting: string;
-  liveListening: string;
-  liveSpeaking: string;
-  saveMemoryBtn: string;
-  hintBtn: string;
-  slowerBtn: string;
-  repeatBtn: string;
-  endSession: string;
-
-  // AI Tutor Page
-  tutorBadge: string;
-  tutorTitle: string;
-  tutorSubtitle: string;
-  startCallButton: string;
-  selectLevelTitle: string;
-  selectLevelSubtitle: string;
-  selectedLabel: string;
-  selectTopicTitle: string;
-  selectTopicSubtitle: string;
-  createCustomTopicBtn: string;
-  closeFormBtn: string;
-  saveTopicBtn: string;
-  savedCustomTopicsTitle: string;
-  customTopicNameLabel: string;
-  customTopicNamePlaceholder: string;
-  customTopicPromptLabel: string;
-  customTopicPromptPlaceholder: string;
-  cheatSheetTitle: string;
-  sampleAnswersTitle: string;
-  rescuePhrasesTitle: string;
-
-  // Arena & Leaderboard
-  arenaBadge: string;
-  arenaTitle: string;
-  arenaSubtitle: string;
-  startDailyQuiz: string;
-  liveLeaderboard: string;
-  challengeAndPoints: string;
-  realTimeSync: string;
-  dayStreakLabel: string;
-  pointsUnit: string;
+export interface Translations {
+  [key: string]: string;
 }
 
-export const translations: Record<AppLanguage, TranslationSchema> = {
+export const TRANSLATIONS: Record<AppLanguage, Translations> = {
   cs: {
-    // Navigation & Common
-    dashboard: 'Dashboard',
+    // ── Společné & Navigace ──
+    dashboard: 'Přehled',
     islands: 'Ostrovy',
-    ankiDeck: 'Anki Balíček',
+    ankiDeck: 'Anki Karty',
     arena: 'Aréna',
-    aiTutor: 'AI Tutor',
+    aiTutor: 'AI Lektor',
     streak: 'dní',
-    pts: 'bodů',
-    profileSwitch: 'Změnit profil',
-    manageProfiles: '⚙️ Spravovat profily',
-    back: '‹ Zpět',
-    close: 'Zavřít',
-    cancel: 'Zrušit',
-    save: 'Uložit změny',
-    create: 'Vytvořit profil',
-    delete: 'Smazat profil',
-    loading: 'Načítání...',
-    ready: 'Připraveno',
-    error: 'Chyba',
     themeDark: 'Tmavý režim',
     themeLight: 'Světlý režim',
+    profileSwitch: 'Přepnout profil',
+    profilesTitle: 'Profily',
+    manageProfiles: 'Spravovat profily',
+    addProfile: 'Přidat nový profil',
+    editProfile: 'Upravit profil',
+    profileName: 'Jméno uživatele',
+    profileNamePlaceholder: 'např. Karel, Lucka...',
+    avatar: 'Avatar',
+    activeAvatarLabel: 'Aktivní avatar:',
+    generateAiAvatar: 'Vygenerovat AI Španělského Avatara',
+    preferredBaseLanguage: 'Základní jazyk překladů',
+    theme: 'Vzhled aplikace',
+    startingLevel: 'Startovací úroveň (CEFR)',
+    cancel: 'Zrušit',
+    save: 'Uložit',
+    create: 'Vytvořit',
+    delete: 'Smazat',
+    deleteProfileConfirm: 'Opravdu chcete tento profil smazat? Tato akce je nevratná.',
+    back: 'Zpět',
+    settings: 'Nastavení',
+    close: 'Zavřít',
+    ready: 'Připraveno',
+    error: 'Chyba',
+    loading: 'Načítám...',
+    daysCount: 'dní',
+    dayLabel: 'Den',
+    weekTitle: 'Týden',
+    dayStreakLabel: 'dní v řadě',
+    pointsUnit: 'bodů',
+    realTimeSync: 'Real-time synchronizace',
+    liveLeaderboard: 'Žebříček Výzvy',
+    challengeAndPoints: 'Body & Výzva',
 
-    // Dashboard Hero & Missions
+    // ── Dashboard ──
+    greeting: '¡Hola',
     phase: 'Fáze',
     dayOf: 'Den',
     of90: 'z 90',
-    phase1Subtitle: 'Přežiju ve španělštině',
-    phase2Subtitle: 'Více mluvení a minulost',
-    phase3Subtitle: 'A2/B1 Plynulá komunikace',
-    greeting: '¡Hola',
-    todayWorkingOn: 'Dnes pracuješ na:',
-    and: 'a',
-    launchAiTutor: 'Spustit AI Tutora',
+    phase1Subtitle: 'Základy a pasivní porozumění',
+    phase2Subtitle: 'Aktivní produkce a gramatické struktury',
+    phase3Subtitle: 'Plynulost a spontánní konverzace',
+    todayWorkingOn: 'Dnes pracuješ na ostrově',
+    and: 'a lekci z knihy',
+    launchAiTutor: 'Spustit AI Lektora',
     trainAnki: 'Trénovat Anki',
     prevDay: '← Předchozí',
-    nextDay: 'Další Den →',
-    daysCount: 'Dní',
-    todaysMissions: '🎯 Dnešní mise — Den',
-    allCompletedBonus: '✓ Vše splněno (+20 bonus)',
-    loadingMissions: 'Načítání misí...',
+    nextDay: 'Další →',
+    todaysMissions: 'Dnešní mise · Den',
+    allCompletedBonus: '🎉 Vše splněno! Bonus +50b',
+    loadingMissions: 'Načítám denní plán...',
+    scheduleBadge: 'Týdenní Plánovač',
 
-    // Task Actions & Labels
-    taskIsland: 'Ostrov',
-    taskAnki: 'Anki Opakování',
-    taskBook: 'Kniha Prokopová',
-    taskDS: 'Dreaming Spanish',
-    taskSpeaking: 'AI Tutor',
-    actionPracticeIsland: 'Procvičit ostrov',
-    actionTrainAnki: 'Trénovat Anki',
-    actionViewLesson: 'Zobrazit lekci',
-    actionOpenYouTube: 'Sledovat na YouTube ↗',
-    actionTalkAi: 'Mluvit s AI',
-    actionStart: 'Spustit',
-    actionOpen: 'Otevřít',
-    completedCheck: 'Hotovo',
-    unmarkCheck: 'Označit jako hotové',
+    // ── Úkoly & Mikrofon ──
+    taskLaunchDefault: 'Spustit',
+    taskOpenDefault: 'Otevřít',
+    taskDoneTooltip: 'Hotovo (kliknutím zrušíš)',
+    taskNotDoneTooltip: 'Označit jako hotové',
+    voiceListening: 'Poslouchám...',
+    voiceSpeak: 'Mluvit',
+    voiceMicTitle: 'Mluv španělsky do mikrofonu (Web Speech API)',
 
-    // Schedule
-    scheduleBadge: 'Harmonogram výuky',
-    weekTitle: 'Týden',
-    dayLabel: 'Den',
+    // ── Avatar Generator Modal ──
+    avatarGeneratorTitle: 'Vytvořit Španělského Kresleného Avatara',
+    avatarStep1: '1. Nahrajte své selfie nebo fotku obličeje',
+    avatarUploadClick: 'Klikněte pro nahrání fotky (selfie)',
+    avatarUploadHint: 'PNG, JPEG nebo WebP (max 5 MB)',
+    avatarPhotoReady: 'Fotka připravena',
+    avatarPhotoReadySub: 'AI zanalyzuje rysy tvého obličeje',
+    avatarChangePhoto: 'Změnit',
+    avatarStep2: '2. Zvolte španělský motiv karikatury',
+    avatarDrawing: '🎨 Gemini kreslí tvou španělskou karikaturu...',
+    avatarDrawingSub: 'Vyladění toreadorského pláště, účesu a barevné palety.',
+    avatarSuccess: '✓ Avatar úspěšně vygenerován!',
+    avatarGenerateBtn: '✨ Vygenerovat Avatara',
+    avatarGeneratingBtn: 'Kreslím...',
+    avatarApplyBtn: '✓ Použít jako můj avatar',
+    avatarErrorSelect: 'Vyberte prosím obrázek (JPEG nebo PNG).',
+    avatarErrorUploadFirst: 'Nejprve nahrajte svou fotku nebo selfie.',
+    avatarErrorGeneric: 'Nastala chyba při tvorbě avatara.',
+    avatarStyleFlamenco: '💃 Flamenco Star',
+    avatarStyleFlamencoDesc: 'Vášnivý španělský tanečník / tanečnice',
+    avatarStyleTorero: '🐂 El Matador',
+    avatarStyleToreroDesc: 'Zlatem vyšívaný toreadorský oblek',
+    avatarStyleChef: '👨‍🍳 Mistr Paelly',
+    avatarStyleChefDesc: 'Šéfkuchař vyhlášeného tapas baru',
+    avatarStyleQuixote: '🛡️ Don Quijote',
+    avatarStyleQuixoteDesc: 'Legendární rytíř bojující s větrnými mlýny',
+    avatarStyleMadrid: '🕶️ Madrid Cool',
+    avatarStyleMadridDesc: 'Stylový obyvatel slunného Madridu',
 
-    // Profile Manager Modal
-    profilesTitle: 'Profily',
-    editProfile: 'Upravit profil',
-    addProfile: '+ Přidat profil',
-    profileName: 'Jméno profilu',
-    profileNamePlaceholder: 'Například Karel, Lucka...',
-    avatar: 'Avatar',
-    activeAvatarLabel: 'Aktivní:',
-    generateAiAvatar: 'Vytvořit Španělského AI Avatara',
-    preferredBaseLanguage: 'Preferovaný základní jazyk',
-    theme: 'Téma aplikace',
-    startingLevel: 'Výchozí úroveň',
-    deleteProfileConfirm: 'Opravdu chcete smazat tento profil?',
-    savedSuccessfully: 'Profil byl úspěšně uložen!',
+    // ── Vlastní Ostrov Modal ──
+    customIslandTitle: 'Vytvořit Vlastní Ostrov Jazyka',
+    customIslandSubtitle: 'Přidat vlastní sadu španělských vět pro stínování a vybavování',
+    customIslandNameLabel: 'Název Ostrova *',
+    customIslandNamePlaceholder: 'např. Moje věty z práce, Věty na letišti...',
+    customIslandDescLabel: 'Popis',
+    customIslandDescPlaceholder: 'Krátký popis zaměření této sady',
+    customIslandDiffLabel: 'Náročnost',
+    customIslandDiffA1: 'A1 - Začátečník',
+    customIslandDiffA2: 'A2 - Mírně pokročilý',
+    customIslandDiffB1: 'B1 - Pokročilý',
+    customIslandIconLabel: 'Ikona',
+    customIslandSentencesLabel: 'Španělské Věty (jedna na řádek, volitelně s "|" a překladem) *',
+    customIslandTip: '💡 Tip: Můžete zadat i jen španělské věty bez symbolu |.',
+    customIslandSubmitBtn: '🚀 Vytvořit Ostrov',
+    customIslandErrorName: 'Zadejte prosím název ostrova.',
+    customIslandErrorSentences: 'Vložte alespoň 1 větu pro procvičování.',
 
-    // Textbook Modal
-    textbookTitle: 'Španělština nejen pro samouky',
-    author: 'Lída Prokopová',
-    lessonDetail: 'Detail lekce',
-    recommendedLesson: 'Doporučená lekce z knihy:',
-    grammarFocus: 'Gramatické zaměření:',
-    audioTrack: 'Audio stopa:',
-    whatToStudy: 'Co projít v knize:',
-    whatToSkip: 'Co přeskočit (ušetři čas):',
-    skipNotice: 'Ignoruj nudná písemná cvičení a překlady do sešitu. Soustřeď se na dialog!',
-    stepRoutineTitle: 'Doporučený 4-krokový postup (max 15 min):',
-    consistencyTag: 'Konzistence > Vyplňování cvičení',
-    iUnderstandBtn: '✓ Rozumím, jdu na dialog',
-    step1Title: '1. Poslech dialogu (10 min)',
-    step1Desc: 'Pusť si MP3 nahrávku a sleduj text dialogu v knize očima.',
-    step2Title: '2. Pochopení principu (5 min)',
-    step2Desc: 'Přečti si gramatické okénko a řekni si "Aha, takhle to funguje".',
-    step3Title: '3. Výber vět do Anki (5 min)',
-    step3Desc: 'Vypiš si 2–4 nejužitečnější věty z dialogu.',
-    step4Title: '4. Aktivní použití s AI (10 min)',
-    step4Desc: 'Použij nové věty večer při hovoru s AI lektorkou.',
-
-    // Anki Page & Modal
-    ankiBadge: 'Spaced Repetition & Active Recall',
-    ankiTitle: 'Anki Balíček',
-    ankiSubtitle: 'Chytrý algoritmus pro zautomatizování španělských vět. Nové kartičky se odemykají postupně s každým dnem plánu.',
-    startAnkiTraining: 'Spustit Anki Trénink',
-    featureShuffleTitle: 'Náhodné Míchání',
-    featureShuffleDesc: 'Tlačítko Shuffle promíchá pořadí kartiček pro trénink reakce bez závislosti na kontextu.',
-    featureUnlockTitle: 'Postupné Odemykání',
-    featureUnlockDesc: 'Každý den se odemknou 3 nové věty ze zvládnutých ostrovů, aby vás záplava nezahltila.',
-    featureTtsTitle: 'Native TTS Hlas',
-    featureTtsDesc: 'Nativní španělská výslovnost (es-ES) s nastavitelnou rychlostí přehrávání pro stínování.',
-    cardsCount: 'karet',
-    unlockedCards: 'Odemčeno',
-    shuffleOrder: 'Náhodně',
-    originalOrder: 'Původní',
-    showAnswer: 'Zobrazit odpověď (Mezerník)',
-    ratingAgain: '🔴 Znovu (Again)',
-    ratingGood: '🟢 Dobře (+1)',
-    ratingEasy: '⚡ Snadné',
-    productionPrompt: '🇨🇿 Česká věta ➔ Řekni španělsky',
-    clozePrompt: '📝 Doplň chybějící slovo (Cloze)',
-    recognitionPrompt: '🇪🇸 Španělská věta ➔ Překlad',
-    translationLabel: 'Překlad:',
-
-    // Islands Page & Trainer
-    islandsBadge: 'Metoda Jazykových Ostrovů',
+    // ── Ostrovy & Stínování ──
+    islandsBadge: '90denní mapa plynulosti',
     islandsTitle: 'Jazykové Ostrovy',
-    islandsSubtitle: 'Trénujte 100 nejčastějších zautomatizovaných vět, fráze pro přežití, restaurace a každodenní témata s okamžitou AI výslovností.',
+    islandsSubtitle: 'Trénink mluvení stínováním a okamžitým vybavováním vět',
     allIslands: 'Všechny Ostrovy',
     customIslands: 'Vlastní Ostrovy',
-    createCustomIsland: 'Vytvořit AI Ostrov na Míru',
+    createCustomIsland: 'Vytvořit Vlastní Ostrov',
     sentencesCount: 'vět',
-    startTraining: 'Spustit Trénink →',
-    startBtn: 'Spustit',
-    pauseBtn: 'Pozastavit',
-    shadowMode: 'Shadowing',
-    recallMode: 'Active Recall',
-    shadowPause: 'Pauza pro stínování:',
-    repCount: 'Opakování věty:',
-    voiceSpeed: 'Rychlost hlasu:',
-    speakNowPrompt: '🗣️ TEĎ MLUVTE VY!',
+    startTraining: 'Spustit trénink →',
+    shadowMode: '🗣️ Stínování',
+    recallMode: '🤖 AI Recall',
+    shadowPauseLabel: 'Pauza:',
+    repCountLabel: 'Opakování:',
+    voiceSpeedLabel: 'Rychlost španělštiny:',
+    shadowPhaseSpanish: '🔊 Španělština...',
+    shadowPhaseTranslation: '🌐 Překlad...',
+    shadowPhaseSpeakNow: '🗣️ Nyní mluvte vy nahlas!',
+    shadowStartBtn: '▶️ Spustit stínování',
+    shadowPauseBtn: '⏸️ Pauza',
+    shadowPrevBtn: 'Předchozí věta',
+    shadowNextBtn: 'Další věta',
+    shadowShuffleBtn: 'Zamíchat pořadí',
+    shadowTransOn: 'Předčítání překladu zapnuto',
+    shadowTransOff: 'Předčítání překladu vypnuto',
+    pocketModeTitle: 'Kapesní režim aktivní',
+    pocketModeDesc: 'Displej zůstane černý, aby telefon neuspal přehrávání do sluchátek.',
+    pocketModeExit: '✕ Vypnout kapesní režim',
+    pocketModeBtn: 'Do kapsy',
+    practicedLabel: 'Procvičeno',
+    repetitionsLabel: 'Opakování',
+    masteredLabel: 'Zvládnuto',
     mastered: 'Zvládnuto',
     islandStats: 'Statistiky ostrova',
     today: 'Dnes',
-    allTime: 'Celkem',
-    practiced: 'Procvičeno',
-    repetitions: 'Opakování',
-    howToPractice: 'JAK NEJLÉPE CVIČIT',
-    shadowGuide: '🎧 Shadowing: Poslouchejte, dělejte pauzy a opakujte věty nahlas.',
-    recallGuide: '💬 Recall: Překládejte z češtiny z paměti s AI koučem.',
+    allTime: 'Celkově',
+    howToPractice: 'Jak trénovat',
+    shadowGuide: '1. Stínování: Poslouchej rodilého mluvčího a opakuj nahlas s ním.',
+    recallGuide: '2. Aktivní vybavování: Přepni na Recall režim a otestuj svou paměť.',
 
-    // AI Recall Coach & Live Session
-    recallCoachTitle: 'AI Recall Coach',
-    recallCoachSubtitle: 'Hands-free trénink vybavování z paměti',
-    howItWorksTitle: 'Jak to funguje (Hands-Free):',
-    howItWorks1: '• AI ti řekne větu v češtině',
-    howItWorks2: '• Ty odpovíš španělsky do mikrofonu',
-    howItWorks3: '• AI okamžitě vyhodnotí a přejde na další',
-    startRecallSession: 'Spustit AI Recall Session',
+    // ── Island Recall Session ──
+    recallCoachTitle: 'AI Recall Kouč',
+    howItWorksTitle: 'Jak to funguje:',
+    howItWorks1: '1. AI lektor řekne větu v tvém rodném jazyce.',
+    howItWorks2: '2. Ty ji řekneš nahlas španělsky do mikrofonu.',
+    howItWorks3: '3. AI ti dá okamžitou zpětnou vazbu k výslovnosti a gramatice.',
+    connectingStatus: 'Připojuji k AI lektorovi...',
+    listeningStatus: 'Poslouchám tvou odpověď...',
+    speakingStatus: 'Lektor mluví...',
+    idleStatus: 'Připraven ke startu',
+    repeatBtn: 'Zopakovat',
+    hintBtn: 'Nápověda',
     voiceLabel: 'Hlas:',
-    voiceFemale: 'Žena',
-    voiceMale: 'Muž',
-    idleStatus: 'Připraveno ke spuštění',
-    connectingStatus: 'Připojuji se k AI...',
-    listeningStatus: '🎙️ Tvůj tah — mluv!',
-    speakingStatus: '🔊 AI mluví...',
-    liveConnecting: 'Připojuji se k Gemini Live API...',
-    liveListening: '🎙️ Poslouchám tě — mluv!',
-    liveSpeaking: '🔊 Lektorka mluví...',
-    saveMemoryBtn: 'Uložit Paměť',
-    hintBtn: 'Poraď mi',
-    slowerBtn: 'Mluv pomaleji',
-    repeatBtn: 'Zopakuj to',
-    endSession: 'Ukončit Session',
+    voiceFemale: 'žena',
+    voiceMale: 'muž',
+    startRecallSession: 'Spustit Recall Hovor',
+    endSession: 'Ukončit hovor',
 
-    // AI Tutor Page
-    tutorBadge: 'Personalizovaný AI Tutor • Gemini 3.1 Flash Live',
-    tutorTitle: 'AI Voice Tutor',
-    tutorSubtitle: 'Nastavte si svou přesnou úroveň, vyberte nebo vytvořte téma a trénujte živou konverzaci s okamžitou učitelskou opravou.',
+    // ── Denní Kvíz ──
+    quizTitle: 'Denní Rychlokvíz',
+    quizSubtitle: 'Odpovězte na 3 otázky vygenerované Gemini Lite a získejte až +15 bonusových bodů!',
+    quizStartBtn: 'Spustit kvíz',
+    quizLoading: 'Generuji AI kvíz (Gemini Lite)...',
+    quizQuestionCount: 'Otázka',
+    quizOf: 'z',
+    quizCurrentBonus: 'Aktuální bonus:',
+    quizPts: 'b.',
+    quizCompleted: 'Kvíz dokončen!',
+    quizBonusEarned: 'bonusových bodů získáno',
+
+    // ── Anki ──
+    ankiBadge: 'Active Recall Drill',
+    ankiTitle: 'Anki Trénink Vět',
+    ankiSubtitle: 'Inteligentní opakování s rozestupy (Spaced Repetition System)',
+    startAnkiTraining: 'Spustit Anki Trénink',
+    featureShuffleTitle: 'Náhodné míchání',
+    featureShuffleDesc: 'Karty se pokaždé zamíchají, aby se zabránilo mechanickému pamatování pořadí.',
+    featureUnlockTitle: 'Postupné odemykání',
+    featureUnlockDesc: 'Každý den se ti odemkne dalších 5 klíčových vět k procvičování.',
+    featureTtsTitle: 'Hlasová výslovnost',
+    featureTtsDesc: 'Každou větu si můžeš okamžitě poslechnout stisknutím tlačítka zvuku.',
+    originalOrder: 'Původní pořadí',
+    shuffleOrder: 'Náhodně zamíchat',
+    productionPrompt: 'Produkce (Přelož do španělštiny)',
+    clozePrompt: 'Doplňovačka (Doplň chybějící slovo)',
+    recognitionPrompt: 'Rozpoznání (Co znamená tato věta?)',
+    showAnswer: 'Zobrazit řešení (Mezerník)',
+    translationLabel: 'Překlad:',
+    ratingAgain: 'Znovu ❌',
+    ratingGood: 'Dobře 👍',
+    ratingEasy: 'Snadné ⚡',
+
+    // ── Dreaming Spanish ──
+    dsBadge: 'Comprehensible Input · Den',
+    dsSubtitle: 'Sleduj 25 minut · vnímej z kontextu · bez slovníku',
+    dsPause: '⏸ Pauza',
+    dsContinue: '▶ Pokračovat',
+    dsReset: 'Reset',
+    dsDone: '✓ Hotovo!',
+    dsCompletedBanner: '🎉 25 minut splněno! (+15 bodů připsáno)',
+    dsWatchYt: 'Sledovat na YouTube ↗',
+    dsTip: '💡 Kliknutím na tlačítko výše se spustí 25min časovač a otevře playlist na YouTube — sleduj a vrať se potvrdit misi!',
+    dsSuperbeginnerDesc: '100% vizuální vstup — kreslení, gesta, rekvizity. Bez předchozí znalosti.',
+    dsBeginnerDesc: 'Pomalé autentické příběhy, přechod od obrázků k poslechu.',
+    dsIntermediateDesc: 'Přirozená španělština a reálná témata ze života ve Španělsku.',
+
+    // ── Učebnice Prokopové & Průvodce ──
+    tabDialogues: 'Texty & Dialogy',
+    tabGrammar: 'Gramatika',
+    tabVocab: 'Slovníček',
+    tabExercises: 'Cvičení',
+    discussWithAi: 'Probrat s AI',
+    closeReader: '✓ Zavřít čtečku [Esc]',
+    searchWordPlaceholder: 'Hledat slovo nebo překlad...',
+    listenPronunciation: 'Kliknutím na 🔊 si poslechneš výslovnost',
+    lessonRecommendation: 'Doporučení k lekci:',
+    showAnswerKey: '👁️ Zobrazit správné řešení',
+    hideAnswerKey: 'Skrýt klíč',
+    answerKeyLabel: 'Klíč:',
+    typeAnswerPlaceholder: 'Napiš svou odpověď...',
+    strongVowels: 'Silné samohlásky:',
+    weakVowels: 'Slabé samohlásky:',
+    culturalNotesTitle: 'Jazykové a kulturní poznámky:',
+    copyToAnki: '+ Anki',
+    copiedCheck: '✓',
+    textbookBadge: 'Španělština nejen pro samouky (L. Prokopová)',
+    lessonStructureTitle: 'Struktura lekce · Den',
+    recommendedLessonLabel: 'Doporučená lekce:',
+    step1Title: '1. 10m Poslech',
+    step1Desc: 'Přečti a pusť MP3 dialog.',
+    step2Title: '2. Gramatika',
+    step2Desc: 'Pochop 1 nový princip.',
+    step3Title: '3. Výběr Vět',
+    step3Desc: 'Vyber 2–4 užitečné věty.',
+    step4Title: '4. AI Voice Chat',
+    step4Desc: 'Použij věty večer s AI.',
+
+    // ── AI Tutor Page & Live Modal ──
+    tutorBadge: 'Gemini 3.1 Flash Live',
+    tutorTitle: 'AI Hlasový Lektor',
+    tutorSubtitle: 'Živá španělská konverzace v reálném čase přes mikrofon a sluchátka',
     startCallButton: 'Spustit Hovor',
-    selectLevelTitle: '1. Vyberte vaši úroveň (A0 – C2)',
-    selectLevelSubtitle: 'Lektorka přizpůsobí tempo, složitost větné skladby a míru gramatických oprav.',
+    selectLevelTitle: 'Zvolte úroveň konverzace',
+    selectLevelSubtitle: 'AI lektor přizpůsobí tempo, slovní zásobu a gramatiku',
     selectedLabel: 'Zvoleno:',
-    selectTopicTitle: '2. Vyberte Téma nebo Vlastní Prompt',
-    selectTopicSubtitle: 'Předdefinované scény nebo vlastní témata uložená v profile.',
-    createCustomTopicBtn: 'Vytvořit Vlastní Téma',
-    closeFormBtn: '✕ Zavřít formulář',
-    saveTopicBtn: 'Uložit Téma Do Profilu',
-    savedCustomTopicsTitle: 'Vaše Uložená Vlastní Témata',
-    customTopicNameLabel: 'Název Tématu',
-    customTopicNamePlaceholder: 'např. Nákup na trhu',
-    customTopicPromptLabel: 'Prompt pro AI',
-    customTopicPromptPlaceholder: 'Chci trénovat smlouvání o ceně ovoce',
-    cheatSheetTitle: 'Tahák na odpovědi',
-    sampleAnswersTitle: 'Vzorové věty:',
+    selectTopicTitle: 'Vyberte téma konverzace',
+    selectTopicSubtitle: 'Klikněte na situaci, kterou chcete procvičit',
+    closeFormBtn: 'Zavřít formulář',
+    createCustomTopicBtn: 'Vytvořit vlastní téma',
+    saveTopicBtn: 'Uložit téma',
+    savedCustomTopicsTitle: 'Uložená vlastní témata',
+    tutorCustomTitleLabel: 'Název Tématu',
+    tutorCustomTitlePlaceholder: 'např. Nákup na trhu',
+    tutorCustomPromptLabel: 'Prompt pro AI',
+    tutorCustomPromptPlaceholder: 'Chci trénovat smlouvání o ceně ovoce a zeleniny',
+    saveMemoryBtn: 'Uložit paměť',
+    cheatSheetTitle: 'Tahák frází',
+    sampleAnswersTitle: 'Ukázkové odpovědi:',
     rescuePhrasesTitle: 'Záchranné fráze:',
+    liveConnecting: 'Připojuji k lektorce...',
+    liveListening: 'Poslouchám tě...',
+    liveSpeaking: 'Lektorka mluví...',
+    slowerBtn: 'Pomaleji',
 
-    // Arena & Leaderboard
-    arenaBadge: 'Soutěžní Aréna',
-    arenaTitle: 'Aréna & AI Kvízy',
-    arenaSubtitle: 'Testujte své znalosti v denním AI kvízu vygenerovaném přes Gemini a sbírejte bonusové body do žebříčku.',
-    startDailyQuiz: 'Spustit Denní Kvíz (+15 Bodů)',
-    liveLeaderboard: 'Živý žebříček',
-    challengeAndPoints: 'Výzva & Body',
-    realTimeSync: '● Real-time Sync',
-    dayStreakLabel: 'denní série',
-    pointsUnit: 'bodů',
+    // ── Aréna & Žebříček ──
+    arenaBadge: 'Denní výzva',
+    arenaTitle: 'Bojová Aréna',
+    arenaSubtitle: 'Otestuj své znalosti v denním rychlokvízu a získej body do žebříčku',
+    startDailyQuiz: 'Spustit Denní Kvíz',
   },
 
   sk: {
-    // Navigation & Common
-    dashboard: 'Dashboard',
+    // ── Spoločné & Navigácia ──
+    dashboard: 'Prehľad',
     islands: 'Ostrovy',
-    ankiDeck: 'Anki Balíček',
+    ankiDeck: 'Anki Karty',
     arena: 'Aréna',
-    aiTutor: 'AI Tutor',
+    aiTutor: 'AI Lektor',
     streak: 'dní',
-    pts: 'bodov',
-    profileSwitch: 'Zmeniť profil',
-    manageProfiles: '⚙️ Spravovať profily',
-    back: '‹ Späť',
-    close: 'Zavrieť',
-    cancel: 'Zrušiť',
-    save: 'Uložiť zmeny',
-    create: 'Vytvoriť profil',
-    delete: 'Zmazať profil',
-    loading: 'Načítava sa...',
-    ready: 'Pripravené',
-    error: 'Chyba',
     themeDark: 'Tmavý režim',
     themeLight: 'Svetlý režim',
+    profileSwitch: 'Prepnúť profil',
+    profilesTitle: 'Profily',
+    manageProfiles: 'Spravovať profily',
+    addProfile: 'Pridať nový profil',
+    editProfile: 'Upraviť profil',
+    profileName: 'Meno používateľa',
+    profileNamePlaceholder: 'napr. Karel, Lucka...',
+    avatar: 'Avatar',
+    activeAvatarLabel: 'Aktívny avatar:',
+    generateAiAvatar: 'Vygenerovať AI Španielskeho Avatara',
+    preferredBaseLanguage: 'Základný jazyk prekladov',
+    theme: 'Vzhľad aplikácie',
+    startingLevel: 'Štartovacia úroveň (CEFR)',
+    cancel: 'Zrušiť',
+    save: 'Uložiť',
+    create: 'Vytvoriť',
+    delete: 'Zmazať',
+    deleteProfileConfirm: 'Naozaj chcete tento profil zmazať? Táto akcia je nevratná.',
+    back: 'Späť',
+    settings: 'Nastavenia',
+    close: 'Zavrieť',
+    ready: 'Pripravené',
+    error: 'Chyba',
+    loading: 'Načítavam...',
+    daysCount: 'dní',
+    dayLabel: 'Deň',
+    weekTitle: 'Týždeň',
+    dayStreakLabel: 'dní v rade',
+    pointsUnit: 'bodov',
+    realTimeSync: 'Real-time synchronizácia',
+    liveLeaderboard: 'Rebríček Výzvy',
+    challengeAndPoints: 'Body & Výzva',
 
-    // Dashboard Hero & Missions
+    // ── Dashboard ──
+    greeting: '¡Hola',
     phase: 'Fáza',
     dayOf: 'Deň',
     of90: 'z 90',
-    phase1Subtitle: 'Prežijem v španielčine',
-    phase2Subtitle: 'Viac rozprávania a minulosť',
-    phase3Subtitle: 'A2/B1 Plynulá komunikácia',
-    greeting: '¡Hola',
-    todayWorkingOn: 'Dnes pracuješ na:',
-    and: 'a',
-    launchAiTutor: 'Spustiť AI Tutora',
+    phase1Subtitle: 'Základy a pasívne porozumenie',
+    phase2Subtitle: 'Aktívna produkcia a gramatické štruktúry',
+    phase3Subtitle: 'Plynulosť a spontánna konverzácia',
+    todayWorkingOn: 'Dnes pracuješ na ostrove',
+    and: 'a lekcii z knihy',
+    launchAiTutor: 'Spustiť AI Lektora',
     trainAnki: 'Trénovať Anki',
     prevDay: '← Predchádzajúci',
-    nextDay: 'Ďalší Deň →',
-    daysCount: 'Dní',
-    todaysMissions: '🎯 Dnešné misie — Deň',
-    allCompletedBonus: '✓ Všetko splnené (+20 bonus)',
-    loadingMissions: 'Načítavam misie...',
+    nextDay: 'Ďalší →',
+    todaysMissions: 'Dnešné misie · Deň',
+    allCompletedBonus: '🎉 Všetko splnené! Bonus +50b',
+    loadingMissions: 'Načítavam denný plán...',
+    scheduleBadge: 'Týždenný Plánovač',
 
-    // Task Actions & Labels
-    taskIsland: 'Ostrov',
-    taskAnki: 'Anki Opakovanie',
-    taskBook: 'Kniha Prokopová',
-    taskDS: 'Dreaming Spanish',
-    taskSpeaking: 'AI Tutor',
-    actionPracticeIsland: 'Precvičiť ostrov',
-    actionTrainAnki: 'Trénovať Anki',
-    actionViewLesson: 'Zobraziť lekciu',
-    actionOpenYouTube: 'Sledovať na YouTube ↗',
-    actionTalkAi: 'Hovoriť s AI',
-    actionStart: 'Spustiť',
-    actionOpen: 'Otvoriť',
-    completedCheck: 'Hotovo',
-    unmarkCheck: 'Označiť ako hotové',
+    // ── Úlohy & Mikrofón ──
+    taskLaunchDefault: 'Spustiť',
+    taskOpenDefault: 'Otvoriť',
+    taskDoneTooltip: 'Hotovo (kliknutím zrušíš)',
+    taskNotDoneTooltip: 'Označiť ako hotové',
+    voiceListening: 'Počúvam...',
+    voiceSpeak: 'Hovoriť',
+    voiceMicTitle: 'Hovorte španielsky do mikrofónu (Web Speech API)',
 
-    // Schedule
-    scheduleBadge: 'Harmonogram výučby',
-    weekTitle: 'Týždeň',
-    dayLabel: 'Deň',
+    // ── Avatar Generator Modal ──
+    avatarGeneratorTitle: 'Vytvoriť Španielskeho Kresleného Avatara',
+    avatarStep1: '1. Nahrajte svoju selfie alebo fotku tváre',
+    avatarUploadClick: 'Kliknite pre nahratie fotky (selfie)',
+    avatarUploadHint: 'PNG, JPEG alebo WebP (max 5 MB)',
+    avatarPhotoReady: 'Fotka pripravená',
+    avatarPhotoReadySub: 'AI zanalyzuje črty tvojej tváre',
+    avatarChangePhoto: 'Zmeniť',
+    avatarStep2: '2. Zvoľte španielsky motív karikatúry',
+    avatarDrawing: '🎨 Gemini kreslí tvoju španielsku karikatúru...',
+    avatarDrawingSub: 'Ladenie toreadorského plášťa, účesu a farebnej palety.',
+    avatarSuccess: '✓ Avatar úspešne vygenerovaný!',
+    avatarGenerateBtn: '✨ Vygenerovať Avatara',
+    avatarGeneratingBtn: 'Kreslím...',
+    avatarApplyBtn: '✓ Použiť ako môj avatar',
+    avatarErrorSelect: 'Vyberte prosím obrázok (JPEG alebo PNG).',
+    avatarErrorUploadFirst: 'Najprv nahrajte svoju fotku alebo selfie.',
+    avatarErrorGeneric: 'Nastala chyba pri tvorbe avatara.',
+    avatarStyleFlamenco: '💃 Flamenco Star',
+    avatarStyleFlamencoDesc: 'Vášnivý španielsky tanečník / tanečnica',
+    avatarStyleTorero: '🐂 El Matador',
+    avatarStyleToreroDesc: 'Zlatom vyšívaný toreadorský oblek',
+    avatarStyleChef: '👨‍🍳 Majster Paelly',
+    avatarStyleChefDesc: 'Šéfkuchár vyhláseného tapas baru',
+    avatarStyleQuixote: '🛡️ Don Quijote',
+    avatarStyleQuixoteDesc: 'Legendárny rytier bojujúci s veternými mlynmi',
+    avatarStyleMadrid: '🕶️ Madrid Cool',
+    avatarStyleMadridDesc: 'Štýlový obyvateľ slnečného Madridu',
 
-    // Profile Manager Modal
-    profilesTitle: 'Profily',
-    editProfile: 'Upraviť profil',
-    addProfile: '+ Pridať profil',
-    profileName: 'Meno profilu',
-    profileNamePlaceholder: 'Napríklad Karel, Lucka...',
-    avatar: 'Avatar',
-    activeAvatarLabel: 'Aktívne:',
-    generateAiAvatar: 'Vytvoriť Španielskeho AI Avatara',
-    preferredBaseLanguage: 'Preferovaný základný jazyk',
-    theme: 'Téma aplikácie',
-    startingLevel: 'Východisková úroveň',
-    deleteProfileConfirm: 'Naozaj chcete zmazať tento profil?',
-    savedSuccessfully: 'Profil bol úspešne uložený!',
+    // ── Vlastný Ostrov Modal ──
+    customIslandTitle: 'Vytvoriť Vlastný Ostrov Jazyka',
+    customIslandSubtitle: 'Pridať vlastnú sadu španielskych viet na tieňovanie a vybavovanie',
+    customIslandNameLabel: 'Názov Ostrova *',
+    customIslandNamePlaceholder: 'napr. Moje vety z práce, Vety na letisku...',
+    customIslandDescLabel: 'Popis',
+    customIslandDescPlaceholder: 'Krátky popis zamerania tejto sady',
+    customIslandDiffLabel: 'Náročnosť',
+    customIslandDiffA1: 'A1 - Začiatočník',
+    customIslandDiffA2: 'A2 - Mierne pokročilý',
+    customIslandDiffB1: 'B1 - Pokročilý',
+    customIslandIconLabel: 'Ikona',
+    customIslandSentencesLabel: 'Španielske Vety (jedna na riadok, voliteľne s "|" a prekladom) *',
+    customIslandTip: '💡 Tip: Môžete zadať aj len španielske vety bez symbolu |.',
+    customIslandSubmitBtn: '🚀 Vytvoriť Ostrov',
+    customIslandErrorName: 'Zadajte prosím názov ostrova.',
+    customIslandErrorSentences: 'Vložte aspoň 1 vetu na precvičovanie.',
 
-    // Textbook Modal
-    textbookTitle: 'Španielčina nielen pre samoukov',
-    author: 'Lída Prokopová',
-    lessonDetail: 'Detail lekcie',
-    recommendedLesson: 'Odporúčaná lekcia z knihy:',
-    grammarFocus: 'Gramatické zameranie:',
-    audioTrack: 'Audio stopa:',
-    whatToStudy: 'Čo prejsť v knihe:',
-    whatToSkip: 'Čo preskočiť (ušetri čas):',
-    skipNotice: 'Ignoruj nudné písomné cvičenia a preklady do zošita. Sústreď sa na dialóg!',
-    stepRoutineTitle: 'Odporúčaný 4-krokový postup (max 15 min):',
-    consistencyTag: 'Konzistencia > Vyplňovanie cvičení',
-    iUnderstandBtn: '✓ Rozumiem, idem na dialóg',
-    step1Title: '1. Počúvanie dialógu (10 min)',
-    step1Desc: 'Pusti si MP3 nahrávku a sleduj text dialógu v knihe očami.',
-    step2Title: '2. Pochopenie princípu (5 min)',
-    step2Desc: 'Prečítaj si gramatické okienko a povedz si "Aha, takto to funguje".',
-    step3Title: '3. Výber viet do Anki (5 min)',
-    step3Desc: 'Vypíš si 2–4 najužitočnejšie vety z dialógu.',
-    step4Title: '4. Aktívne použitie s AI (10 min)',
-    step4Desc: 'Použi nové vety večer pri hovore s AI lektorkou.',
-
-    // Anki Page & Modal
-    ankiBadge: 'Spaced Repetition & Active Recall',
-    ankiTitle: 'Anki Balíček',
-    ankiSubtitle: 'Múdry algoritmus pre zautomatizovanie španielskych viet. Nové kartičky sa odomykajú postupne s každým dňom plánu.',
-    startAnkiTraining: 'Spustiť Anki Tréning',
-    featureShuffleTitle: 'Náhodné Miešanie',
-    featureShuffleDesc: 'Tlačidlo Shuffle premieša poradie kartičiek pre tréning reakcie bez závislosti na kontexte.',
-    featureUnlockTitle: 'Postupné Odomykanie',
-    featureUnlockDesc: 'Každý deň sa odomknú 3 nové vety zo zvládnutých ostrovov, aby vás záplava nezahltila.',
-    featureTtsTitle: 'Native TTS Hlas',
-    featureTtsDesc: 'Natívna španielska výslovnosť (es-ES) s nastaviteľnou rýchlosťou prehrávania pre tieňovanie.',
-    cardsCount: 'kariet',
-    unlockedCards: 'Odomknuté',
-    shuffleOrder: 'Náhodne',
-    originalOrder: 'Pôvodné',
-    showAnswer: 'Zobraziť odpoveď (Medzerník)',
-    ratingAgain: '🔴 Znova (Again)',
-    ratingGood: '🟢 Dobre (+1)',
-    ratingEasy: '⚡ Ľahké',
-    productionPrompt: '🇸🇰 Slovenská veta ➔ Povedz španielsky',
-    clozePrompt: '📝 Doplň chýbajúce slovo (Cloze)',
-    recognitionPrompt: '🇪🇸 Španielska veta ➔ Preklad',
-    translationLabel: 'Preklad:',
-
-    // Islands Page & Trainer
-    islandsBadge: 'Metóda Jazykových Ostrovov',
+    // ── Ostrovy & Tieňovanie ──
+    islandsBadge: '90-dňová mapa plynulosti',
     islandsTitle: 'Jazykové Ostrovy',
-    islandsSubtitle: 'Trénujte 100 najčastejších zautomatizovaných viet, frázy pre prežitie, reštaurácie a každodenné témy s okamžitou AI výslovnosťou.',
+    islandsSubtitle: 'Tréning rozprávania tieňovaním a okamžitým vybavovaním viet',
     allIslands: 'Všetky Ostrovy',
     customIslands: 'Vlastné Ostrovy',
-    createCustomIsland: 'Vytvoriť AI Ostrov na Mieru',
+    createCustomIsland: 'Vytvoriť Vlastný Ostrov',
     sentencesCount: 'viet',
-    startTraining: 'Spustiť Tréning →',
-    startBtn: 'Spustiť',
-    pauseBtn: 'Pozastaviť',
-    shadowMode: 'Shadowing',
-    recallMode: 'Active Recall',
-    shadowPause: 'Pauza pre tieňovanie:',
-    repCount: 'Opakovanie vety:',
-    voiceSpeed: 'Rýchlosť hlasu:',
-    speakNowPrompt: '🗣️ TERAZ HOVORTE VY!',
+    startTraining: 'Spustiť tréning →',
+    shadowMode: '🗣️ Tieňovanie',
+    recallMode: '🤖 AI Recall',
+    shadowPauseLabel: 'Pauza:',
+    repCountLabel: 'Opakovanie:',
+    voiceSpeedLabel: 'Rýchlosť španielčiny:',
+    shadowPhaseSpanish: '🔊 Španielčina...',
+    shadowPhaseTranslation: '🌐 Preklad...',
+    shadowPhaseSpeakNow: '🗣️ Teraz hovorte vy nahlas!',
+    shadowStartBtn: '▶️ Spustiť tieňovanie',
+    shadowPauseBtn: '⏸️ Pauza',
+    shadowPrevBtn: 'Predchádzajúca veta',
+    shadowNextBtn: 'Ďalšia veta',
+    shadowShuffleBtn: 'Zamiešať poradie',
+    shadowTransOn: 'Predčítanie prekladu zapnuté',
+    shadowTransOff: 'Predčítanie prekladu vypnuté',
+    pocketModeTitle: 'Kapesný režim aktívny',
+    pocketModeDesc: 'Displej zostane čierny, aby telefón neuspal prehrávanie do slúchadiel.',
+    pocketModeExit: '✕ Vypnúť kapesný režim',
+    pocketModeBtn: 'Do vrecka',
+    practicedLabel: 'Precvičené',
+    repetitionsLabel: 'Opakovanie',
+    masteredLabel: 'Zvládnuté',
     mastered: 'Zvládnuté',
     islandStats: 'Štatistiky ostrova',
     today: 'Dnes',
     allTime: 'Celkovo',
-    practiced: 'Precvičené',
-    repetitions: 'Opakovanie',
-    howToPractice: 'AKO NAJLEPŠIE TRÉNOVAŤ',
-    shadowGuide: '🎧 Shadowing: Počúvajte, robte pauzy a opakujte vety nahlas.',
-    recallGuide: '💬 Recall: Prekladajte zo slovenčiny z pamäte s AI koučom.',
+    howToPractice: 'Ako trénovať',
+    shadowGuide: '1. Tieňovanie: Počúvaj rodeného hovorcu a opakuj nahlas s ním.',
+    recallGuide: '2. Aktívne vybavovanie: Prepni na Recall režim a otestuj svoju pamäť.',
 
-    // AI Recall Coach & Live Session
-    recallCoachTitle: 'AI Recall Coach',
-    recallCoachSubtitle: 'Hands-free tréning vybavovania z pamäte',
-    howItWorksTitle: 'Ako to funguje (Hands-Free):',
-    howItWorks1: '• AI ti povie vetu v slovenčine',
-    howItWorks2: '• Ty odpovieš španielsky do mikrofónu',
-    howItWorks3: '• AI okamžite vyhodnotí a prejde na ďalšiu',
-    startRecallSession: 'Spustiť AI Recall Session',
+    // ── Island Recall Session ──
+    recallCoachTitle: 'AI Recall Kouč',
+    howItWorksTitle: 'Ako to funguje:',
+    howItWorks1: '1. AI lektor povie vetu v tvojom rodnom jazyku.',
+    howItWorks2: '2. Ty ju povieš nahlas španielsky do mikrofónu.',
+    howItWorks3: '3. AI ti dá okamžitú spätnú väzbu k výslovnosti a gramatike.',
+    connectingStatus: 'Pripájam k AI lektorovi...',
+    listeningStatus: 'Počúvam tvoju odpoveď...',
+    speakingStatus: 'Lektor hovorí...',
+    idleStatus: 'Pripravený na štart',
+    repeatBtn: 'Zopakovať',
+    hintBtn: 'Nápoveda',
     voiceLabel: 'Hlas:',
-    voiceFemale: 'Žena',
-    voiceMale: 'Muž',
-    idleStatus: 'Pripravené na spustenie',
-    connectingStatus: 'Pripájam sa k AI...',
-    listeningStatus: '🎙️ Tvoj ťah — hovor!',
-    speakingStatus: '🔊 AI hovorí...',
-    liveConnecting: 'Pripájam sa k Gemini Live API...',
-    liveListening: '🎙️ Počúvam ťa — hovor!',
-    liveSpeaking: '🔊 Lektorka hovorí...',
-    saveMemoryBtn: 'Uložiť Pamäť',
-    hintBtn: 'Poraď mi',
-    slowerBtn: 'Hovor pomalšie',
-    repeatBtn: 'Zopakuj to',
-    endSession: 'Ukončiť Session',
+    voiceFemale: 'žena',
+    voiceMale: 'muž',
+    startRecallSession: 'Spustiť Recall Hovor',
+    endSession: 'Ukončiť hovor',
 
-    // AI Tutor Page
-    tutorBadge: 'Personalizovaný AI Tutor • Gemini 3.1 Flash Live',
-    tutorTitle: 'AI Voice Tutor',
-    tutorSubtitle: 'Nastavte si svoju presnú úroveň, vyberte tému a trénujte živú konverzáciu s okamžitou lektorskou opravou.',
+    // ── Denný Kvíz ──
+    quizTitle: 'Denný Rýchlokvíz',
+    quizSubtitle: 'Odpovedzte na 3 otázky vygenerované Gemini Lite a získajte až +15 bonusových bodov!',
+    quizStartBtn: 'Spustiť kvíz',
+    quizLoading: 'Generujem AI kvíz (Gemini Lite)...',
+    quizQuestionCount: 'Otázka',
+    quizOf: 'z',
+    quizCurrentBonus: 'Aktuálny bonus:',
+    quizPts: 'b.',
+    quizCompleted: 'Kvíz dokončený!',
+    quizBonusEarned: 'bonusových bodov získaných',
+
+    // ── Anki ──
+    ankiBadge: 'Active Recall Drill',
+    ankiTitle: 'Anki Tréning Viet',
+    ankiSubtitle: 'Inteligentné opakovanie s rozostupmi (Spaced Repetition System)',
+    startAnkiTraining: 'Spustiť Anki Tréning',
+    featureShuffleTitle: 'Náhodné miešanie',
+    featureShuffleDesc: 'Karty sa zakaždým zamiešajú, aby sa zabránilo mechanickému pamätaniu poradia.',
+    featureUnlockTitle: 'Postupné odomykanie',
+    featureUnlockDesc: 'Každý deň sa ti odomkne ďalších 5 kľúčových viet na precvičovanie.',
+    featureTtsTitle: 'Hlasová výslovnosť',
+    featureTtsDesc: 'Každú vetu si môžeš okamžite vypočuť stlačením tlačidla zvuku.',
+    originalOrder: 'Pôvodné poradie',
+    shuffleOrder: 'Náhodne zamiešať',
+    productionPrompt: 'Produkcia (Prelož do španielčiny)',
+    clozePrompt: 'Doplňovačka (Doplň chýbajúce slovo)',
+    recognitionPrompt: 'Rozpoznanie (Čo znamená táto veta?)',
+    showAnswer: 'Zobraziť riešenie (Medzerník)',
+    translationLabel: 'Preklad:',
+    ratingAgain: 'Znova ❌',
+    ratingGood: 'Dobre 👍',
+    ratingEasy: 'Jednoduché ⚡',
+
+    // ── Dreaming Spanish ──
+    dsBadge: 'Comprehensible Input · Deň',
+    dsSubtitle: 'Sleduj 25 minút · vnímaj z kontextu · bez slovníka',
+    dsPause: '⏸ Pauza',
+    dsContinue: '▶ Pokračovať',
+    dsReset: 'Reset',
+    dsDone: '✓ Hotovo!',
+    dsCompletedBanner: '🎉 25 minút splnených! (+15 bodov pripísaných)',
+    dsWatchYt: 'Sledovať na YouTube ↗',
+    dsTip: '💡 Kliknutím na tlačidlo vyššie sa spustí 25min časovač a otvorí playlist na YouTube — sleduj a vráť sa potvrdiť misiu!',
+    dsSuperbeginnerDesc: '100% vizuálny vstup — kreslenie, gestá, rekvizity. Bez predchádzajúcej znalosti.',
+    dsBeginnerDesc: 'Pomalé autentické príbehy, prechod od obrázkov k počúvaniu.',
+    dsIntermediateDesc: 'Prirodzená španielčina a reálne témy zo života v Španielsku.',
+
+    // ── Učebnica Prokopovej & Sprievodca ──
+    tabDialogues: 'Texty & Dialógy',
+    tabGrammar: 'Gramatika',
+    tabVocab: 'Slovníček',
+    tabExercises: 'Cvičenia',
+    discussWithAi: 'Prebrať s AI',
+    closeReader: '✓ Zavrieť čítačku [Esc]',
+    searchWordPlaceholder: 'Hľadať slovo alebo preklad...',
+    listenPronunciation: 'Kliknutím na 🔊 si vypočuješ výslovnosť',
+    lessonRecommendation: 'Odporúčanie k lekcii:',
+    showAnswerKey: '👁️ Zobraziť správne riešenie',
+    hideAnswerKey: 'Skryť kľúč',
+    answerKeyLabel: 'Kľúč:',
+    typeAnswerPlaceholder: 'Napíš svoju odpoveď...',
+    strongVowels: 'Silné samohlásky:',
+    weakVowels: 'Slabé samohlásky:',
+    culturalNotesTitle: 'Jazykové a kultúrne poznámky:',
+    copyToAnki: '+ Anki',
+    copiedCheck: '✓',
+    textbookBadge: 'Španielčina nielen pre samoukov (L. Prokopová)',
+    lessonStructureTitle: 'Štruktúra lekcie · Deň',
+    recommendedLessonLabel: 'Odporúčaná lekcia:',
+    step1Title: '1. 10m Počúvanie',
+    step1Desc: 'Prečítaj a pusť MP3 dialóg.',
+    step2Title: '2. Gramatika',
+    step2Desc: 'Pochop 1 nový princíp.',
+    step3Title: '3. Výber Viet',
+    step3Desc: 'Vyber 2–4 užitočné vety.',
+    step4Title: '4. AI Voice Chat',
+    step4Desc: 'Použi vety večer s AI.',
+
+    // ── AI Tutor Page & Live Modal ──
+    tutorBadge: 'Gemini 3.1 Flash Live',
+    tutorTitle: 'AI Hlasový Lektor',
+    tutorSubtitle: 'Živá španielska konverzácia v reálnom čase cez mikrofón a slúchadlá',
     startCallButton: 'Spustiť Hovor',
-    selectLevelTitle: '1. Vyberte vašu úroveň (A0 – C2)',
-    selectLevelSubtitle: 'Lektorka prispôsobí tempo, zložitosť vetnej skladby a mieru gramatických opráv.',
+    selectLevelTitle: 'Zvoľte úroveň konverzácie',
+    selectLevelSubtitle: 'AI lektor prispôsobí tempo, slovnú zásobu a gramatiku',
     selectedLabel: 'Zvolené:',
-    selectTopicTitle: '2. Vyberte Tému alebo Vlastný Prompt',
-    selectTopicSubtitle: 'Preddefinované scény alebo vlastné témy uložené v profile.',
-    createCustomTopicBtn: 'Vytvoriť Vlastnú Tému',
-    closeFormBtn: '✕ Zavrieť formulár',
-    saveTopicBtn: 'Uložiť Tému Do Profilu',
-    savedCustomTopicsTitle: 'Vaše Uložené Vlastné Témy',
-    customTopicNameLabel: 'Názov Témy',
-    customTopicNamePlaceholder: 'napr. Nákup na trhu',
-    customTopicPromptLabel: 'Prompt pre AI',
-    customTopicPromptPlaceholder: 'Chcem trénovať zjednávanie ceny',
-    cheatSheetTitle: 'Ťahák na odpovede',
-    sampleAnswersTitle: 'Vzorové vety:',
+    selectTopicTitle: 'Vyberte tému konverzácie',
+    selectTopicSubtitle: 'Kliknite na situáciu, ktorú chcete precvičiť',
+    closeFormBtn: 'Zavrieť formulár',
+    createCustomTopicBtn: 'Vytvoriť vlastnú tému',
+    saveTopicBtn: 'Uložiť tému',
+    savedCustomTopicsTitle: 'Uložené vlastné témy',
+    tutorCustomTitleLabel: 'Názov Témy',
+    tutorCustomTitlePlaceholder: 'napr. Nákup na trhu',
+    tutorCustomPromptLabel: 'Prompt pre AI',
+    tutorCustomPromptPlaceholder: 'Chcem trénovať zjednávanie o cene ovocia a zeleniny',
+    saveMemoryBtn: 'Uložiť pamäť',
+    cheatSheetTitle: 'Ťahák fráz',
+    sampleAnswersTitle: 'Ukážkové odpovede:',
     rescuePhrasesTitle: 'Záchranné frázy:',
+    liveConnecting: 'Pripájam k lektorke...',
+    liveListening: 'Počúvam ťa...',
+    liveSpeaking: 'Lektorka hovorí...',
+    slowerBtn: 'Pomalšie',
 
-    // Arena & Leaderboard
-    arenaBadge: 'Súťažná Aréna',
-    arenaTitle: 'Aréna & AI Kvízy',
-    arenaSubtitle: 'Testujte svoje znalosti v dennom AI kvíze vygenerovanom cez Gemini a zbierajte bonusové body do rebríčka.',
-    startDailyQuiz: 'Spustiť Denný Kvíz (+15 Bodov)',
-    liveLeaderboard: 'Živý rebríček',
-    challengeAndPoints: 'Výzva & Body',
-    realTimeSync: '● Real-time Sync',
-    dayStreakLabel: 'denná séria',
-    pointsUnit: 'bodov',
+    // ── Aréna & Rebríček ──
+    arenaBadge: 'Denná výzva',
+    arenaTitle: 'Bojová Aréna',
+    arenaSubtitle: 'Otestuj svoje znalosti v dennom rýchlokvíze a získaj body do rebríčka',
+    startDailyQuiz: 'Spustiť Denný Kvíz',
   },
 
   en: {
-    // Navigation & Common
+    // ── Common & Navigation ──
     dashboard: 'Dashboard',
     islands: 'Islands',
     ankiDeck: 'Anki Deck',
     arena: 'Arena',
     aiTutor: 'AI Tutor',
     streak: 'days',
-    pts: 'pts',
-    profileSwitch: 'Switch Profile',
-    manageProfiles: '⚙️ Manage Profiles',
-    back: '‹ Back',
-    close: 'Close',
+    themeDark: 'Dark mode',
+    themeLight: 'Light mode',
+    profileSwitch: 'Switch profile',
+    profilesTitle: 'Profiles',
+    manageProfiles: 'Manage profiles',
+    addProfile: 'Add new profile',
+    editProfile: 'Edit profile',
+    profileName: 'Display name',
+    profileNamePlaceholder: 'e.g. Karel, Lucy...',
+    avatar: 'Avatar',
+    activeAvatarLabel: 'Active avatar:',
+    generateAiAvatar: 'Generate AI Spanish Avatar',
+    preferredBaseLanguage: 'Preferred base language',
+    theme: 'App theme',
+    startingLevel: 'Starting Level (CEFR)',
     cancel: 'Cancel',
-    save: 'Save Changes',
-    create: 'Create Profile',
-    delete: 'Delete Profile',
-    loading: 'Loading...',
+    save: 'Save',
+    create: 'Create',
+    delete: 'Delete',
+    deleteProfileConfirm: 'Are you sure you want to delete this profile? This action cannot be undone.',
+    back: 'Back',
+    settings: 'Settings',
+    close: 'Close',
     ready: 'Ready',
     error: 'Error',
-    themeDark: 'Dark Theme',
-    themeLight: 'Light Theme',
+    loading: 'Loading...',
+    daysCount: 'days',
+    dayLabel: 'Day',
+    weekTitle: 'Week',
+    dayStreakLabel: 'day streak',
+    pointsUnit: 'pts',
+    realTimeSync: 'Real-time sync',
+    liveLeaderboard: 'Challenge Leaderboard',
+    challengeAndPoints: 'Points & Challenge',
 
-    // Dashboard Hero & Missions
+    // ── Dashboard ──
+    greeting: '¡Hola',
     phase: 'Phase',
     dayOf: 'Day',
     of90: 'of 90',
-    phase1Subtitle: 'Survival Spanish',
-    phase2Subtitle: 'More Speaking & Past Tenses',
-    phase3Subtitle: 'A2/B1 Fluent Communication',
-    greeting: '¡Hola',
-    todayWorkingOn: 'Today you are working on:',
-    and: 'and',
+    phase1Subtitle: 'Foundations and passive comprehension',
+    phase2Subtitle: 'Active production and grammar patterns',
+    phase3Subtitle: 'Fluency and spontaneous conversation',
+    todayWorkingOn: 'Today you are working on',
+    and: 'and textbook chapter',
     launchAiTutor: 'Launch AI Tutor',
-    trainAnki: 'Practice Anki',
+    trainAnki: 'Train Anki',
     prevDay: '← Previous',
-    nextDay: 'Next Day →',
-    daysCount: 'Days',
-    todaysMissions: '🎯 Today’s Missions — Day',
-    allCompletedBonus: '✓ All Done (+20 bonus)',
-    loadingMissions: 'Loading missions...',
+    nextDay: 'Next →',
+    todaysMissions: "Today's missions · Day",
+    allCompletedBonus: '🎉 All completed! Bonus +50pts',
+    loadingMissions: 'Loading daily plan...',
+    scheduleBadge: 'Weekly Schedule',
 
-    // Task Actions & Labels
-    taskIsland: 'Island',
-    taskAnki: 'Anki Review',
-    taskBook: 'Prokopová Textbook',
-    taskDS: 'Dreaming Spanish',
-    taskSpeaking: 'AI Tutor',
-    actionPracticeIsland: 'Practice Island',
-    actionTrainAnki: 'Train Anki',
-    actionViewLesson: 'View Lesson',
-    actionOpenYouTube: 'Watch on YouTube ↗',
-    actionTalkAi: 'Talk to AI',
-    actionStart: 'Start',
-    actionOpen: 'Open',
-    completedCheck: 'Completed',
-    unmarkCheck: 'Mark as done',
+    // ── Tasks & Voice ──
+    taskLaunchDefault: 'Launch',
+    taskOpenDefault: 'Open',
+    taskDoneTooltip: 'Completed (click to undo)',
+    taskNotDoneTooltip: 'Mark as completed',
+    voiceListening: 'Listening...',
+    voiceSpeak: 'Speak',
+    voiceMicTitle: 'Speak Spanish into the microphone (Web Speech API)',
 
-    // Schedule
-    scheduleBadge: 'Curriculum Schedule',
-    weekTitle: 'Week',
-    dayLabel: 'Day',
+    // ── Avatar Generator Modal ──
+    avatarGeneratorTitle: 'Create Spanish Cartoon Avatar',
+    avatarStep1: '1. Upload your selfie or face photo',
+    avatarUploadClick: 'Click to upload photo (selfie)',
+    avatarUploadHint: 'PNG, JPEG or WebP (max 5 MB)',
+    avatarPhotoReady: 'Photo ready',
+    avatarPhotoReadySub: 'AI will analyze your facial features',
+    avatarChangePhoto: 'Change',
+    avatarStep2: '2. Choose Spanish caricature style',
+    avatarDrawing: '🎨 Gemini is drawing your Spanish caricature...',
+    avatarDrawingSub: 'Tuning outfit, hairstyle, and color palette.',
+    avatarSuccess: '✓ Avatar generated successfully!',
+    avatarGenerateBtn: '✨ Generate Avatar',
+    avatarGeneratingBtn: 'Drawing...',
+    avatarApplyBtn: '✓ Use as my avatar',
+    avatarErrorSelect: 'Please select an image file (JPEG or PNG).',
+    avatarErrorUploadFirst: 'Please upload your photo or selfie first.',
+    avatarErrorGeneric: 'An error occurred while creating your avatar.',
+    avatarStyleFlamenco: '💃 Flamenco Star',
+    avatarStyleFlamencoDesc: 'Passionate Spanish dancer with festive attire',
+    avatarStyleTorero: '🐂 El Matador',
+    avatarStyleToreroDesc: 'Gold-embroidered matador suit',
+    avatarStyleChef: '👨‍🍳 Paella Master',
+    avatarStyleChefDesc: 'Chef of a renowned tapas and paella bar',
+    avatarStyleQuixote: '🛡️ Don Quixote',
+    avatarStyleQuixoteDesc: 'Legendary knight fighting windmills',
+    avatarStyleMadrid: '🕶️ Madrid Cool',
+    avatarStyleMadridDesc: 'Stylish resident of sunny Madrid',
 
-    // Profile Manager Modal
-    profilesTitle: 'Profiles',
-    editProfile: 'Edit Profile',
-    addProfile: '+ Add Profile',
-    profileName: 'Profile Name',
-    profileNamePlaceholder: 'e.g. Karel, Lucka...',
-    avatar: 'Avatar',
-    activeAvatarLabel: 'Active:',
-    generateAiAvatar: 'Create Spanish AI Avatar',
-    preferredBaseLanguage: 'Preferred Base Language',
-    theme: 'App Theme',
-    startingLevel: 'Starting Level',
-    deleteProfileConfirm: 'Are you sure you want to delete this profile?',
-    savedSuccessfully: 'Profile saved successfully!',
+    // ── Custom Island Modal ──
+    customIslandTitle: 'Create Custom Language Island',
+    customIslandSubtitle: 'Add your own set of Spanish sentences for shadowing and recall',
+    customIslandNameLabel: 'Island Name *',
+    customIslandNamePlaceholder: 'e.g. Sentences from work, Airport phrases...',
+    customIslandDescLabel: 'Description',
+    customIslandDescPlaceholder: 'Short description of this set',
+    customIslandDiffLabel: 'Difficulty',
+    customIslandDiffA1: 'A1 - Beginner',
+    customIslandDiffA2: 'A2 - Intermediate',
+    customIslandDiffB1: 'B1 - Advanced',
+    customIslandIconLabel: 'Icon',
+    customIslandSentencesLabel: 'Spanish Sentences (one per line, optionally with "|" and translation) *',
+    customIslandTip: '💡 Tip: You can also enter just Spanish sentences without the | symbol.',
+    customIslandSubmitBtn: '🚀 Create Island',
+    customIslandErrorName: 'Please enter an island title.',
+    customIslandErrorSentences: 'Please add at least 1 sentence.',
 
-    // Textbook Modal
-    textbookTitle: 'Spanish for Self-Learners',
-    author: 'Lída Prokopová',
-    lessonDetail: 'Lesson Details',
-    recommendedLesson: 'Recommended Lesson:',
-    grammarFocus: 'Grammar Focus:',
-    audioTrack: 'Audio Track:',
-    whatToStudy: 'What to Study:',
-    whatToSkip: 'What to Skip (Save Time):',
-    skipNotice: 'Skip tedious fill-in grammar exercises. Focus on the core dialogue and audio!',
-    stepRoutineTitle: 'Recommended 4-Step Routine (max 15 min):',
-    consistencyTag: 'Consistency > Fill-in Drills',
-    iUnderstandBtn: '✓ Understood, let’s go to dialogue',
-    step1Title: '1. Listen to Dialogue (10 min)',
-    step1Desc: 'Play the MP3 audio and follow the dialogue text with your eyes.',
-    step2Title: '2. Understand Pattern (5 min)',
-    step2Desc: 'Read the short grammar box to understand how the syntax works.',
-    step3Title: '3. Sentence Mining (5 min)',
-    step3Desc: 'Pick 2–4 useful sentences from the dialogue for your deck.',
-    step4Title: '4. Active Practice with AI (10 min)',
-    step4Desc: 'Use your newly learned sentences in your evening AI conversation.',
-
-    // Anki Page & Modal
-    ankiBadge: 'Spaced Repetition & Active Recall',
-    ankiTitle: 'Anki Deck',
-    ankiSubtitle: 'Smart algorithm to automate Spanish sentences. New flashcards unlock gradually with each day of the program.',
-    startAnkiTraining: 'Start Anki Training',
-    featureShuffleTitle: 'Random Shuffle',
-    featureShuffleDesc: 'Shuffle button randomizes card order for rapid reaction training independent of context.',
-    featureUnlockTitle: 'Gradual Unlocking',
-    featureUnlockDesc: '3 new sentences unlock every day from mastered islands so you never feel overwhelmed.',
-    featureTtsTitle: 'Native TTS Voice',
-    featureTtsDesc: 'Native Spanish pronunciation (es-ES) with adjustable playback speed for shadowing.',
-    cardsCount: 'cards',
-    unlockedCards: 'Unlocked',
-    shuffleOrder: 'Random',
-    originalOrder: 'Original',
-    showAnswer: 'Show Answer (Spacebar)',
-    ratingAgain: '🔴 Again',
-    ratingGood: '🟢 Good (+1)',
-    ratingEasy: '⚡ Easy',
-    productionPrompt: '🇬🇧 English sentence ➔ Speak in Spanish',
-    clozePrompt: '📝 Fill in the missing word (Cloze)',
-    recognitionPrompt: '🇪🇸 Spanish sentence ➔ Translation',
-    translationLabel: 'Translation:',
-
-    // Islands Page & Trainer
-    islandsBadge: 'Language Islands Method',
+    // ── Islands & Shadowing ──
+    islandsBadge: '90-Day Fluency Map',
     islandsTitle: 'Language Islands',
-    islandsSubtitle: 'Master 100 high-frequency automated sentences, survival phrases, restaurants and daily topics with instant AI pronunciation feedback.',
+    islandsSubtitle: 'Speaking practice through shadowing and active recall',
     allIslands: 'All Islands',
     customIslands: 'Custom Islands',
-    createCustomIsland: 'Create Custom AI Island',
+    createCustomIsland: 'Create Custom Island',
     sentencesCount: 'sentences',
-    startTraining: 'Start Training →',
-    startBtn: 'Start',
-    pauseBtn: 'Pause',
-    shadowMode: 'Shadowing',
-    recallMode: 'Active Recall',
-    shadowPause: 'Shadowing Pause:',
-    repCount: 'Sentence Repetitions:',
-    voiceSpeed: 'Voice Speed:',
-    speakNowPrompt: '🗣️ NOW SPEAK ALOUD!',
+    startTraining: 'Start training →',
+    shadowMode: '🗣️ Shadowing',
+    recallMode: '🤖 AI Recall',
+    shadowPauseLabel: 'Pause:',
+    repCountLabel: 'Repetitions:',
+    voiceSpeedLabel: 'Spanish speed:',
+    shadowPhaseSpanish: '🔊 Spanish...',
+    shadowPhaseTranslation: '🌐 Translation...',
+    shadowPhaseSpeakNow: '🗣️ Speak out loud now!',
+    shadowStartBtn: '▶️ Start Shadowing',
+    shadowPauseBtn: '⏸️ Pause',
+    shadowPrevBtn: 'Previous sentence',
+    shadowNextBtn: 'Next sentence',
+    shadowShuffleBtn: 'Shuffle order',
+    shadowTransOn: 'Translation audio on',
+    shadowTransOff: 'Translation audio off',
+    pocketModeTitle: 'Pocket Mode Active',
+    pocketModeDesc: 'Screen will stay black so the phone does not sleep playback in your pocket.',
+    pocketModeExit: '✕ Exit Pocket Mode',
+    pocketModeBtn: 'Pocket Mode',
+    practicedLabel: 'Practiced',
+    repetitionsLabel: 'Reps',
+    masteredLabel: 'Mastered',
     mastered: 'Mastered',
-    islandStats: 'Island Stats',
+    islandStats: 'Island Statistics',
     today: 'Today',
-    allTime: 'All-time',
-    practiced: 'Practiced',
-    repetitions: 'Reps',
-    howToPractice: 'BEST PRACTICE GUIDE',
-    shadowGuide: '🎧 Shadowing: Listen, pause, and repeat sentences out loud.',
-    recallGuide: '💬 Recall: Translate from memory with your AI coach.',
+    allTime: 'All time',
+    howToPractice: 'How to practice',
+    shadowGuide: '1. Shadowing: Listen to native audio and repeat out loud simultaneously.',
+    recallGuide: '2. Active Recall: Switch to Recall mode to test your memory hands-free.',
 
-    // AI Recall Coach & Live Session
+    // ── Island Recall Session ──
     recallCoachTitle: 'AI Recall Coach',
-    recallCoachSubtitle: 'Hands-free Active Recall speaking session',
-    howItWorksTitle: 'How it works (Hands-Free):',
-    howItWorks1: '• AI says the sentence in English',
-    howItWorks2: '• You speak Spanish into your microphone',
-    howItWorks3: '• AI evaluates instantly and moves to the next',
-    startRecallSession: 'Start AI Recall Session',
-    voiceLabel: 'Voice:',
-    voiceFemale: 'Female',
-    voiceMale: 'Male',
+    howItWorksTitle: 'How it works:',
+    howItWorks1: '1. AI coach speaks a sentence in your native language.',
+    howItWorks2: '2. You speak the Spanish translation into your microphone.',
+    howItWorks3: '3. AI gives instant feedback on grammar and pronunciation.',
+    connectingStatus: 'Connecting to AI coach...',
+    listeningStatus: 'Listening to your answer...',
+    speakingStatus: 'Coach is speaking...',
     idleStatus: 'Ready to start',
-    connectingStatus: 'Connecting to AI...',
-    listeningStatus: '🎙️ Your turn — speak!',
-    speakingStatus: '🔊 AI speaking...',
-    liveConnecting: 'Connecting to Gemini Live API...',
-    liveListening: '🎙️ Listening to you — speak!',
-    liveSpeaking: '🔊 Tutor speaking...',
-    saveMemoryBtn: 'Save Memory',
-    hintBtn: 'Give Hint',
-    slowerBtn: 'Speak Slower',
-    repeatBtn: 'Repeat That',
-    endSession: 'End Session',
+    repeatBtn: 'Repeat',
+    hintBtn: 'Hint',
+    voiceLabel: 'Voice:',
+    voiceFemale: 'female',
+    voiceMale: 'male',
+    startRecallSession: 'Start Recall Call',
+    endSession: 'End Call',
 
-    // AI Tutor Page
-    tutorBadge: 'Personalized AI Tutor • Gemini 3.1 Flash Live',
+    // ── Daily Quiz ──
+    quizTitle: 'Daily Speed Quiz',
+    quizSubtitle: 'Answer 3 questions generated by Gemini Lite to earn up to +15 bonus points!',
+    quizStartBtn: 'Start Quiz',
+    quizLoading: 'Generating AI Quiz (Gemini Lite)...',
+    quizQuestionCount: 'Question',
+    quizOf: 'of',
+    quizCurrentBonus: 'Current Bonus:',
+    quizPts: 'pts',
+    quizCompleted: 'Quiz Completed!',
+    quizBonusEarned: 'bonus points earned',
+
+    // ── Anki ──
+    ankiBadge: 'Active Recall Drill',
+    ankiTitle: 'Anki Sentence Training',
+    ankiSubtitle: 'Spaced Repetition System (SRS) for long-term retention',
+    startAnkiTraining: 'Start Anki Training',
+    featureShuffleTitle: 'Smart Shuffling',
+    featureShuffleDesc: 'Cards shuffle every session to prevent memorizing order patterns.',
+    featureUnlockTitle: 'Daily Unlocks',
+    featureUnlockDesc: '5 new essential sentences unlock every day of your 90-day journey.',
+    featureTtsTitle: 'Voice Pronunciation',
+    featureTtsDesc: 'Listen to native pronunciation instantly by tapping the audio button.',
+    originalOrder: 'Original order',
+    shuffleOrder: 'Shuffle order',
+    productionPrompt: 'Production (Translate to Spanish)',
+    clozePrompt: 'Fill in the blank (Complete the sentence)',
+    recognitionPrompt: 'Recognition (What does this sentence mean?)',
+    showAnswer: 'Show Answer (Spacebar)',
+    translationLabel: 'Translation:',
+    ratingAgain: 'Again ❌',
+    ratingGood: 'Good 👍',
+    ratingEasy: 'Easy ⚡',
+
+    // ── Dreaming Spanish ──
+    dsBadge: 'Comprehensible Input · Day',
+    dsSubtitle: 'Watch 25 min · absorb from context · no dictionary',
+    dsPause: '⏸ Pause',
+    dsContinue: '▶ Continue',
+    dsReset: 'Reset',
+    dsDone: '✓ Done!',
+    dsCompletedBanner: '🎉 25 minutes completed! (+15 points added)',
+    dsWatchYt: 'Watch on YouTube ↗',
+    dsTip: '💡 Clicking above will start the 25m timer and open the YouTube playlist — watch and return to complete the mission!',
+    dsSuperbeginnerDesc: '100% visual input — drawing, gestures, props. No prior knowledge needed.',
+    dsBeginnerDesc: 'Slow authentic stories, transitioning from drawings to listening.',
+    dsIntermediateDesc: 'Natural Spanish and real-world topics from life in Spain.',
+
+    // ── Textbook & Guide ──
+    tabDialogues: 'Texts & Dialogues',
+    tabGrammar: 'Grammar',
+    tabVocab: 'Vocabulary',
+    tabExercises: 'Exercises',
+    discussWithAi: 'Discuss with AI',
+    closeReader: '✓ Close Reader [Esc]',
+    searchWordPlaceholder: 'Search word or translation...',
+    listenPronunciation: 'Click 🔊 to hear pronunciation',
+    lessonRecommendation: 'Lesson recommendation:',
+    showAnswerKey: '👁️ Show Answer Key',
+    hideAnswerKey: 'Hide Key',
+    answerKeyLabel: 'Key:',
+    typeAnswerPlaceholder: 'Type your answer...',
+    strongVowels: 'Strong vowels:',
+    weakVowels: 'Weak vowels:',
+    culturalNotesTitle: 'Language & Cultural Notes:',
+    copyToAnki: '+ Anki',
+    copiedCheck: '✓',
+    textbookBadge: 'Spanish for Self-Learners (L. Prokopova)',
+    lessonStructureTitle: 'Lesson Structure · Day',
+    recommendedLessonLabel: 'Recommended Lesson:',
+    step1Title: '1. 10m Listening',
+    step1Desc: 'Read and listen to the MP3 dialogue.',
+    step2Title: '2. Grammar',
+    step2Desc: 'Understand 1 core grammar concept.',
+    step3Title: '3. Sentence Selection',
+    step3Desc: 'Pick 2–4 useful sentences for your day.',
+    step4Title: '4. AI Voice Chat',
+    step4Desc: 'Use the sentences in evening AI tutor practice.',
+
+    // ── AI Tutor Page & Live Modal ──
+    tutorBadge: 'Gemini 3.1 Flash Live',
     tutorTitle: 'AI Voice Tutor',
-    tutorSubtitle: 'Set your precise CEFR level, choose a scenario, and practice real-time conversational speaking with instant corrective feedback.',
+    tutorSubtitle: 'Real-time spontaneous Spanish conversation over microphone and headphones',
     startCallButton: 'Start Live Call',
-    selectLevelTitle: '1. Select your Level (A0 – C2)',
-    selectLevelSubtitle: 'The tutor adapts tempo, sentence structure complexity, and feedback frequency.',
+    selectLevelTitle: 'Select conversation level',
+    selectLevelSubtitle: 'AI tutor adjusts pace, vocabulary, and grammar depth',
     selectedLabel: 'Selected:',
-    selectTopicTitle: '2. Choose Topic or Custom Prompt',
-    selectTopicSubtitle: 'Predefined roleplay scenarios or custom topics saved to your profile.',
-    createCustomTopicBtn: 'Create Custom Topic',
-    closeFormBtn: '✕ Close form',
-    saveTopicBtn: 'Save Topic to Profile',
-    savedCustomTopicsTitle: 'Your Saved Custom Topics',
-    customTopicNameLabel: 'Topic Title',
-    customTopicNamePlaceholder: 'e.g. Market Shopping',
-    customTopicPromptLabel: 'AI Prompt / Instructions',
-    customTopicPromptPlaceholder: 'I want to practice bargaining for fruit prices',
+    selectTopicTitle: 'Select conversation scenario',
+    selectTopicSubtitle: 'Click on the scenario you want to drill',
+    closeFormBtn: 'Close form',
+    createCustomTopicBtn: 'Create custom topic',
+    saveTopicBtn: 'Save topic',
+    savedCustomTopicsTitle: 'Saved custom topics',
+    tutorCustomTitleLabel: 'Topic Title',
+    tutorCustomTitlePlaceholder: 'e.g. Market Shopping',
+    tutorCustomPromptLabel: 'AI Prompt',
+    tutorCustomPromptPlaceholder: 'I want to practice bargaining fruit and vegetable prices',
+    saveMemoryBtn: 'Save memory',
     cheatSheetTitle: 'Cheat Sheet',
-    sampleAnswersTitle: 'Sample sentences:',
-    rescuePhrasesTitle: 'Rescue phrases:',
+    sampleAnswersTitle: 'Sample Answers:',
+    rescuePhrasesTitle: 'Rescue Phrases:',
+    liveConnecting: 'Connecting to tutor...',
+    liveListening: 'Listening to you...',
+    liveSpeaking: 'Tutor is speaking...',
+    slowerBtn: 'Slower',
 
-    // Arena & Leaderboard
-    arenaBadge: 'Competition Arena',
-    arenaTitle: 'Arena & AI Quizzes',
-    arenaSubtitle: 'Test your Spanish knowledge with daily AI quizzes generated via Gemini and collect bonus points for the leaderboard.',
-    startDailyQuiz: 'Start Daily Quiz (+15 Pts)',
-    liveLeaderboard: 'Live Leaderboard',
-    challengeAndPoints: 'Challenge & Points',
-    realTimeSync: '● Real-time Sync',
-    dayStreakLabel: 'day streak',
-    pointsUnit: 'pts',
+    // ── Arena & Leaderboard ──
+    arenaBadge: 'Daily Challenge',
+    arenaTitle: 'Battle Arena',
+    arenaSubtitle: 'Test your Spanish in the speed quiz and compete on the leaderboard',
+    startDailyQuiz: 'Start Daily Quiz',
   },
 };
 
-export const getTranslation = (lang: AppLanguage): TranslationSchema => {
-  return translations[lang] || translations.cs;
-};
+export function getTranslation(lang: AppLanguage): Translations {
+  return TRANSLATIONS[lang] || TRANSLATIONS.cs;
+}

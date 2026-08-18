@@ -1,4 +1,8 @@
+// src/components/TextbookGuide.tsx
 'use client';
+
+import { useAppLanguage } from '@/lib/context/LanguageContext';
+import { getTranslation } from '@/lib/translations';
 
 interface TextbookGuideProps {
   currentDay: number;
@@ -21,57 +25,63 @@ const LESSON_MAPPINGS: Record<number, { lessonNumber: number; title: string; foc
 };
 
 export default function TextbookGuide({ currentDay }: TextbookGuideProps) {
+  const { language } = useAppLanguage();
+  const t = getTranslation(language);
+
+  const lessonNum = Math.min(44, Math.ceil(currentDay / 2));
   const mapping = LESSON_MAPPINGS[currentDay] || {
-    lessonNumber: Math.min(44, Math.ceil(currentDay / 2)),
-    title: `Lekce ${Math.min(44, Math.ceil(currentDay / 2))} — Praktické struktury`,
+    lessonNumber: lessonNum,
+    title: `Lekce ${lessonNum} — Praktické struktury`,
     focus: 'Aktivní čtení dialogu + poslech MP3 nahrávky + výběr 2-4 větných karet',
-    audioTrack: `MP3 ${Math.min(44, Math.ceil(currentDay / 2)).toString().padStart(2, '0')}`,
+    audioTrack: `MP3 ${lessonNum.toString().padStart(2, '0')}`,
   };
 
   return (
-    <div className="apple-glass p-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="apple-glass p-6 sm:p-8 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="apple-pill-badge bg-[var(--accent-amber)]/15 text-[var(--accent-amber)] border border-[var(--accent-amber)]/30 mb-2">
-            Španělština nejen pro samouky (L. Prokopová)
+            {t.textbookBadge}
           </span>
           <h2 className="apple-heading-md text-[var(--text-primary)] flex items-center gap-2">
-            <span>📖</span> Lesson Structure • Day {currentDay}
+            <span>📖</span> {t.lessonStructureTitle} {currentDay}
           </h2>
         </div>
 
-        <span className="text-xs font-mono text-[var(--accent-amber)] bg-[var(--card-bg)] px-4 py-2 rounded-full border border-[var(--card-border)]">
+        <span className="text-xs font-mono text-[var(--accent-amber)] bg-[var(--card-bg)] px-4 py-2 rounded-full border border-[var(--card-border)] self-start sm:self-auto">
           🔊 {mapping.audioTrack}
         </span>
       </div>
 
       <div className="bg-[var(--card-bg)] border border-[var(--card-border)] p-5 rounded-2xl space-y-2">
-        <div className="text-xs text-[var(--accent-amber)] font-mono font-bold">Doporučená lekce:</div>
+        <div className="text-xs text-[var(--accent-amber)] font-mono font-bold">
+          {t.recommendedLessonLabel}
+        </div>
         <div className="text-base font-extrabold text-[var(--text-primary)]">
-          Lekce {mapping.lessonNumber}: {mapping.title}
+          {t.dayLabel} {currentDay} · {mapping.title}
         </div>
         <div className="text-xs text-[var(--text-secondary)] font-medium">
           Focus: <span className="text-[var(--text-primary)]">{mapping.focus}</span>
         </div>
       </div>
 
-      {/* 4-Step Execution Loop */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1 text-xs">
-        <div className="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--card-border)] text-[var(--text-secondary)]">
-          <strong className="text-[var(--accent-amber)] block text-sm mb-1">1. 10m Poslech</strong>
-          Přečti a pusť MP3 dialog.
+      {/* 4-kroková studijní smyčka */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1 text-xs">
+        <div className="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--card-border)] text-[var(--text-secondary)] space-y-1">
+          <strong className="text-[var(--accent-amber)] block text-sm">{t.step1Title}</strong>
+          <p>{t.step1Desc}</p>
         </div>
-        <div className="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--card-border)] text-[var(--text-secondary)]">
-          <strong className="text-[var(--accent-amber)] block text-sm mb-1">2. Gramatika</strong>
-          Pochop 1 nový princip.
+        <div className="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--card-border)] text-[var(--text-secondary)] space-y-1">
+          <strong className="text-[var(--accent-amber)] block text-sm">{t.step2Title}</strong>
+          <p>{t.step2Desc}</p>
         </div>
-        <div className="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--card-border)] text-[var(--text-secondary)]">
-          <strong className="text-[var(--accent-amber)] block text-sm mb-1">3. Výběr Vět</strong>
-          Vyber 2–4 užitečné věty.
+        <div className="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--card-border)] text-[var(--text-secondary)] space-y-1">
+          <strong className="text-[var(--accent-amber)] block text-sm">{t.step3Title}</strong>
+          <p>{t.step3Desc}</p>
         </div>
-        <div className="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--card-border)] text-[var(--text-secondary)]">
-          <strong className="text-[var(--accent-amber)] block text-sm mb-1">4. AI Voice Chat</strong>
-          Použij věty večer s AI.
+        <div className="bg-[var(--card-bg)] p-4 rounded-2xl border border-[var(--card-border)] text-[var(--text-secondary)] space-y-1">
+          <strong className="text-[var(--accent-amber)] block text-sm">{t.step4Title}</strong>
+          <p>{t.step4Desc}</p>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+// src/components/LiveTutorModal.tsx
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -49,10 +50,45 @@ export default function LiveTutorModal({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [voiceId, setVoiceId] = useState<LiveVoiceId>('Aoede');
   const [savedMemories, setSavedMemories] = useState<{ topic: string; summary: string; userFacts: string[] }[]>([]);
+  
+  // Kapesní režim + WakeLock
+  const [pocketMode, setPocketMode] = useState(false);
+  const wakeLockRef = useRef<any>(null);
+
   const sessionRef = useRef<LiveTutorSession | null>(null);
   const sessionStartedAtRef = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
+
+  const requestWakeLock = useCallback(async () => {
+    if (typeof window !== 'undefined' && 'wakeLock' in navigator) {
+      try {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      } catch (err) {
+        console.warn('Wake Lock failed:', err);
+      }
+    }
+  }, []);
+
+  const releaseWakeLock = useCallback(async () => {
+    if (wakeLockRef.current) {
+      try {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      } catch (err) {
+        console.warn('Wake Lock release failed:', err);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (pocketMode || status === 'speaking' || status === 'listening') {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    return () => { releaseWakeLock(); };
+  }, [pocketMode, status, requestWakeLock, releaseWakeLock]);
 
   const STATUS_CONFIG: Record<LiveStatus, { label: string; color: string; pulse: boolean }> = {
     idle:        { label: t.idleStatus,         color: 'text-[var(--text-secondary)]',  pulse: false },
@@ -152,6 +188,7 @@ export default function LiveTutorModal({
 
     sessionStartedAtRef.current = null;
     setStatus('idle');
+    setPocketMode(false);
   }, [userId]);
 
   useEffect(() => {
@@ -167,10 +204,41 @@ export default function LiveTutorModal({
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-xl animate-fade-in overflow-y-auto">
       <div className="relative w-full max-w-2xl apple-glass bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl flex flex-col my-auto max-h-[96vh] sm:max-h-[90vh] overflow-hidden animate-scale-in">
+        
+        {/* ── KAPESNÍ REŽIM PROTI USNUTÍ IPHONE / ANDROIDU ── */}
+        {pocketMode && (
+          <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-between p-8 text-center animate-fade-in select-none">
+            <div className="pt-8">
+              <span className="text-5xl block mb-2">📱</span>
+              <span className="text-xs font-mono font-bold tracking-[0.28em] text-emerald-400 uppercase">
+                Kapesní režim aktivní
+              </span>
+            </div>
+
+            <div className="space-y-3 max-w-sm">
+              <p className="text-sm font-semibold text-slate-300">
+                Displej zůstane černý, aby telefon neuspal hovor do sluchátek. Mluvte do mikrofonu.
+              </p>
+              <div className="p-3 rounded-2xl bg-white/10 border border-white/15 text-xs text-slate-300">
+                Stav: <strong className="text-emerald-400 font-mono">{statusCfg.label}</strong>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                soundEngine.playTick();
+                setPocketMode(false);
+              }}
+              className="w-full max-w-xs py-4 rounded-2xl bg-white text-slate-950 font-black text-sm transition cursor-pointer hover:bg-slate-200 active:scale-95 shadow-2xl"
+            >
+              ✕ Vypnout kapesní režim
+            </button>
+          </div>
+        )}
 
         {/* Header */}
         <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] shrink-0">
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
               <div className={`w-2.5 h-2.5 rounded-full ${
                 status === 'listening' ? 'bg-rose-400 animate-pulse' :
@@ -188,10 +256,25 @@ export default function LiveTutorModal({
             </p>
           </div>
 
-          <button onClick={() => { stopSession(); onClose(); }}
-            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-2xl leading-none cursor-pointer transition px-2 py-1">
-            ×
-          </button>
+          <div className="flex items-center gap-1.5">
+            {/* TLAČÍTKO KAPESNÍHO REŽIMU – POUZE NA MOBILU (sm:hidden) */}
+            <button
+              onClick={() => {
+                soundEngine.playTick();
+                setPocketMode(true);
+                if (status === 'idle') startSession();
+              }}
+              className="sm:hidden p-2 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-bold text-[var(--accent-emerald)] shadow-sm cursor-pointer"
+              title="Kapesní režim proti zhasnutí obrazovky"
+            >
+              📱
+            </button>
+
+            <button onClick={() => { stopSession(); onClose(); }}
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-2xl leading-none cursor-pointer transition px-2 py-1">
+              ×
+            </button>
+          </div>
         </div>
 
         {/* Scrollable Body */}
@@ -251,106 +334,12 @@ export default function LiveTutorModal({
             ))}
           </div>
 
-          {/* Save Memory Notification */}
-          {messages.length > 2 && (
-            <div className="p-3 rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🧠</span>
-                <div>
-                  <div className="font-bold text-[var(--text-primary)] text-xs">
-                    {language === 'en' ? 'Save conversation memory?' : language === 'sk' ? 'Uložiť pamäť konverzácie?' : 'Uložit paměť konverzace?'}
-                  </div>
-                  <div className="text-[11px] text-[var(--text-secondary)]">
-                    {language === 'en' ? 'AI tutor will recall these facts next session.' : language === 'sk' ? 'Lektorka si zapamätá fakty pre ďalšiu reláciu.' : 'Lektorka si zapamatuje fakta pro příští lekci.'}
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={async () => {
-                  const userMessages = messages.filter(m => m.role === 'user').map(m => m.text);
-                  const summaryText = userMessages.length > 0
-                    ? userMessages.join(' | ')
-                    : 'Student practiced conversation.';
-
-                  const memObj = {
-                    id: `mem_${Date.now()}`,
-                    topic,
-                    summary: `${topic}: "${summaryText.slice(0, 220)}"`,
-                    userFacts: userMessages.slice(-4).filter(Boolean),
-                    createdAt: new Date().toISOString(),
-                  };
-
-                  const targetUserId = userId || (userName === 'Lucka' ? 'user_lucka' : 'user_karel');
-                  await saveTutorMemory(targetUserId, memObj);
-                  setSavedMemories((prev) => [memObj, ...prev.filter((item) => item.topic !== memObj.topic || item.summary !== memObj.summary)].slice(0, 5));
-                  soundEngine.playSuccessTone();
-                  alert(language === 'en' ? 'Memory saved successfully!' : language === 'sk' ? 'Pamäť bola úspešne uložená!' : 'Paměť byla úspěšně uložena!');
-                }}
-                className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition shrink-0 cursor-pointer shadow-sm"
-              >
-                💾 {t.saveMemoryBtn}
-              </button>
-            </div>
-          )}
-
           {/* Error Message */}
           {errorMsg && (
             <div className="px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono">
               ⚠️ {errorMsg}
             </div>
           )}
-
-          {/* Live Coaching Buttons */}
-          {isActive && (
-            <div className="flex flex-wrap gap-1.5 justify-center py-1">
-              <button
-                onClick={() => {
-                  sessionRef.current?.sendTextMessage("Help me answer please.");
-                  handleTranscript('user', `💡 (${t.hintBtn})`);
-                }}
-                className="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-[11px] font-bold transition cursor-pointer flex items-center gap-1">
-                <span>💡 {t.hintBtn}</span>
-              </button>
-              <button
-                onClick={() => {
-                  sessionRef.current?.sendTextMessage("Please speak slower.");
-                  handleTranscript('user', `🐢 (${t.slowerBtn})`);
-                }}
-                className="px-2.5 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 text-[11px] font-bold transition cursor-pointer flex items-center gap-1">
-                <span>🐢 {t.slowerBtn}</span>
-              </button>
-              <button
-                onClick={() => {
-                  sessionRef.current?.sendTextMessage("Could you repeat that please?");
-                  handleTranscript('user', `🔄 (${t.repeatBtn})`);
-                }}
-                className="px-2.5 py-1.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/40 text-blue-300 text-[11px] font-bold transition cursor-pointer flex items-center gap-1">
-                <span>🔄 {t.repeatBtn}</span>
-              </button>
-            </div>
-          )}
-
-          {/* Cheat Sheet */}
-          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg-hover)] p-3 space-y-1.5">
-            <div className="flex items-center justify-between text-xs font-bold text-[var(--text-primary)]">
-              <span className="flex items-center gap-1 text-[var(--accent-amber)] font-mono text-[10px] sm:text-[11px] uppercase tracking-wider">
-                💡 {t.cheatSheetTitle} ({level})
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded-xl space-y-0.5">
-                <div className="text-[10px] font-mono text-[var(--accent-cyan)] font-bold">{t.sampleAnswersTitle}</div>
-                <div className="font-mono text-[var(--text-primary)] text-[11px]">• Me llamo {userName || 'Karel'}.</div>
-                <div className="font-mono text-[var(--text-primary)] text-[11px]">• Soy de la República Checa.</div>
-              </div>
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded-xl space-y-0.5">
-                <div className="text-[10px] font-mono text-[var(--accent-amber)] font-bold">{t.rescuePhrasesTitle}</div>
-                <div className="font-mono text-[var(--text-primary)] text-[11px]">• No entiendo.</div>
-                <div className="font-mono text-[var(--text-primary)] text-[11px]">• ¿Cómo se dice...?</div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}

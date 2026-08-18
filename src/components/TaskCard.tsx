@@ -1,7 +1,10 @@
+// src/components/TaskCard.tsx
 'use client';
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useAppLanguage } from '@/lib/context/LanguageContext';
+import { getTranslation } from '@/lib/translations';
 
 interface TaskCardProps {
   id: string;
@@ -26,6 +29,9 @@ export default function TaskCard({
   actionLabel,
   onActionClick,
 }: TaskCardProps) {
+  const { language } = useAppLanguage();
+  const t = getTranslation(language);
+
   return (
     <motion.div
       whileHover={{ y: -3, scale: 1.005 }}
@@ -57,7 +63,9 @@ export default function TaskCard({
           >
             {title}
           </h3>
-          <p className="text-xs text-[var(--text-secondary)] font-medium mt-1 line-clamp-2 sm:line-clamp-1">{duration}</p>
+          <p className="text-xs text-[var(--text-secondary)] font-medium mt-1 line-clamp-2 sm:line-clamp-1">
+            {duration}
+          </p>
         </div>
       </div>
 
@@ -68,14 +76,14 @@ export default function TaskCard({
               href={actionHref}
               className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 sm:py-2 rounded-full bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[var(--text-primary)] text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm min-h-[44px] sm:min-h-auto"
             >
-              <span>🚀</span> <span className="hidden sm:inline">{actionLabel || 'Spustit'}</span>
+              <span>🚀</span> <span className="hidden sm:inline">{actionLabel || t.taskLaunchDefault}</span>
             </Link>
           ) : (
             <button
               onClick={onActionClick}
               className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 sm:py-2 rounded-full bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[var(--text-primary)] text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm min-h-[44px] sm:min-h-auto"
             >
-              <span>🚀</span> <span className="hidden sm:inline">{actionLabel || 'Otevřít'}</span>
+              <span>🚀</span> <span className="hidden sm:inline">{actionLabel || t.taskLaunchDefault}</span>
             </button>
           )
         )}
@@ -87,7 +95,7 @@ export default function TaskCard({
               ? 'bg-[var(--accent-emerald)] border-[var(--accent-emerald)] text-black font-extrabold shadow-md'
               : 'border-[var(--card-border)] bg-[var(--card-bg)] hover:border-[var(--card-border-hover)] text-[var(--text-muted)]'
           }`}
-          title={completed ? 'Hotovo (kliknutím zrušíš)' : 'Označit jako hotové'}
+          title={completed ? t.taskDoneTooltip : t.taskNotDoneTooltip}
         >
           {completed ? <span className="text-base sm:text-sm">✓</span> : <span className="text-sm">○</span>}
         </button>

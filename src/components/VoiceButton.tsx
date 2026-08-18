@@ -1,7 +1,10 @@
+// src/components/VoiceButton.tsx
 'use client';
 
 import { useVoiceInput } from '@/lib/audio/tts';
 import { soundEngine } from '@/lib/audio/sound-engine';
+import { useAppLanguage } from '@/lib/context/LanguageContext';
+import { getTranslation } from '@/lib/translations';
 
 interface VoiceButtonProps {
   onSpeechResult: (text: string) => void;
@@ -9,6 +12,9 @@ interface VoiceButtonProps {
 }
 
 export default function VoiceButton({ onSpeechResult, disabled }: VoiceButtonProps) {
+  const { language } = useAppLanguage();
+  const t = getTranslation(language);
+
   const { isListening, isSupported, error, startListening } = useVoiceInput((text) => {
     soundEngine.playTick();
     onSpeechResult(text);
@@ -36,11 +42,11 @@ export default function VoiceButton({ onSpeechResult, disabled }: VoiceButtonPro
             ? 'bg-rose-600 border-rose-400 text-white shadow-[0_0_20px_rgba(244,63,94,0.5)] animate-pulse'
             : 'bg-white/10 hover:bg-white/20 border-white/15 text-slate-200'
         }`}
-        title="Mluv španělsky do mikrofonu (Web Speech API)"
+        title={t.voiceMicTitle}
       >
         <span className="text-base">{isListening ? '🔴' : '🎙️'}</span>
         <span className="hidden sm:inline font-mono">
-          {isListening ? 'Poslouchám...' : 'Mluvit'}
+          {isListening ? t.voiceListening : t.voiceSpeak}
         </span>
       </button>
 

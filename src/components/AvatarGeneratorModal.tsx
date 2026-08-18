@@ -1,3 +1,4 @@
+// src/components/AvatarGeneratorModal.tsx
 'use client';
 
 import { useState, useRef } from 'react';
@@ -13,14 +14,6 @@ interface AvatarGeneratorModalProps {
   onAvatarGenerated: (avatarDataUri: string) => void;
 }
 
-const STYLES = [
-  { id: 'flamenco', label: '💃 Flamenco Star', desc: 'Vášnivý španělský tanečník / tanečnice' },
-  { id: 'torero', label: '🐂 El Matador', desc: 'Zlatem vyšívaný toreadorský oblek' },
-  { id: 'chef', label: '👨‍🍳 Mistr Paelly', desc: 'Šéfkuchař vyhlášeného tapas baru' },
-  { id: 'quixote', label: '🛡️ Don Quijote', desc: 'Legendární rytíř bojující s větrnými mlýny' },
-  { id: 'madrid', label: '🕶️ Madrid Cool', desc: 'Stylový obyvatel slunného Madridu' },
-];
-
 export default function AvatarGeneratorModal({
   isOpen,
   onClose,
@@ -29,6 +22,14 @@ export default function AvatarGeneratorModal({
 }: AvatarGeneratorModalProps) {
   const { language } = useAppLanguage();
   const t = getTranslation(language);
+
+  const STYLES = [
+    { id: 'flamenco', label: t.avatarStyleFlamenco, desc: t.avatarStyleFlamencoDesc },
+    { id: 'torero', label: t.avatarStyleTorero, desc: t.avatarStyleToreroDesc },
+    { id: 'chef', label: t.avatarStyleChef, desc: t.avatarStyleChefDesc },
+    { id: 'quixote', label: t.avatarStyleQuixote, desc: t.avatarStyleQuixoteDesc },
+    { id: 'madrid', label: t.avatarStyleMadrid, desc: t.avatarStyleMadridDesc },
+  ];
 
   const [selectedStyle, setSelectedStyle] = useState('flamenco');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -46,7 +47,7 @@ export default function AvatarGeneratorModal({
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setError('Vyberte prosím obrázek (JPEG nebo PNG).');
+      setError(t.avatarErrorSelect);
       return;
     }
 
@@ -63,7 +64,7 @@ export default function AvatarGeneratorModal({
 
   const handleGenerate = async () => {
     if (!imageBase64) {
-      setError('Nejprve nahrajte svou fotku nebo selfie.');
+      setError(t.avatarErrorUploadFirst);
       return;
     }
 
@@ -84,7 +85,7 @@ export default function AvatarGeneratorModal({
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Generování selhalo');
+      if (!res.ok) throw new Error(data.error || t.avatarErrorGeneric);
 
       setGeneratedSvgUri(data.dataUri);
       soundEngine.playVictoryFanfare();
@@ -94,7 +95,7 @@ export default function AvatarGeneratorModal({
         // ignore
       }
     } catch (err: any) {
-      setError(err?.message || 'Nastala chyba při tvorbě avatara.');
+      setError(err?.message || t.avatarErrorGeneric);
       soundEngine.playUntick();
     } finally {
       setIsGenerating(false);
@@ -109,10 +110,10 @@ export default function AvatarGeneratorModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-xl animate-fade-in overflow-hidden">
+    <div className="fixed inset-0 z-[140] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-xl animate-fade-in overflow-hidden">
       <div className="relative w-full max-w-xl max-h-[92vh] sm:max-h-[88vh] bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl backdrop-blur-2xl flex flex-col overflow-hidden animate-scale-in">
         
-        {/* ── 1. Fixed Header ── */}
+        {/* ── 1. Záhlaví ── */}
         <div className="flex items-center justify-between border-b border-[var(--card-border)] px-5 sm:px-7 py-4 bg-[var(--card-bg-hover)] shrink-0">
           <div className="flex items-center space-x-2.5">
             <span className="text-2xl">✨</span>
@@ -121,7 +122,7 @@ export default function AvatarGeneratorModal({
                 Gemini AI Stylizer
               </p>
               <h2 className="text-base sm:text-lg font-extrabold text-[var(--text-primary)]">
-                Vytvořit Španělského Kresleného Avatara
+                {t.avatarGeneratorTitle}
               </h2>
             </div>
           </div>
@@ -138,19 +139,19 @@ export default function AvatarGeneratorModal({
           </button>
         </div>
 
-        {/* ── 2. Scrollable Body ── */}
+        {/* ── 2. Tělo formuláře ── */}
         <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6 custom-scrollbar text-xs sm:text-sm">
           
           {error && (
-            <div className="p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold">
+            <div className="p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-semibold">
               ⚠️ {error}
             </div>
           )}
 
-          {/* Upload Box / Image Preview */}
+          {/* Krok 1: Nahrání fotky */}
           <div className="space-y-2">
             <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
-              1. Nahrajte své selfie nebo fotku obličeje
+              {t.avatarStep1}
             </label>
 
             <input
@@ -168,10 +169,10 @@ export default function AvatarGeneratorModal({
               >
                 <span className="text-3xl">📸</span>
                 <p className="font-bold text-xs text-[var(--text-primary)]">
-                  Klikněte pro nahrání fotky (selfie)
+                  {t.avatarUploadClick}
                 </p>
                 <p className="text-[11px] text-[var(--text-secondary)]">
-                  PNG, JPEG nebo WebP (max 5 MB)
+                  {t.avatarUploadHint}
                 </p>
               </div>
             ) : (
@@ -182,24 +183,24 @@ export default function AvatarGeneratorModal({
                   className="w-16 h-16 rounded-xl object-cover border border-white/10"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-[var(--text-primary)] truncate">Fotka připravena</p>
-                  <p className="text-[11px] text-[var(--text-secondary)]">AI zanalyzuje rysy tvého obličeje</p>
+                  <p className="text-xs font-bold text-[var(--text-primary)] truncate">{t.avatarPhotoReady}</p>
+                  <p className="text-[11px] text-[var(--text-secondary)]">{t.avatarPhotoReadySub}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   className="px-3 py-1.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer"
                 >
-                  Změnit
+                  {t.avatarChangePhoto}
                 </button>
               </div>
             )}
           </div>
 
-          {/* Style Selector */}
+          {/* Krok 2: Výběr stylu */}
           <div className="space-y-2">
             <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
-              2. Zvolte španělský motiv karikatury
+              {t.avatarStep2}
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {STYLES.map((st) => (
@@ -223,24 +224,24 @@ export default function AvatarGeneratorModal({
             </div>
           </div>
 
-          {/* Generating Animation Box */}
+          {/* Animace generování */}
           {isGenerating && (
             <div className="p-6 rounded-2xl bg-[var(--accent-emerald)]/10 border border-[var(--accent-emerald)]/30 text-center space-y-3 animate-pulse">
               <div className="animate-spin w-8 h-8 border-3 border-[var(--accent-emerald)] border-t-transparent rounded-full mx-auto" />
               <p className="font-bold text-xs text-[var(--accent-emerald)] font-mono">
-                🎨 Gemini kreslí tvou španělskou karikaturu...
+                {t.avatarDrawing}
               </p>
               <p className="text-[11px] text-[var(--text-secondary)]">
-                Vyladění toreadorského pláště, účesu a barevné palety.
+                {t.avatarDrawingSub}
               </p>
             </div>
           )}
 
-          {/* Generated Result Preview */}
+          {/* Náhled vygenerovaného avatara */}
           {generatedSvgUri && !isGenerating && (
             <div className="p-5 rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--accent-emerald)]/40 text-center space-y-3">
-              <span className="apple-pill-badge bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">
-                ✓ Avatar úspěšně vygenerován!
+              <span className="apple-pill-badge bg-emerald-500/20 text-emerald-400 font-mono text-[10px]">
+                {t.avatarSuccess}
               </span>
               <div className="w-36 h-36 mx-auto rounded-full overflow-hidden border-2 border-[var(--accent-emerald)] shadow-xl bg-slate-950 p-1 flex items-center justify-center">
                 <img
@@ -254,7 +255,7 @@ export default function AvatarGeneratorModal({
 
         </div>
 
-        {/* ── 3. Bottom Sticky Action Bar ── */}
+        {/* ── 3. Spodní tlačítka ── */}
         <div className="border-t border-[var(--card-border)] px-5 sm:px-7 py-3.5 bg-[var(--card-bg-hover)] flex items-center justify-between gap-3 shrink-0">
           <button
             type="button"
@@ -271,7 +272,7 @@ export default function AvatarGeneratorModal({
               disabled={isGenerating || !imageBase64}
               className="px-6 py-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition cursor-pointer shadow-lg hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              {isGenerating ? 'Kreslím...' : '✨ Vygenerovat Avatara'}
+              {isGenerating ? t.avatarGeneratingBtn : t.avatarGenerateBtn}
             </button>
           ) : (
             <button
@@ -279,7 +280,7 @@ export default function AvatarGeneratorModal({
               onClick={handleApplyAvatar}
               className="px-6 py-2.5 rounded-full bg-[var(--accent-emerald)] hover:opacity-90 text-black font-black text-xs transition cursor-pointer shadow-lg hover:scale-105 active:scale-95"
             >
-              ✓ Použít jako můj avatar
+              {t.avatarApplyBtn}
             </button>
           )}
         </div>

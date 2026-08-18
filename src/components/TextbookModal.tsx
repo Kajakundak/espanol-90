@@ -1,3 +1,4 @@
+// src/components/TextbookModal.tsx
 'use client';
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
@@ -8,6 +9,7 @@ import { getTranslation } from '@/lib/translations';
 import { soundEngine } from '@/lib/audio/sound-engine';
 import { ttsEngine } from '@/lib/audio/tts';
 import TextbookLiveModal from '@/components/TextbookLiveModal';
+import { resolveAudioCandidateUrls } from '@/lib/audio/audio-urls';
 
 interface TextbookModalProps {
   isOpen: boolean;
@@ -19,6 +21,12 @@ interface TextbookModalProps {
 }
 
 type TabType = 'dialogues' | 'grammar' | 'vocab' | 'exercises';
+
+type TrackItem = {
+  file: string;
+  code: string;
+  description: string;
+};
 
 // Formátování času MM:SS
 const formatTime = (timeInSeconds: number) => {
@@ -69,8 +77,8 @@ export default function TextbookModal({
 
   // Načtení dat z JSONu podle čísla lekce
   const rawLesson = useMemo(
-    () => getProkopovaLessonData(bookMeta.lessonNumber) as any,
-    [bookMeta.lessonNumber]
+    () => (bookMeta ? (getProkopovaLessonData(bookMeta.lessonNumber) as any) : null),
+    [bookMeta]
   );
 
   // Převod ID stopy (oddil_1_track_07) na reálný soubor (1_07.mp3)
@@ -82,20 +90,31 @@ export default function TextbookModal({
     return trackId?.endsWith('.mp3') ? trackId : `${trackId}.mp3`;
   };
 
-  // Seznam stop pro přehrávač
-  const tracksList = useMemo(() => {
+  // Seznam stop pro přehrávač – čistý název souboru bez přípony .mp3
+  const tracksList = useMemo<TrackItem[]>(() => {
     if (rawLesson?.audio_tracks && Array.isArray(rawLesson.audio_tracks) && rawLesson.audio_tracks.length > 0) {
-      return rawLesson.audio_tracks.map((tItem: any) => ({
-        file: resolveAudioFile(tItem.id || tItem.track || ''),
-        code: tItem.code || tItem.name || '',
-        description: tItem.description || tItem.type || '',
-      }));
+      return rawLesson.audio_tracks.map((tItem: any) => {
+        const file = resolveAudioFile(tItem.id || tItem.track || tItem.file || '');
+        const cleanName = file.replace(/\.mp3$/i, '');
+        const fullDescription = tItem.description || tItem.title || tItem.type || cleanName;
+
+        return {
+          file,
+          code: cleanName,
+          description: fullDescription,
+        };
+      });
     }
-    return (bookMeta.audioTracks || []).map((tItem) => ({
-      file: tItem.file,
-      code: tItem.label,
-      description: tItem.label,
-    }));
+
+    return (bookMeta?.audioTracks || []).map((tItem: any) => {
+      const file = tItem.file;
+      const cleanName = file ? file.replace(/\.mp3$/i, '') : tItem.label;
+      return {
+        file,
+        code: cleanName,
+        description: tItem.description || tItem.label || cleanName,
+      };
+    });
   }, [rawLesson, bookMeta]);
 
   // Audio Player State
@@ -124,18 +143,17 @@ export default function TextbookModal({
     setIsPlayingAudio(false);
   }, []);
 
-  // Reset a vyčištění při změně lekce
+  // Reset a vyčištění POUZE při změně čísla lekce
   useEffect(() => {
     if (tracksList.length > 0) {
       setActiveTrackFile(tracksList[0].file);
       setActiveTrackDesc(tracksList[0].description || tracksList[0].code);
     }
     setCurrentTime(0);
-    stopAudio();
     setVocabSearch('');
     setRevealedExercises(new Set());
     setUserAnswers({});
-  }, [bookMeta.lessonNumber, tracksList, stopAudio]);
+  }, [bookMeta?.lessonNumber]);
 
   // Vyčištění při unmountu
   useEffect(() => {
@@ -144,14 +162,13 @@ export default function TextbookModal({
     };
   }, [stopAudio]);
 
-  // Bezpečné volání TTS (zastaví MP3 a ověří neprázdnost textu)
   const handleSpeak = (text?: string | null) => {
     if (!text || typeof text !== 'string' || !text.trim()) return;
     if (isPlayingAudio) stopAudio();
     ttsEngine.speak(text.trim());
   };
 
-  const handleSelectTrack = (trackFile: string, description: string) => {
+  const handleSelectTrack = useCallback((trackFile: string, description: string) => {
     soundEngine.playTick();
     if (activeTrackFile === trackFile && isPlayingAudio) {
       stopAudio();
@@ -163,13 +180,36 @@ export default function TextbookModal({
     setIsPlayingAudio(true);
 
     if (audioRef.current) {
-      // Load MP3 from GitHub CDN
-      audioRef.current.src = `https://raw.githubusercontent.com/Kajakundak/espanol-90/main/public/mp3/${trackFile}`;
+      const urls = resolveAudioCandidateUrls(trackFile);
+      audioRef.current.src = urls[0];
       audioRef.current.playbackRate = playbackRate;
       audioRef.current.loop = isLooping;
-      audioRef.current.play().catch(console.warn);
+      audioRef.current.play().catch((err) => {
+        console.warn('Playback failed for primary URL, trying fallback:', err);
+        if (urls[1] && audioRef.current) {
+          audioRef.current.src = urls[1];
+          audioRef.current.play().catch(console.warn);
+        }
+      });
     }
-  };
+  }, [activeTrackFile, isPlayingAudio, stopAudio, playbackRate, isLooping]);
+
+  // ── Přeskočení na další / předchozí nahrávku ──
+  const handleNextTrack = useCallback(() => {
+    if (!activeTrackFile || tracksList.length === 0) return;
+    const currentIndex = tracksList.findIndex((tItem) => tItem.file === activeTrackFile);
+    const nextIndex = (currentIndex + 1) % tracksList.length;
+    const nextTrack = tracksList[nextIndex];
+    if (nextTrack) handleSelectTrack(nextTrack.file, nextTrack.description);
+  }, [activeTrackFile, tracksList, handleSelectTrack]);
+
+  const handlePrevTrack = useCallback(() => {
+    if (!activeTrackFile || tracksList.length === 0) return;
+    const currentIndex = tracksList.findIndex((tItem) => tItem.file === activeTrackFile);
+    const prevIndex = (currentIndex - 1 + tracksList.length) % tracksList.length;
+    const prevTrack = tracksList[prevIndex];
+    if (prevTrack) handleSelectTrack(prevTrack.file, prevTrack.description);
+  }, [activeTrackFile, tracksList, handleSelectTrack]);
 
   const togglePlayPause = () => {
     soundEngine.playTick();
@@ -210,7 +250,7 @@ export default function TextbookModal({
     if (audioRef.current) audioRef.current.loop = next;
   };
 
-  // Klávesové zkratky (Mezerník = Play/Pause, Šipky = skok, 1-4 = taby, Esc = zavřít)
+  // Klávesové zkratky
   useEffect(() => {
     if (!isOpen) return;
 
@@ -226,6 +266,10 @@ export default function TextbookModal({
       } else if (e.code === 'ArrowRight') {
         e.preventDefault();
         skipSeconds(5);
+      } else if (e.key === 'n' || e.key === 'N') {
+        handleNextTrack();
+      } else if (e.key === 'p' || e.key === 'P') {
+        handlePrevTrack();
       } else if (e.key === '1') setActiveTab('dialogues');
       else if (e.key === '2') setActiveTab('grammar');
       else if (e.key === '3') setActiveTab('vocab');
@@ -238,7 +282,7 @@ export default function TextbookModal({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, isPlayingAudio, duration, onClose, stopAudio]);
+  }, [isOpen, isPlayingAudio, duration, onClose, stopAudio, handleNextTrack, handlePrevTrack]);
 
   const toggleExerciseReveal = (exNum: number) => {
     soundEngine.playTick();
@@ -265,9 +309,9 @@ export default function TextbookModal({
 
   const pageRange = rawLesson?.pages?.book_new_edition
     ? `str. ${rawLesson.pages.book_new_edition.start}–${rawLesson.pages.book_new_edition.end}`
-    : bookMeta.pages;
+    : bookMeta?.pages || '';
 
-  if (!isOpen) return null;
+  if (!isOpen || !bookMeta) return null;
 
   return (
     <>
@@ -275,9 +319,9 @@ export default function TextbookModal({
         <div className="relative w-full max-w-4xl h-[96vh] sm:h-[92vh] bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-3xl shadow-2xl backdrop-blur-2xl flex flex-col overflow-hidden animate-scale-in">
           
           {/* ── 1. HORNÍ LIŠTA ── */}
-          <div className="flex items-center justify-between border-b border-[var(--card-border)] px-5 sm:px-7 py-3.5 bg-[var(--card-bg-hover)] shrink-0 gap-3">
-            <div className="flex items-center space-x-3 min-w-0">
-              <span className="text-2xl shrink-0">📖</span>
+          <div className="flex items-center justify-between border-b border-[var(--card-border)] px-4 sm:px-7 py-3 bg-[var(--card-bg-hover)] shrink-0 gap-2 sm:gap-3">
+            <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+              <span className="text-xl sm:text-2xl shrink-0">📖</span>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent-amber)] font-mono">
@@ -287,7 +331,7 @@ export default function TextbookModal({
                     {pageRange}
                   </span>
                 </div>
-                <h2 className="text-sm sm:text-base font-extrabold text-[var(--text-primary)] truncate">
+                <h2 className="text-xs sm:text-base font-extrabold text-[var(--text-primary)] truncate">
                   {rawLesson?.title_es || bookMeta.title}
                   <span className="text-xs font-normal text-[var(--text-secondary)] ml-2 hidden sm:inline">
                     ({rawLesson?.title_cs || bookMeta.spanishTitle})
@@ -296,7 +340,7 @@ export default function TextbookModal({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => {
@@ -304,10 +348,10 @@ export default function TextbookModal({
                   stopAudio();
                   setIsLiveTutorOpen(true);
                 }}
-                className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition cursor-pointer shadow-md flex items-center gap-1.5 hover:scale-105 active:scale-95"
+                className="px-3 sm:px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition cursor-pointer shadow-md flex items-center gap-1.5"
               >
                 <span>🎙️</span>
-                <span className="hidden sm:inline">Probrat s AI</span>
+                <span className="hidden sm:inline">{t.discussWithAi}</span>
               </button>
 
               <button
@@ -324,73 +368,106 @@ export default function TextbookModal({
             </div>
           </div>
 
-          {/* ── 2. AUDIO PŘEHRÁVAČ ── */}
+          {/* ── 2. MOBILNĚ ADAPTOVANÝ AUDIO PŘEHRÁVAČ S PŘESKAKOVÁNÍM STOP ── */}
           {tracksList.length > 0 && (
-            <div className="px-3 sm:px-5 py-2 sm:py-3 bg-[var(--card-bg)] border-b border-[var(--card-border)] shrink-0 space-y-2 overflow-x-auto">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
-                <div className="flex items-center gap-2.5 min-w-0 w-full sm:w-auto">
-                  <button
-                    type="button"
-                    onClick={togglePlayPause}
-                    className={`min-h-[44px] min-w-[44px] sm:min-h-auto sm:min-w-auto w-10 h-10 sm:w-9 sm:h-9 rounded-xl font-bold text-xs flex items-center justify-center transition cursor-pointer shrink-0 shadow-sm ${
-                      isPlayingAudio ? 'bg-[var(--accent-amber)] text-black' : 'bg-[var(--accent-cyan)] text-black'
-                    }`}
-                  >
-                    {isPlayingAudio ? '⏸' : '▶'}
-                  </button>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-extrabold text-[var(--text-primary)] truncate">
+            <div className="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-[var(--card-bg)] border-b border-[var(--card-border)] shrink-0 space-y-2">
+              
+              {/* Hlavní lišta přehrávače */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3">
+                
+                {/* Tlačítka: Předchozí stopa | Play/Pause | Další stopa + název stopy */}
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handlePrevTrack}
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] hover:border-white/20 text-xs sm:text-sm font-bold flex items-center justify-center cursor-pointer transition text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      title={t.shadowPrevBtn}
+                    >
+                      ⏮️
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={togglePlayPause}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center transition cursor-pointer shrink-0 shadow-md ${
+                        isPlayingAudio ? 'bg-[var(--accent-amber)] text-black' : 'bg-[var(--accent-cyan)] text-black'
+                      }`}
+                      title={isPlayingAudio ? t.shadowPauseBtn : t.shadowStartBtn}
+                    >
+                      {isPlayingAudio ? '⏸' : '▶'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleNextTrack}
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] hover:border-white/20 text-xs sm:text-sm font-bold flex items-center justify-center cursor-pointer transition text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      title={t.shadowNextBtn}
+                    >
+                      ⏭️
+                    </button>
+                  </div>
+
+                  {/* Název stopy */}
+                  <div className="min-w-0 flex-1 pl-1">
+                    <p className="text-xs sm:text-sm font-extrabold text-[var(--text-primary)] truncate">
                       {activeTrackDesc || activeTrackFile}
                     </p>
-                    <span className="text-[10px] font-mono text-[var(--accent-cyan)] font-bold hidden sm:block">
-                      {activeTrackFile}
+                    <span className="text-[10px] font-mono text-[var(--accent-cyan)] font-bold">
+                      {activeTrackFile ? activeTrackFile.replace(/\.mp3$/i, '') : ''}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 sm:gap-2 shrink-0 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                  <button
-                    type="button"
-                    onClick={() => skipSeconds(-5)}
-                    className="p-1.5 px-1.5 sm:px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[9px] sm:text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer whitespace-nowrap"
-                    title="Zpět o 5 sekund (Šipka vlevo)"
-                  >
-                    <span className="hidden sm:inline">⏪ -5s</span>
-                    <span className="sm:hidden">⏪</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => skipSeconds(5)}
-                    className="p-1.5 px-1.5 sm:px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[9px] sm:text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer whitespace-nowrap"
-                    title="Vpřed o 5 sekund (Šipka vpravo)"
-                  >
-                    <span className="hidden sm:inline">+5s ⏩</span>
-                    <span className="sm:hidden">⏩</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={cyclePlaybackRate}
-                    className="p-1.5 px-1.5 sm:px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[9px] sm:text-[10px] font-mono font-bold text-[var(--accent-cyan)] cursor-pointer whitespace-nowrap"
-                    title="Playback rate"
-                  >
-                    {playbackRate.toFixed(1)}×
-                  </button>
-                  <button
-                    type="button"
-                    onClick={toggleLoop}
-                    className={`p-1.5 rounded-lg border text-[10px] font-bold cursor-pointer shrink-0 ${
-                      isLooping ? 'bg-[var(--accent-cyan)]/20 border-[var(--accent-cyan)] text-[var(--accent-cyan)]' : 'border-[var(--card-border)] text-[var(--text-secondary)]'
-                    }`}
-                    title="Opakovat stopu ve smyčce"
-                  >
-                    🔁
-                  </button>
-                  <span className="text-[9px] sm:text-[10px] font-mono text-[var(--text-secondary)] font-bold pl-0 sm:pl-1 whitespace-nowrap">
+                {/* Ovladače posunu o 5s, rychlost, smyčka, čas */}
+                <div className="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 shrink-0 border-t sm:border-t-0 border-[var(--card-border)]/40 pt-1.5 sm:pt-0">
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => skipSeconds(-5)}
+                      className="px-2 py-1 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                      title="-5s"
+                    >
+                      ⏪ -5s
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => skipSeconds(5)}
+                      className="px-2 py-1 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                      title="+5s"
+                    >
+                      +5s ⏩
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={cyclePlaybackRate}
+                      className="px-2 py-1 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[10px] font-mono font-bold text-[var(--accent-cyan)] cursor-pointer"
+                    >
+                      ⚡ {playbackRate.toFixed(1)}×
+                    </button>
+                    <button
+                      type="button"
+                      onClick={toggleLoop}
+                      className={`p-1.5 rounded-lg border text-[10px] font-bold cursor-pointer ${
+                        isLooping ? 'bg-[var(--accent-cyan)]/20 border-[var(--accent-cyan)] text-[var(--accent-cyan)]' : 'border-[var(--card-border)] text-[var(--text-secondary)]'
+                      }`}
+                      title="Loop"
+                    >
+                      🔁
+                    </button>
+                  </div>
+
+                  <span className="text-[10px] font-mono text-[var(--text-secondary)] font-bold pl-1 shrink-0">
                     {formatTime(currentTime)} / {formatTime(duration)}
                   </span>
                 </div>
               </div>
 
+              {/* Progress bar */}
               <input
                 type="range"
                 min="0"
@@ -402,24 +479,26 @@ export default function TextbookModal({
                   setCurrentTime(newTime);
                   if (audioRef.current) audioRef.current.currentTime = newTime;
                 }}
-                className="w-full h-1.5 bg-[var(--card-border)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-cyan)] transition touch-manipulation"
+                className="w-full h-1.5 bg-[var(--card-border)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-cyan)] transition"
               />
 
-              <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-0.5">
-                {tracksList.map((tItem: any, idx: number) => {
+              {/* Tlačítka pro rychlý výběr konkrétní stopy */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-0.5">
+                {tracksList.map((tItem, idx) => {
                   const isSel = activeTrackFile === tItem.file;
                   return (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => handleSelectTrack(tItem.file, tItem.description)}
-                      className={`px-2 sm:px-2.5 py-1 rounded-lg text-[9px] sm:text-[10px] font-mono font-bold whitespace-nowrap transition cursor-pointer border shrink-0 min-h-[36px] sm:min-h-auto flex items-center justify-center ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition cursor-pointer border shrink-0 flex items-center gap-1.5 ${
                         isSel
-                          ? 'bg-[var(--accent-cyan)]/20 border-[var(--accent-cyan)] text-[var(--accent-cyan)]'
-                          : 'bg-[var(--card-bg-hover)] border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                          ? 'bg-[var(--accent-cyan)]/20 border-[var(--accent-cyan)] text-[var(--accent-cyan)] shadow-sm'
+                          : 'bg-[var(--card-bg-hover)] border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-white/20'
                       }`}
                     >
-                      <span>{isSel && isPlayingAudio ? '🔊' : '▶'}</span> <span className="hidden sm:inline">{tItem.code}</span>
+                      <span>{isSel && isPlayingAudio ? '🔊' : '▶'}</span>
+                      <span>{tItem.code}</span>
                     </button>
                   );
                 })}
@@ -428,61 +507,61 @@ export default function TextbookModal({
           )}
 
           {/* ── 3. NAVIGAČNÍ ZÁLOŽKY ── */}
-          <div className="flex items-center gap-2 px-5 py-2.5 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] shrink-0 overflow-x-auto">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] shrink-0 overflow-x-auto">
             <button
               onClick={() => { soundEngine.playTick(); setActiveTab('dialogues'); }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'dialogues'
                   ? 'bg-[var(--accent-cyan)]/20 border border-[var(--accent-cyan)] text-[var(--accent-cyan)] font-extrabold shadow-sm'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
-              <span>💬</span> Texty & Dialogy [1]
+              <span>💬</span> {t.tabDialogues}
             </button>
 
             <button
               onClick={() => { soundEngine.playTick(); setActiveTab('grammar'); }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'grammar'
                   ? 'bg-[var(--accent-cyan)]/20 border border-[var(--accent-cyan)] text-[var(--accent-cyan)] font-extrabold shadow-sm'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
-              <span>💡</span> Gramatika [2]
+              <span>💡</span> {t.tabGrammar}
             </button>
 
             <button
               onClick={() => { soundEngine.playTick(); setActiveTab('vocab'); }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'vocab'
                   ? 'bg-[var(--accent-cyan)]/20 border border-[var(--accent-cyan)] text-[var(--accent-cyan)] font-extrabold shadow-sm'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
-              <span>📚</span> Slovníček ({rawLesson?.vocabulary?.length || 0}) [3]
+              <span>📚</span> {t.tabVocab} ({rawLesson?.vocabulary?.length || 0})
             </button>
 
             <button
               onClick={() => { soundEngine.playTick(); setActiveTab('exercises'); }}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'exercises'
                   ? 'bg-[var(--accent-cyan)]/20 border border-[var(--accent-cyan)] text-[var(--accent-cyan)] font-extrabold shadow-sm'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
-              <span>🎯</span> Cvičení ({rawLesson?.exercises?.length || 0}) [4]
+              <span>🎯</span> {t.tabExercises} ({rawLesson?.exercises?.length || 0})
             </button>
           </div>
 
-          {/* ── 4. TĚLO ZÁLOŽKY ── */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6 custom-scrollbar text-xs sm:text-sm">
+          {/* ── 4. TĚLO ZÁLOŽEK S BOHATÝM OBSAHEM ── */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-7 space-y-5 sm:space-y-6 custom-scrollbar text-xs sm:text-sm">
             
             {/* 💬 TAB 1: TEXTY & DIALOGY */}
             {activeTab === 'dialogues' && (
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 {rawLesson?.texts && rawLesson.texts.length > 0 ? (
                   rawLesson.texts.map((sec: any, secIdx: number) => (
-                    <div key={secIdx} className="p-5 rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] space-y-4">
+                    <div key={secIdx} className="p-4 sm:p-5 rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] space-y-4">
                       {sec.section_title && (
                         <div className="flex items-center justify-between border-b border-[var(--card-border)] pb-2">
                           <h3 className="font-extrabold text-sm text-[var(--accent-cyan)] flex items-center gap-2">
@@ -496,7 +575,7 @@ export default function TextbookModal({
                         </div>
                       )}
 
-                      {/* Odstavce */}
+                      {/* Odstavce textu */}
                       {sec.paragraphs && Array.isArray(sec.paragraphs) && (
                         <div className="space-y-3">
                           {sec.paragraphs.map((p: any, pIdx: number) => {
@@ -513,6 +592,7 @@ export default function TextbookModal({
                                       type="button"
                                       onClick={() => handleSpeak(pText)}
                                       className="p-1.5 rounded-lg bg-[var(--card-bg-hover)] hover:bg-white/10 text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--card-border)] text-xs shrink-0 cursor-pointer"
+                                      title={t.listenPronunciation}
                                     >
                                       🔊
                                     </button>
@@ -548,7 +628,7 @@ export default function TextbookModal({
                                   type="button"
                                   onClick={() => handleSpeak(line.text)}
                                   className="p-1.5 rounded-lg bg-[var(--card-bg-hover)] hover:bg-white/10 text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--card-border)] text-xs cursor-pointer"
-                                  title="Poslech"
+                                  title={t.listenPronunciation}
                                 >
                                   🔊
                                 </button>
@@ -556,9 +636,9 @@ export default function TextbookModal({
                                   type="button"
                                   onClick={() => handleCopySentence(line.text)}
                                   className="p-1.5 px-2 rounded-lg bg-[var(--card-bg-hover)] hover:bg-emerald-500/20 text-[var(--text-secondary)] hover:text-emerald-400 border border-[var(--card-border)] text-[10px] font-bold font-mono cursor-pointer"
-                                  title="Zkopírovat pro Anki"
+                                  title={t.copyToAnki}
                                 >
-                                  {copiedSentence === line.text ? '✓' : '+ Anki'}
+                                  {copiedSentence === line.text ? t.copiedCheck : t.copyToAnki}
                                 </button>
                               </div>
                             </div>
@@ -566,7 +646,7 @@ export default function TextbookModal({
                         </div>
                       )}
 
-                      {/* Scény */}
+                      {/* Divadelní scény */}
                       {sec.scenes && Array.isArray(sec.scenes) && (
                         <div className="space-y-4">
                           {sec.scenes.map((scene: any, sIdx: number) => (
@@ -605,11 +685,11 @@ export default function TextbookModal({
                   </div>
                 )}
 
-                {/* Poznámky k lekci */}
+                {/* Kulturní a jazykové poznámky */}
                 {rawLesson?.cultural_and_linguistic_notes && rawLesson.cultural_and_linguistic_notes.length > 0 && (
-                  <div className="p-5 rounded-2xl bg-[var(--accent-amber)]/10 border border-[var(--accent-amber)]/30 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[var(--accent-amber)]/10 border border-[var(--accent-amber)]/30 space-y-3">
                     <h4 className="font-extrabold text-xs uppercase tracking-wider text-[var(--accent-amber)] font-mono flex items-center gap-1.5">
-                      <span>💡</span> Jazykové a kulturní poznámky:
+                      <span>💡</span> {t.culturalNotesTitle}
                     </h4>
                     <div className="space-y-2">
                       {rawLesson.cultural_and_linguistic_notes.map((note: any) => (
@@ -624,7 +704,7 @@ export default function TextbookModal({
               </div>
             )}
 
-            {/* 💡 TAB 2: GRAMATIKA (OPRAVENO: UNIVERZÁLNÍ VYKRESLOVÁNÍ) */}
+            {/* 💡 TAB 2: KOMPLETNÍ GRAMATIKA */}
             {activeTab === 'grammar' && (
               <div className="space-y-4">
                 {rawLesson?.grammar && rawLesson.grammar.length > 0 ? (
@@ -632,7 +712,7 @@ export default function TextbookModal({
                     const c = g.content || {};
 
                     return (
-                      <div key={gIdx} className="p-5 rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] space-y-3">
+                      <div key={gIdx} className="p-4 sm:p-5 rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] space-y-3">
                         <div className="flex items-center gap-2">
                           {g.roman_numeral && (
                             <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-[var(--accent-cyan)]/20 text-[var(--accent-cyan)]">
@@ -644,18 +724,18 @@ export default function TextbookModal({
                           </h4>
                         </div>
 
-                        {/* 1. Výklad / Definice / Jednotlivé pravidlo */}
+                        {/* 1. Výklad / Pravidlo */}
                         {(c.rule || c.explanation || c.definition || g.explanation) && (
                           <p className="text-xs sm:text-sm font-semibold text-[var(--text-primary)] leading-relaxed bg-[var(--card-bg)] p-3 rounded-xl border border-[var(--card-border)]">
                             {c.rule || c.explanation || c.definition || g.explanation}
                           </p>
                         )}
 
-                        {/* 2. Klasifikace samohlásek (Lekce 1 apod.) */}
+                        {/* 2. Klasifikace samohlásek */}
                         {c.vowel_classification && (
                           <div className="grid grid-cols-2 gap-2">
                             <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs">
-                              <span className="text-[10px] text-[var(--text-muted)] font-mono uppercase block">Silné samohlásky:</span>
+                              <span className="text-[10px] text-[var(--text-muted)] font-mono uppercase block">{t.strongVowels}</span>
                               <div className="flex gap-1.5 pt-1">
                                 {c.vowel_classification.strong?.map((v: string, idx: number) => (
                                   <span key={idx} className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold font-mono">{v}</span>
@@ -663,7 +743,7 @@ export default function TextbookModal({
                               </div>
                             </div>
                             <div className="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)] text-xs">
-                              <span className="text-[10px] text-[var(--text-muted)] font-mono uppercase block">Slabé samohlásky:</span>
+                              <span className="text-[10px] text-[var(--text-muted)] font-mono uppercase block">{t.weakVowels}</span>
                               <div className="flex gap-1.5 pt-1">
                                 {c.vowel_classification.weak?.map((v: string, idx: number) => (
                                   <span key={idx} className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 font-bold font-mono">{v}</span>
@@ -702,7 +782,7 @@ export default function TextbookModal({
                           </div>
                         )}
 
-                        {/* 4. Příklady s překlady (c.examples) */}
+                        {/* 4. Příklady s překlady */}
                         {c.examples && Array.isArray(c.examples) && (
                           <div className="space-y-1.5 pt-1">
                             {c.examples.map((exItem: any, exIdx: number) => {
@@ -737,7 +817,7 @@ export default function TextbookModal({
                           </div>
                         )}
 
-                        {/* 5. Kontrastní dvojice (pairs, contrast_examples) */}
+                        {/* 5. Kontrastní dvojice */}
                         {(c.pairs || c.contrast_examples) && Array.isArray(c.pairs || c.contrast_examples) && (
                           <div className="space-y-1.5 pt-1">
                             {(c.pairs || c.contrast_examples).map((pair: any, pIdx: number) => (
@@ -794,14 +874,14 @@ export default function TextbookModal({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <h3 className="font-extrabold text-sm text-[var(--text-primary)]">
-                      Slovní zásoba lekce ({rawLesson?.vocabulary?.length || 0} slov)
+                      {t.tabVocab} ({rawLesson?.vocabulary?.length || 0})
                     </h3>
-                    <p className="text-[11px] text-[var(--text-secondary)]">Kliknutím na 🔊 si poslechneš výslovnost</p>
+                    <p className="text-[11px] text-[var(--text-secondary)]">{t.listenPronunciation}</p>
                   </div>
 
                   <input
                     type="text"
-                    placeholder="Hledat slovo nebo překlad..."
+                    placeholder={t.searchWordPlaceholder}
                     value={vocabSearch}
                     onChange={(e) => setVocabSearch(e.target.value)}
                     className="px-3.5 py-1.5 rounded-xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-cyan)] transition w-full sm:w-60"
@@ -839,6 +919,7 @@ export default function TextbookModal({
                         type="button"
                         onClick={() => handleSpeak(w.word)}
                         className="p-1.5 rounded-lg bg-[var(--card-bg)] hover:bg-white/10 text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--card-border)] text-xs shrink-0 cursor-pointer"
+                        title={t.listenPronunciation}
                       >
                         🔊
                       </button>
@@ -848,12 +929,12 @@ export default function TextbookModal({
               </div>
             )}
 
-            {/* 🎯 TAB 4: CVIČENÍ & INTERAKTIVITA */}
+            {/* 🎯 TAB 4: CVIČENÍ */}
             {activeTab === 'exercises' && (
               <div className="space-y-4">
                 <div className="p-4 rounded-2xl border-l-4 border-l-rose-500 bg-rose-500/10 border-y border-r border-rose-500/30 space-y-1 shadow-sm">
                   <div className="text-xs font-black text-[var(--accent-rose)] flex items-center gap-1.5 uppercase font-mono tracking-wider">
-                    <span>⛔</span> Doporučení k lekci:
+                    <span>⛔</span> {t.lessonRecommendation}
                   </div>
                   <p className="text-xs font-semibold text-[var(--text-primary)] leading-relaxed">
                     {bookMeta.whatToSkip}
@@ -865,11 +946,11 @@ export default function TextbookModal({
                   return (
                     <div
                       key={ex.number}
-                      className="p-5 rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] space-y-3"
+                      className="p-4 sm:p-5 rounded-2xl bg-[var(--card-bg-hover)] border border-[var(--card-border)] space-y-3"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-mono font-black text-xs px-2.5 py-1 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)]">
-                          Cvičení {ex.number}
+                          {t.tabExercises} {ex.number}
                         </span>
 
                         {ex.has_key && (
@@ -878,7 +959,7 @@ export default function TextbookModal({
                             onClick={() => toggleExerciseReveal(ex.number)}
                             className="px-3 py-1 rounded-lg bg-[var(--card-bg)] hover:bg-white/10 border border-[var(--card-border)] text-xs font-bold text-[var(--accent-cyan)] transition cursor-pointer"
                           >
-                            {isRevealed ? 'Skrýt klíč' : '👁️ Zobrazit správné řešení'}
+                            {isRevealed ? t.hideAnswerKey : t.showAnswerKey}
                           </button>
                         )}
                       </div>
@@ -918,7 +999,7 @@ export default function TextbookModal({
                                       type="button"
                                       onClick={() => handleSpeak(itemText)}
                                       className="text-xs text-[var(--text-muted)] hover:text-white cursor-pointer"
-                                      title="Přehrát"
+                                      title={t.listenPronunciation}
                                     >
                                       🔊
                                     </button>
@@ -929,7 +1010,7 @@ export default function TextbookModal({
                                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
                                     <input
                                       type="text"
-                                      placeholder="Napiš svou odpověď..."
+                                      placeholder={t.typeAnswerPlaceholder}
                                       value={userAnswers[answerKey] || ''}
                                       onChange={(e) => setUserAnswers({ ...userAnswers, [answerKey]: e.target.value })}
                                       className={`px-3 py-1.5 rounded-lg bg-[var(--card-bg-hover)] border text-xs outline-none flex-1 transition ${
@@ -942,7 +1023,7 @@ export default function TextbookModal({
                                     />
                                     {isRevealed && (
                                       <span className="font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20 shrink-0 text-center">
-                                        Klíč: {item.answer}
+                                        {t.answerKeyLabel} {item.answer}
                                       </span>
                                     )}
                                   </div>
@@ -961,7 +1042,7 @@ export default function TextbookModal({
           </div>
 
           {/* ── 5. SPODNÍ LIŠTA ── */}
-          <div className="border-t border-[var(--card-border)] px-5 sm:px-7 py-3 bg-[var(--card-bg-hover)] flex items-center justify-between shrink-0">
+          <div className="border-t border-[var(--card-border)] px-4 sm:px-7 py-3 bg-[var(--card-bg-hover)] flex items-center justify-between shrink-0">
             <span className="text-[11px] text-[var(--text-muted)] font-mono hidden sm:inline">
               {pageRange} • {bookMeta.title}
             </span>
@@ -974,7 +1055,7 @@ export default function TextbookModal({
               }}
               className="px-6 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition cursor-pointer shadow-md hover:scale-105 active:scale-95 ml-auto sm:ml-0"
             >
-              ✓ Zavřít čtečku [Esc]
+              {t.closeReader}
             </button>
           </div>
 
@@ -985,7 +1066,21 @@ export default function TextbookModal({
         ref={audioRef}
         onTimeUpdate={() => { if (audioRef.current) setCurrentTime(audioRef.current.currentTime); }}
         onLoadedMetadata={() => { if (audioRef.current) setDuration(audioRef.current.duration); }}
-        onEnded={() => { if (!isLooping) setIsPlayingAudio(false); }}
+        onEnded={() => {
+          if (isLooping) {
+            if (audioRef.current) {
+              audioRef.current.currentTime = 0;
+              audioRef.current.play().catch(console.warn);
+            }
+          } else {
+            const currentIndex = tracksList.findIndex((tItem) => tItem.file === activeTrackFile);
+            if (currentIndex !== -1 && currentIndex + 1 < tracksList.length) {
+              handleNextTrack();
+            } else {
+              setIsPlayingAudio(false);
+            }
+          }
+        }}
         className="hidden"
       />
 
