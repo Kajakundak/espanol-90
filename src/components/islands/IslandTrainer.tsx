@@ -463,28 +463,29 @@ Evaluate user performance. Respond ONLY in JSON with keys:
       <div className="relative w-full max-w-6xl h-[96vh] sm:h-[92vh] apple-glass bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] rounded-2xl sm:rounded-3xl shadow-2xl backdrop-blur-2xl flex flex-col overflow-hidden">
         
         {/* Top Header Bar */}
-        <div className="flex flex-row items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] gap-2 shrink-0">
-          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+        <div className="flex flex-row items-center justify-between px-3 sm:px-5 py-2 sm:py-3 border-b border-[var(--card-border)] bg-[var(--card-bg-hover)] gap-2 shrink-0 overflow-x-auto">
+          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 shrink-0">
             <button
               onClick={() => {
                 clearAllTimers();
                 onClose();
               }}
-              className="p-1.5 px-2.5 rounded-xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] text-[var(--text-primary)] transition flex items-center space-x-1 text-xs font-bold cursor-pointer shrink-0 border border-[var(--card-border)]"
+              className="p-1.5 px-2 sm:px-2.5 rounded-xl bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] text-[var(--text-primary)] transition flex items-center space-x-1 text-xs font-bold cursor-pointer shrink-0 border border-[var(--card-border)] min-h-[44px] sm:min-h-auto min-w-[44px] sm:min-w-auto"
             >
-              <span>{t.back}</span>
+              <span className="hidden sm:inline">{t.back}</span>
+              <span className="sm:hidden">←</span>
             </button>
 
-            <div className="truncate">
-              <h2 className="text-sm sm:text-base md:text-lg font-extrabold text-[var(--text-primary)] flex items-center gap-1.5 truncate">
-                <span>{category.icon}</span>
+            <div className="truncate min-w-0">
+              <h2 className="text-xs sm:text-sm md:text-base font-extrabold text-[var(--text-primary)] flex items-center gap-1.5 truncate">
+                <span className="shrink-0">{category.icon}</span>
                 <span className="truncate">{localizedCategoryTitle}</span>
               </h2>
             </div>
           </div>
 
           {/* Mode Pill & Audio Toggles */}
-          <div className="flex items-center justify-between sm:justify-end gap-1.5 overflow-x-auto pb-0.5 sm:pb-0">
+          <div className="flex items-center justify-end gap-1 sm:gap-1.5 overflow-x-auto pb-0.5 sm:pb-0 shrink-0">
             {/* Play Button */}
             <button
               onClick={() => {

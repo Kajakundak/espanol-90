@@ -132,19 +132,28 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.85rem 1.75rem;
+  padding: 1rem 1.75rem;
   border-radius: 9999px;
+  min-height: 44px;
+  min-width: 44px;
   background: rgba(16, 185, 129, 0.18);
   border: 1px solid rgba(16, 185, 129, 0.45);
   color: #34d399;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: clamp(0.875rem, 2vw, 0.95rem);
   letter-spacing: -0.01em;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 20px -4px rgba(16, 185, 129, 0.25);
   cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .apple-button-primary {
+    padding: 0.9rem 1.25rem;
+    font-size: 0.85rem;
+  }
 }
 
 .apple-button-primary:hover {
@@ -169,20 +178,29 @@ html.light-theme .apple-button-primary {
 
 .apple-button-secondary {
   display: inline-flex;
-  items-center: center;
+  align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.85rem 1.75rem;
+  padding: 1rem 1.75rem;
   border-radius: 9999px;
+  min-height: 44px;
+  min-width: 44px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: clamp(0.875rem, 2vw, 0.95rem);
   letter-spacing: -0.01em;
   backdrop-filter: blur(12px);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .apple-button-secondary {
+    padding: 0.9rem 1.25rem;
+    font-size: 0.85rem;
+  }
 }
 
 .apple-button-secondary:hover {

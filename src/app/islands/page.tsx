@@ -62,7 +62,7 @@ export default function IslandsPage() {
     <div className="min-h-screen flex flex-col font-sans relative overflow-x-hidden">
       <Navbar currentUser={currentUser} />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-8 py-10 space-y-12 relative z-10">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 md:px-8 py-6 sm:py-10 space-y-8 sm:space-y-12 relative z-10">
 
         {/* Hero Section */}
         <ScrollReveal animation="fade-up">
@@ -79,11 +79,11 @@ export default function IslandsPage() {
               {t.islandsSubtitle}
             </p>
 
-            <div className="pt-4 flex flex-wrap justify-center gap-3">
+            <div className="pt-4 flex flex-wrap justify-center gap-2 sm:gap-3">
               {/* ── 1. Tlačítko Všechny Ostrovy (All Islands) ── */}
               <button
                 onClick={() => { setFilter('all'); soundEngine.playTick(); }}
-                className={`px-5 py-2.5 rounded-full text-xs font-black transition cursor-pointer ${
+                className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-black transition cursor-pointer min-h-[44px] sm:min-h-auto flex items-center justify-center ${
                   filter === 'all'
                     ? 'bg-emerald-600 text-white shadow-md'
                     : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -95,7 +95,7 @@ export default function IslandsPage() {
               {/* ── 2. Tlačítko Vlastní Ostrovy (Custom Islands) ── */}
               <button
                 onClick={() => { setFilter('custom'); soundEngine.playTick(); }}
-                className={`px-5 py-2.5 rounded-full text-xs font-black transition cursor-pointer ${
+                className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-black transition cursor-pointer min-h-[44px] sm:min-h-auto flex items-center justify-center ${
                   filter === 'custom'
                     ? 'bg-emerald-600 text-white shadow-md'
                     : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -105,9 +105,9 @@ export default function IslandsPage() {
               </button>
               <button
                 onClick={() => { setIsCustomModalOpen(true); soundEngine.playTick(); }}
-                className="px-5 py-2.5 rounded-full bg-[var(--accent-blue)] hover:bg-[var(--accent-blue)]/80 text-white font-extrabold text-xs transition cursor-pointer shadow-md flex items-center gap-1.5"
+                className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[var(--accent-blue)] hover:bg-[var(--accent-blue)]/80 text-white font-extrabold text-xs transition cursor-pointer shadow-md flex items-center gap-1.5 min-h-[44px] sm:min-h-auto"
               >
-                <span>✨ {t.createCustomIsland}</span>
+                <span className="hidden sm:inline">✨</span> <span>{t.createCustomIsland}</span>
               </button>
             </div>
           </section>

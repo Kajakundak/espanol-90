@@ -4,6 +4,7 @@ import './globals.css';
 import { LanguageProvider } from '@/lib/context/LanguageContext';
 import { ThemeProvider } from '@/lib/context/ThemeContext';
 import { UserProvider } from '@/lib/context/UserContext';
+import { AudioProvider } from '@/lib/context/AudioContext';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -31,7 +32,9 @@ export default function RootLayout({
         <ThemeProvider>
           <UserProvider>
             <LanguageProvider>
-              <div className="relative z-10">{children}</div>
+              <AudioProvider>
+                <div className="relative z-10">{children}</div>
+              </AudioProvider>
             </LanguageProvider>
           </UserProvider>
         </ThemeProvider>

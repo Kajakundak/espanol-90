@@ -110,56 +110,56 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full backdrop-blur-2xl bg-[var(--nav-bg)] border-b border-[var(--nav-border)] transition-colors duration-300">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-[60] w-full backdrop-blur-2xl bg-[var(--nav-bg)] border-b border-[var(--nav-border)] transition-colors duration-300">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 shrink-0 group">
-            <span className="text-xl font-extrabold tracking-tight text-[var(--text-primary)] group-hover:opacity-80 transition">
+          <Link href="/" className="flex items-center space-x-1 sm:space-x-2 shrink-0 group">
+            <span className="text-lg sm:text-xl font-extrabold tracking-tight text-[var(--text-primary)] group-hover:opacity-80 transition">
               Español <span className="text-[var(--accent-emerald)]">90</span>
             </span>
           </Link>
 
           {/* Navigace */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden lg:flex items-center space-x-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+                  className={`px-3 sm:px-3.5 py-2 sm:py-1.5 rounded-full text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 min-h-[44px] lg:min-h-auto flex-col lg:flex-row text-center ${
                     isActive
                       ? 'bg-[var(--card-bg-hover)] text-[var(--text-primary)] border border-[var(--card-border-hover)] shadow-sm'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)]'
                   }`}
                 >
                   <span className="text-sm">{item.icon}</span>
-                  <span>{item.label}</span>
+                  <span className="hidden lg:inline">{item.label}</span>
                 </Link>
               );
             })}
           </nav>
 
           {/* Ovládací prvky */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             
             {/* Tlačítko přepnutí tématu (Světlý / Tmavý) */}
             <button
               onClick={handleThemeToggle}
-              className="p-2 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-xs text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition cursor-pointer"
+              className="p-2.5 sm:p-2 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-xs text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-auto sm:min-w-auto flex items-center justify-center"
               title={theme === 'dark' ? t.themeLight : t.themeDark}
             >
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
 
             {/* Přepínač jazyků */}
-            <div className="flex items-center p-0.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-full">
+            <div className="flex items-center p-0.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-full min-h-[44px]">
               {languages.map((l) => (
                 <button
                   key={l.code}
                   onClick={() => handleLanguageChange(l.code)}
-                  className={`px-2 py-1 rounded-full text-[11px] font-bold transition flex items-center gap-1 cursor-pointer ${
+                  className={`px-2 py-1.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold transition flex items-center justify-center gap-1 cursor-pointer min-w-[44px] sm:min-w-auto min-h-[44px] sm:min-h-auto ${
                     language === l.code
                       ? 'bg-emerald-600 text-white font-black shadow-sm'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -172,7 +172,7 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
             </div>
 
             {/* Streak */}
-            <div className="flex items-center space-x-1 bg-[var(--card-bg)] border border-[var(--card-border)] px-2.5 py-1 rounded-full text-[var(--accent-amber)] text-xs font-bold shrink-0">
+            <div className="hidden sm:flex items-center space-x-1 bg-[var(--card-bg)] border border-[var(--card-border)] px-2.5 py-1 rounded-full text-[var(--accent-amber)] text-xs font-bold shrink-0 min-h-[44px]">
               <span>🔥</span>
               <span>{activeUser.currentStreak} {t.streak}</span>
             </div>
@@ -181,10 +181,10 @@ export default function Navbar({ currentUser: propUser, onSwitchUser: propSwitch
             <div className="relative">
               <button
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                className="px-3 py-1 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition flex items-center gap-2 cursor-pointer shrink-0"
+                className="px-3 py-2.5 sm:py-1 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--card-bg-hover)] transition flex items-center justify-center gap-2 cursor-pointer shrink-0 min-h-[44px] sm:min-h-auto"
                 title={t.profileSwitch}
               >
-                <span className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden">
+                <span className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
                   {renderAvatar(activeUser.avatar, 'text-sm')}
                 </span>
                 <span className="font-bold hidden sm:inline">{activeUser.displayName}</span>

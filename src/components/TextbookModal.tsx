@@ -163,7 +163,8 @@ export default function TextbookModal({
     setIsPlayingAudio(true);
 
     if (audioRef.current) {
-      audioRef.current.src = `/mp3/${trackFile}`;
+      // Load MP3 from GitHub CDN
+      audioRef.current.src = `https://raw.githubusercontent.com/Kajakundak/espanol-90/main/public/mp3/${trackFile}`;
       audioRef.current.playbackRate = playbackRate;
       audioRef.current.loop = isLooping;
       audioRef.current.play().catch(console.warn);
@@ -325,63 +326,66 @@ export default function TextbookModal({
 
           {/* ── 2. AUDIO PŘEHRÁVAČ ── */}
           {tracksList.length > 0 && (
-            <div className="px-5 py-3 bg-[var(--card-bg)] border-b border-[var(--card-border)] shrink-0 space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
+            <div className="px-3 sm:px-5 py-2 sm:py-3 bg-[var(--card-bg)] border-b border-[var(--card-border)] shrink-0 space-y-2 overflow-x-auto">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+                <div className="flex items-center gap-2.5 min-w-0 w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={togglePlayPause}
-                    className={`w-9 h-9 rounded-xl font-bold text-xs flex items-center justify-center transition cursor-pointer shrink-0 shadow-sm ${
+                    className={`min-h-[44px] min-w-[44px] sm:min-h-auto sm:min-w-auto w-10 h-10 sm:w-9 sm:h-9 rounded-xl font-bold text-xs flex items-center justify-center transition cursor-pointer shrink-0 shadow-sm ${
                       isPlayingAudio ? 'bg-[var(--accent-amber)] text-black' : 'bg-[var(--accent-cyan)] text-black'
                     }`}
                   >
                     {isPlayingAudio ? '⏸' : '▶'}
                   </button>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="text-xs font-extrabold text-[var(--text-primary)] truncate">
                       {activeTrackDesc || activeTrackFile}
                     </p>
-                    <span className="text-[10px] font-mono text-[var(--accent-cyan)] font-bold">
+                    <span className="text-[10px] font-mono text-[var(--accent-cyan)] font-bold hidden sm:block">
                       {activeTrackFile}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-1 sm:gap-2 shrink-0 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
                   <button
                     type="button"
                     onClick={() => skipSeconds(-5)}
-                    className="p-1.5 px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                    className="p-1.5 px-1.5 sm:px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[9px] sm:text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer whitespace-nowrap"
                     title="Zpět o 5 sekund (Šipka vlevo)"
                   >
-                    ⏪ -5s
+                    <span className="hidden sm:inline">⏪ -5s</span>
+                    <span className="sm:hidden">⏪</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => skipSeconds(5)}
-                    className="p-1.5 px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                    className="p-1.5 px-1.5 sm:px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[9px] sm:text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer whitespace-nowrap"
                     title="Vpřed o 5 sekund (Šipka vpravo)"
                   >
-                    +5s ⏩
+                    <span className="hidden sm:inline">+5s ⏩</span>
+                    <span className="sm:hidden">⏩</span>
                   </button>
                   <button
                     type="button"
                     onClick={cyclePlaybackRate}
-                    className="p-1.5 px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[10px] font-mono font-bold text-[var(--accent-cyan)] cursor-pointer"
+                    className="p-1.5 px-1.5 sm:px-2 rounded-lg bg-[var(--card-bg-hover)] border border-[var(--card-border)] text-[9px] sm:text-[10px] font-mono font-bold text-[var(--accent-cyan)] cursor-pointer whitespace-nowrap"
+                    title="Playback rate"
                   >
-                    ⚡ {playbackRate.toFixed(1)}×
+                    {playbackRate.toFixed(1)}×
                   </button>
                   <button
                     type="button"
                     onClick={toggleLoop}
-                    className={`p-1.5 px-2 rounded-lg border text-[10px] font-bold cursor-pointer ${
+                    className={`p-1.5 rounded-lg border text-[10px] font-bold cursor-pointer shrink-0 ${
                       isLooping ? 'bg-[var(--accent-cyan)]/20 border-[var(--accent-cyan)] text-[var(--accent-cyan)]' : 'border-[var(--card-border)] text-[var(--text-secondary)]'
                     }`}
                     title="Opakovat stopu ve smyčce"
                   >
                     🔁
                   </button>
-                  <span className="text-[10px] font-mono text-[var(--text-secondary)] font-bold pl-1">
+                  <span className="text-[9px] sm:text-[10px] font-mono text-[var(--text-secondary)] font-bold pl-0 sm:pl-1 whitespace-nowrap">
                     {formatTime(currentTime)} / {formatTime(duration)}
                   </span>
                 </div>
@@ -398,10 +402,10 @@ export default function TextbookModal({
                   setCurrentTime(newTime);
                   if (audioRef.current) audioRef.current.currentTime = newTime;
                 }}
-                className="w-full h-1.5 bg-[var(--card-border)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-cyan)] transition"
+                className="w-full h-1.5 bg-[var(--card-border)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-cyan)] transition touch-manipulation"
               />
 
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-0.5">
+              <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-0.5">
                 {tracksList.map((tItem: any, idx: number) => {
                   const isSel = activeTrackFile === tItem.file;
                   return (
@@ -409,13 +413,13 @@ export default function TextbookModal({
                       key={idx}
                       type="button"
                       onClick={() => handleSelectTrack(tItem.file, tItem.description)}
-                      className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold whitespace-nowrap transition cursor-pointer border shrink-0 ${
+                      className={`px-2 sm:px-2.5 py-1 rounded-lg text-[9px] sm:text-[10px] font-mono font-bold whitespace-nowrap transition cursor-pointer border shrink-0 min-h-[36px] sm:min-h-auto flex items-center justify-center ${
                         isSel
                           ? 'bg-[var(--accent-cyan)]/20 border-[var(--accent-cyan)] text-[var(--accent-cyan)]'
                           : 'bg-[var(--card-bg-hover)] border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                       }`}
                     >
-                      {isSel && isPlayingAudio ? '🔊' : '▶'} {tItem.code}
+                      <span>{isSel && isPlayingAudio ? '🔊' : '▶'}</span> <span className="hidden sm:inline">{tItem.code}</span>
                     </button>
                   );
                 })}

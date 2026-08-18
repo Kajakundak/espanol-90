@@ -84,14 +84,14 @@ export default function Dashboard() {
         onSwitchUser={(id) => setActiveUserId(id)}
       />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-8 py-10 space-y-12 relative z-10">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 md:px-8 py-6 sm:py-8 md:py-10 space-y-8 sm:space-y-10 md:space-y-12 relative z-10">
 
         {/* ── 1. Hero sekce (Jednorázové ikony v tlačítkách) ── */}
         <ScrollReveal animation="fade-up">
-          <section className="apple-glass p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-10 relative overflow-hidden">
-            <div className="space-y-4 text-center md:text-left z-10 max-w-xl">
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <span className="apple-pill-badge bg-[var(--accent-emerald)]/15 text-[var(--accent-emerald)] border border-[var(--accent-emerald)]/30">
+          <section className="apple-glass p-4 sm:p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 md:gap-10 relative overflow-hidden">
+            <div className="space-y-3 sm:space-y-4 text-center md:text-left z-10 max-w-xl">
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-2">
+                <span className="apple-pill-badge bg-[var(--accent-emerald)]/15 text-[var(--accent-emerald)] border border-[var(--accent-emerald)]/30 text-xs sm:text-sm">
                   {t.phase} {phase} • {t.dayOf} {currentDay} {t.of90}
                 </span>
                 <span className="text-xs font-medium text-[var(--text-secondary)]">
@@ -114,8 +114,8 @@ export default function Dashboard() {
                 </strong>.
               </p>
 
-              <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-4">
-                <Link href="/tutor" className="apple-button-primary">
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 sm:gap-4">
+                <Link href="/tutor" className="apple-button-primary w-full sm:w-auto text-center">
                   <span>🎙️</span> {t.launchAiTutor}
                 </Link>
                 <button
@@ -123,22 +123,22 @@ export default function Dashboard() {
                     soundEngine.playTick();
                     setIsAnkiModalOpen(true);
                   }}
-                  className="apple-button-secondary"
+                  className="apple-button-secondary w-full sm:w-auto text-center"
                 >
                   <span>🧠</span> {t.trainAnki}
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center gap-8 z-10 bg-[var(--card-bg)] p-6 rounded-3xl border border-[var(--card-border)] shadow-lg">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 z-10 bg-[var(--card-bg)] p-4 sm:p-6 rounded-3xl border border-[var(--card-border)] shadow-lg">
               <ProgressRing currentDay={currentDay} totalDays={90} />
-              <div className="flex flex-col gap-3">
+              <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => {
                     soundEngine.playTick();
                     setCurrentDay((d) => Math.max(1, d - 1));
                   }}
-                  className="px-4 py-2 bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] rounded-full text-xs font-mono font-bold border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer"
+                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 sm:py-2 bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] rounded-full text-xs font-mono font-bold border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer min-h-[44px] sm:min-h-auto flex items-center justify-center"
                 >
                   {t.prevDay}
                 </button>
@@ -147,7 +147,7 @@ export default function Dashboard() {
                     soundEngine.playTick();
                     setCurrentDay((d) => Math.min(90, d + 1));
                   }}
-                  className="px-4 py-2 bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] rounded-full text-xs font-mono font-bold border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer"
+                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2.5 sm:py-2 bg-[var(--card-bg)] hover:bg-[var(--card-bg-hover)] rounded-full text-xs font-mono font-bold border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer min-h-[44px] sm:min-h-auto flex items-center justify-center"
                 >
                   {t.nextDay}
                 </button>
@@ -186,11 +186,11 @@ export default function Dashboard() {
             </div>
 
             {progressLoading ? (
-              <div className="apple-glass text-center py-16 text-[var(--text-muted)] font-mono text-sm">
+              <div className="apple-glass text-center py-12 sm:py-16 text-[var(--text-muted)] font-mono text-sm">
                 {t.loadingMissions}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
                 {todayPlan.tasks.map((task) => (
                   <TaskCard
                     key={task.key}
