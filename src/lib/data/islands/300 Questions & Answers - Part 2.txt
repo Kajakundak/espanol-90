@@ -1,0 +1,201 @@
+¿Dónde está tu ciudad?
+Mi ciudad está en Canadá.
+Es una ciudad grande.
+¿Te gusta tu ciudad?
+Me gusta mi ciudad.
+¿Es tranquila o ruidosa?
+A veces es ruidosa.
+¿Qué se puede hacer allí?
+Puedes trabajar, comer fuera y relajarte.
+¿Hay buenos restaurantes?
+Hay muchos restaurantes buenos.
+¿Hay un parque cerca?
+Hay un parque cerca.
+¿Es bueno el transporte público?
+El transporte público es bueno.
+¿Es seguro por la noche?
+Es mayormente seguro por la noche.
+¿Cuál es tu lugar favorito de tu ciudad?
+Mi lugar favorito es el parque.
+¿Te gusta vivir allí?
+Me gusta vivir allí.
+¿Qué es lo que no te gusta de ella?
+No me gusta el tráfico.
+¿Cuánto tiempo llevas viviendo allí?
+He vivido allí durante diez años.
+¿Quieres mudarte?
+Puede que me mude algún día.
+¿Dónde te gustaría vivir?
+Me gustaría vivir cerca del mar.
+¿Prefieres las ciudades o los pueblos?
+Prefiero las ciudades.
+¿Te gusta la naturaleza?
+Me gusta la naturaleza.
+¿Vives cerca del mar?
+No vivo cerca del mar.
+¿Hace buen tiempo allí?
+El tiempo a veces es bueno.
+¿Qué tiempo hace hoy?
+Hoy hace sol.
+¿Qué haces en tu tiempo libre?
+Leo libros y salgo a caminar.
+¿Te gusta leer?
+Me gusta leer.
+¿Qué tipo de libros lees?
+Leo novelas sencillas.
+¿Te gusta ver películas?
+Me gusta ver películas.
+¿Cuál es tu película favorita?
+Mi película favorita es una comedia.
+¿Te gusta la música?
+Me gusta la música.
+¿Qué tipo de música escuchas?
+Escucho música pop.
+¿Quién es tu cantante favorito?
+No tengo un cantante favorito.
+¿Tocas algún instrumento?
+No toco ningún instrumento.
+¿Te gustan los deportes?
+Me gustan los deportes.
+¿Qué deporte practicas?
+Nado.
+¿Ves el fútbol?
+Veo fútbol a veces.
+¿Cuál es tu equipo favorito?
+No tengo un equipo favorito.
+¿Vas al gimnasio?
+Voy al gimnasio dos veces por semana.
+¿Con qué frecuencia haces ejercicio?
+Hago ejercicio tres veces por semana.
+¿Te gusta correr?
+Me gusta correr a veces.
+¿Te gusta nadar?
+Me gusta mucho nadar.
+¿Bailas?
+No bailo.
+¿Te gustan los videojuegos?
+Me gustan un poco los videojuegos.
+¿Qué haces los fines de semana?
+Descanso y me reúno con amigos.
+¿Te gusta viajar?
+Me gusta viajar.
+¿Adónde has viajado?
+He viajado por Europa.
+¿Cuál fue tu viaje favorito?
+Mi viaje favorito fue a Italia.
+¿Viajas a menudo?
+Viajo una vez al año.
+¿Has estado en el extranjero?
+He estado en el extranjero muchas veces.
+¿Qué país te gusta más?
+El que más me gusta es Italia.
+¿Qué país quieres visitar?
+Quiero visitar Japón.
+¿Has estado alguna vez en España?
+He estado en España una vez.
+¿Has estado en Japón?
+Aún no he estado en Japón.
+¿Has visitado América del Sur?
+No he visitado América del Sur.
+¿Te gusta volar?
+No me gusta mucho volar.
+¿Prefieres la playa o la montaña?
+Prefiero la playa.
+¿Te gusta acampar?
+No me gusta acampar.
+¿Te gustan los hoteles o los apartamentos?
+Prefiero los hoteles.
+¿Viajas solo o con amigos?
+Suelo viajar con amigos.
+¿Haces muchas fotos?
+Hago muchas fotos.
+¿Cuál es el destino de tus sueños?
+El destino de mis sueños es Japón.
+¿Te gustan los viajes largos?
+A veces me gustan los viajes largos.
+¿Cuál es tu próximo viaje?
+Mi próximo viaje es quizás a Francia.
+¿Cómo te preparas para un viaje?
+Planifico y reservo por internet.
+¿Te gusta aprender idiomas?
+Me gusta aprender idiomas.
+¿Cuántos idiomas hablas?
+Hablo dos idiomas.
+¿Cuál es el idioma más fácil para ti?
+El inglés es el idioma más fácil para mí.
+¿Cuál es el idioma más difícil?
+El español es el idioma más difícil para mí.
+¿Te gusta la gramática?
+No me gusta mucho la gramática.
+¿Cómo estudias el vocabulario?
+Estudio el vocabulario con listas de palabras.
+¿Usas aplicaciones?
+Uso aplicaciones de idiomas.
+¿Ves vídeos para aprender?
+Veo vídeos para aprender.
+¿Escuchas pódcast?
+A veces escucho pódcast.
+¿Hablas con hablantes nativos?
+A veces hablo con hablantes nativos.
+¿Estudias solo o con un profesor?
+Estudio solo.
+¿Te gustan las clases por internet?
+Me gustan las clases por internet.
+¿Cuántas horas estudias a la semana?
+Estudio unas cinco horas a la semana.
+¿Practicas todos los días?
+Practico casi todos los días.
+¿Escribes en el idioma que estás aprendiendo?
+Escribo textos cortos.
+¿Lees libros en ese idioma?
+Leo libros fáciles.
+¿Ves películas con subtítulos?
+Veo películas con subtítulos.
+¿Tienes un cuaderno de vocabulario?
+Tengo un cuaderno de vocabulario.
+¿Usas tarjetas de memoria?
+Uso tarjetas de memoria.
+¿Cómo mantienes la motivación?
+Me mantengo motivado pensando en viajar.
+¿Cómo te sientes hoy?
+Hoy me siento bien.
+¿Estás cansado?
+Me siento un poco cansado.
+¿Estás feliz?
+Me siento feliz.
+¿Estás triste?
+No me siento triste.
+¿Tienes hambre?
+No tengo hambre ahora mismo.
+¿Tienes sed?
+Tengo un poco de sed.
+¿Estás ocupado hoy?
+Hoy estoy ocupado.
+¿Estás relajado?
+No estoy muy relajado.
+¿Estás estresado?
+Me siento un poco estresado.
+¿Estás emocionado?
+Me siento emocionado.
+¿Qué te hace feliz?
+El tiempo libre me hace feliz.
+¿Qué te hace enfadar?
+El tráfico me hace enfadar.
+¿Qué te pone triste?
+Las malas noticias me ponen triste.
+¿Te pones nervioso con facilidad?
+A veces me pongo nervioso.
+¿Eres una persona paciente?
+Soy una persona paciente.
+¿Eres optimista?
+Soy optimista.
+¿Eres tímido?
+Soy un poco tímido.
+¿Eres hablador?
+A veces soy hablador.
+¿Te gusta conocer a gente nueva?
+Me gusta conocer a gente nueva.
+¿Prefieres quedarte en casa?
+A veces prefiero quedarme en casa.
+¿Te gusta el café o el té?
+Me gusta más el café que el té.

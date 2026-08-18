@@ -1,0 +1,261 @@
+Estoy aquí ahora.
+Estás aquí ahora.
+Él está aquí ahora.
+Ella está aquí ahora.
+Estamos aquí ahora.
+Ellos están aquí ahora.
+Estoy en casa hoy.
+Estás en el trabajo hoy.
+Él está en la oficina hoy.
+Ella está en la ciudad hoy.
+Estamos en la tienda hoy.
+Ellos están allí hoy.
+No estoy allí ahora.
+Él no está en casa hoy.
+No estamos listos ahora.
+¿Estás aquí ahora?
+¿Está él en el trabajo hoy?
+¿Están ellos en la ciudad hoy?
+¿Dónde estás ahora?
+¿Cuándo estamos listos?
+¿Por qué está ella aquí hoy?
+Tengo tiempo hoy.
+Tienes tiempo hoy.
+Él tiene un plan hoy.
+Ella tiene una idea hoy.
+Tenemos una reunión hoy.
+Ellos tienen información hoy.
+No tengo tiempo hoy.
+Él no tiene dinero hoy.
+¿Tienes la llave ahora?
+¿Tiene ella la respuesta ahora?
+¿Quién tiene el documento ahora?
+Tengo que irme ahora.
+Tienes que trabajar hoy.
+Él no tiene que trabajar hoy.
+Lo hago ahora.
+Lo haces ahora.
+Él lo hace ahora.
+Ella lo hace ahora.
+Lo hacemos ahora.
+Ellos lo hacen ahora.
+No lo hago ahora.
+Él no lo hace ahora.
+¿Lo haces todos los días?
+¿Lo hace ella a menudo?
+¿Qué haces en el trabajo?
+Lo hice ayer.
+Él lo hizo ayer.
+Lo hicimos la semana pasada.
+Lo haré mañana.
+Ellos lo harán la semana próxima.
+Hago un plan hoy.
+Haces un plan hoy.
+Él hace un plan hoy.
+Tomamos una decisión hoy.
+Ellos cometen un error a veces.
+No cometo ese error.
+¿Haces café en casa?
+¿Hizo ella el plan ayer?
+Hice el plan ayer.
+Haré un nuevo plan mañana.
+Voy a casa ahora.
+Vas al trabajo hoy.
+Él va a la oficina hoy.
+Ella va a la tienda hoy.
+Vamos a la ciudad hoy.
+Ellos van allí hoy.
+No voy allí hoy.
+¿Vas allí a menudo?
+¿A dónde van ellos hoy?
+Fui allí ayer.
+Fuimos allí la semana pasada.
+Iré allí mañana.
+Vengo aquí ahora.
+Vienes aquí ahora.
+Él viene aquí hoy.
+Ella viene aquí a menudo.
+Venimos aquí todos los días.
+Ellos vienen aquí a veces.
+No vengo aquí hoy.
+¿Vienes aquí a menudo?
+¿Cuándo vendrás aquí?
+Vine aquí ayer.
+Ellos vinieron aquí la semana pasada.
+Vendré aquí mañana.
+Obtengo la respuesta ahora.
+Obtienes la respuesta ahora.
+Él obtiene la respuesta ahora.
+Obtenemos la respuesta hoy.
+Ellos obtienen resultados pronto.
+No lo entiendo ahora.
+¿Lo entiendes ahora?
+¿Cómo obtienes la respuesta?
+Recibí el mensaje ayer.
+Conseguiré el documento mañana.
+Te doy el libro hoy.
+Me das la respuesta hoy.
+Él le da información hoy.
+Ella nos da ayuda hoy.
+Les damos tiempo hoy.
+Ellos me dan un mensaje hoy.
+No doy dinero ahora.
+¿Le das la llave?
+¿Qué te dio ella ayer?
+Te di el documento ayer.
+Te daré la respuesta más tarde.
+Tomo el libro ahora.
+Tomas el documento ahora.
+Él toma la llave ahora.
+Ella toma tiempo hoy.
+Tomamos un descanso hoy.
+Ellos toman el tren hoy.
+No tomo eso hoy.
+¿Tomas café o agua?
+¿Por qué tomó él el documento?
+Lo tomé ayer.
+Lo tomaré mañana.
+Lo pongo aquí ahora.
+Lo pones allí ahora.
+Él pone el libro aquí.
+Ella pone el documento allí.
+Ponemos el plan por escrito.
+Ellos ponen el mensaje en el correo electrónico.
+No lo pongo allí.
+¿Lo pones aquí?
+¿Dónde pusiste la llave?
+Lo puse aquí ayer.
+Lo pondré allí más tarde.
+Guardo el libro aquí.
+Guardas el documento allí.
+Él guarda la llave en casa.
+Ella mantiene el plan simple.
+Seguimos trabajando hoy.
+Ellos siguen aprendiendo todos los días.
+No guardo ese mensaje.
+¿Guardas la respuesta por escrito?
+¿Por qué sigue preguntando él?
+Guardé el documento ayer.
+Lo guardaré aquí mañana.
+Me voy ahora.
+Te vas ahora.
+Él se va hoy.
+Ella se va mañana.
+Nos vamos la semana que viene.
+Ellos se van pronto.
+No me voy hoy.
+¿Te vas ahora?
+¿Cuándo se van ellos?
+Dejé el libro en casa.
+Dejaré el documento aquí.
+Traigo agua hoy.
+Traes café hoy.
+Él trae el libro hoy.
+Ella trae el documento hoy.
+Traemos comida hoy.
+Ellos traen ayuda hoy.
+No traigo dinero.
+¿Traes la llave?
+¿Qué trajo él ayer?
+Traje el mensaje ayer.
+Traeré la respuesta más tarde.
+Encuentro la llave ahora.
+Encuentras la respuesta ahora.
+Él encuentra una solución hoy.
+Ella encuentra tiempo hoy.
+Encontramos la idea útil.
+Ellos encuentran esto difícil hoy.
+No lo encuentro ahora.
+¿Lo encuentras útil?
+¿Dónde encontraste el libro?
+Lo encontré ayer.
+Lo encontraré mañana.
+Pierdo tiempo a veces.
+Pierdes dinero a veces.
+Él pierde la llave a veces.
+Ella pierde la concentración a veces.
+No perdemos nada por intentarlo.
+Ellos perdieron el juego ayer.
+No pierdo la llave.
+¿Pierdes tiempo en el trabajo?
+¿Qué perdiste ayer?
+Perdí el documento ayer.
+No lo perderé de nuevo.
+Sé la respuesta ahora.
+Sabes el plan ahora.
+Él sabe la idea ahora.
+Ella sabe las reglas ahora.
+Nos conocemos.
+Ellos conocen el lugar.
+No lo sé ahora.
+¿Sabes la respuesta?
+¿Quién conoce el plan?
+¿Cómo sabes eso?
+Lo sabía ayer.
+Lo sabré mañana.
+Pienso que es bueno.
+Piensas que es bueno.
+Él piensa que es fácil.
+Ella piensa que es difícil.
+Pensamos que es útil.
+Ellos piensan que es posible.
+No lo creo.
+¿Lo crees?
+¿Por qué piensan ellos eso?
+Pensé en ello ayer.
+Pensaré en ello mañana.
+Lo entiendo ahora.
+Lo entiendes ahora.
+Él lo entiende ahora.
+Ella lo entiende ahora.
+Lo entendemos ahora.
+Ellos lo entienden ahora.
+No lo entiendo ahora.
+¿Lo entiende él ahora?
+¿Qué entiendes ahora?
+Lo entendí ayer.
+Lo entenderé pronto.
+Aprendo todos los días.
+Aprendes todos los días.
+Él aprende rápido.
+Ella aprende despacio.
+Aprendemos de los errores.
+Ellos aprenden del libro.
+No aprendo esto hoy.
+¿Aprendes en casa?
+¿Cómo aprendes esto?
+Lo aprendí la semana pasada.
+Lo aprenderé la semana que viene.
+Te enseño hoy.
+Me enseñas hoy.
+Él enseña a los estudiantes hoy.
+Ella enseña lo básico hoy.
+Enseñamos en la oficina hoy.
+Ellos enseñan en línea hoy.
+No enseño hoy.
+¿Enseñas esto?
+¿Quién te enseñó eso?
+Lo enseñé la semana pasada.
+Lo enseñaré mañana.
+Hablo inglés hoy.
+Hablas inglés hoy.
+Él habla despacio.
+Ella habla con claridad.
+Hablamos todos los días.
+Ellos hablan demasiado rápido.
+No hablo rápido.
+¿Hablas inglés?
+¿Qué idioma hablan ellos?
+Hablé con él ayer.
+Hablaré más tarde.
+Te digo ahora.
+Me dices ahora.
+Él le dice a ella ahora.
+Ella nos dice ahora.
+Les decimos ahora.
+Ellos me dicen ahora.
+No se lo digo a nadie ahora.
+¿Le dices el plan?
+¿Qué te dijo ella?
+Te lo dije ayer.
+Te lo diré más tarde.

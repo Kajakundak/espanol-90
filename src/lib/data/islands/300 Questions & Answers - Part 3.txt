@@ -1,0 +1,185 @@
+¿Prefieres el verano o el invierno?
+Prefiero el verano.
+¿Prefieres el clima cálido o el frío?
+Prefiero el clima cálido.
+¿Prefieres la mañana o la tarde?
+Prefiero la mañana.
+¿Te gustan las ciudades grandes o los pueblos pequeños?
+Me gustan las ciudades grandes.
+¿Prefieres los libros o las películas?
+Prefiero los libros.
+¿Te gusta trabajar desde casa?
+Me gusta trabajar desde casa.
+¿Prefieres llamar o enviar mensajes de texto?
+Prefiero enviar mensajes de texto.
+¿Prefieres quedarte en casa o salir?
+Prefiero quedarme en casa.
+¿Te gusta cocinar o comer fuera?
+Prefiero comer fuera.
+¿Prefieres la montaña o la playa?
+Prefiero la playa.
+¿Te gusta aprender o enseñar?
+Me gusta aprender.
+¿Te gusta pasar tiempo a solas?
+A veces me gusta pasar tiempo a solas.
+¿Te gustan las sorpresas?
+No me gustan mucho las sorpresas.
+¿Prefieres la música o el silencio?
+Prefiero la música.
+¿Te gustan las cosas modernas o las tradicionales?
+Me gustan las cosas modernas.
+¿Te gustan más los deportes o el arte?
+Me gustan más los deportes.
+¿Prefieres Netflix o YouTube?
+Prefiero YouTube.
+¿Dónde creciste?
+Crecí en Canadá.
+¿Te gustó tu infancia?
+Me gustó mi infancia.
+¿Tenías muchos amigos?
+Tenía muchos amigos.
+¿A qué juegos jugabas de niño?
+Jugaba a juegos de pelota.
+¿Estudiabas mucho en el colegio?
+Estudiaba mucho en el colegio.
+¿Te gustaban tus profesores?
+Me gustaban la mayoría de mis profesores.
+¿Qué asignaturas te gustaban?
+Me gustaban el inglés y los deportes.
+¿Ibas a excursiones escolares?
+Iba a excursiones escolares.
+¿Viajabas cuando eras joven?
+Viajaba con mi familia.
+¿Hacías deporte de pequeño?
+Hacía deporte de pequeño.
+¿Qué querías ser de pequeño?
+Quería ser profesor.
+¿Veías mucho la televisión?
+Veía mucho la televisión.
+¿Qué dibujos animados veías?
+Veía dibujos animados sencillos.
+¿Tenías mascotas?
+Tenía mascotas.
+¿Te gustaba el colegio?
+Me gustaba el colegio.
+¿Leías mucho?
+Leía un poco.
+¿Vivías en el mismo lugar?
+Vivía en el mismo lugar.
+¿Quiénes eran tus mejores amigos?
+Mis compañeros de clase eran mis mejores amigos.
+¿Te mudabas a menudo?
+No me mudaba a menudo.
+¿Hablabas otros idiomas de niño?
+No hablaba otros idiomas de niño.
+¿Qué vas a hacer hoy?
+Hoy voy a trabajar.
+¿Qué harás mañana?
+Mañana trabajaré.
+¿Cuáles son tus planes para el fin de semana?
+Descansaré este fin de semana.
+¿Vas a viajar pronto?
+No voy a viajar pronto.
+¿Vas a estudiar luego?
+Voy a estudiar luego.
+¿Tienes pensado mudarte?
+No tengo pensado mudarme ahora.
+¿Quieres aprender otro idioma?
+Quiero aprender otro idioma.
+¿Quieres vivir en el extranjero?
+Algún día quiero vivir en el extranjero.
+¿Quieres montar tu propio negocio?
+Puede que monte mi propio negocio.
+¿Quieres casarte?
+Algún día quiero casarme.
+¿Quieres tener hijos?
+Quiero tener hijos.
+¿Dónde quieres vivir en el futuro?
+Quiero vivir cerca del mar.
+¿Qué quieres hacer el año que viene?
+Quiero viajar más el año que viene.
+¿Cuál es tu mayor sueño?
+Mi mayor sueño es vivir en el extranjero.
+¿Qué es lo siguiente que quieres aprender?
+¿Estás planeando unas vacaciones?
+Estoy planeando unas vacaciones.
+¿Cuándo visitarás a tu familia?
+Visitaré a mi familia el mes que viene.
+¿Qué harás después de esto?
+Descansaré después de esto.
+¿Seguirás estudiando mañana?
+Seguiré estudiando mañana.
+¿Qué hora es?
+Son las tres.
+¿Puedes ayudarme?
+Te puedo ayudar.
+¿Puedes repetir eso, por favor?
+Puedo repetir eso.
+¿Cómo se dice esto en inglés?
+Se dice así en inglés.
+¿Qué significa esta palabra?
+Esta palabra tiene un significado sencillo.
+¿Puedes escribirlo?
+Puedo escribirlo.
+¿Me entiendes?
+Te entiendo.
+¿Necesitas ayuda?
+No necesito ayuda ahora.
+¿Es esto correcto?
+Esto es correcto.
+¿Puedo hacerte una pregunta?
+Puedes hacer una pregunta.
+¿Dónde está el baño?
+El baño está por allí.
+¿Dónde está la parada de autobús?
+La parada de autobús está cerca de la calle.
+¿Cuánto cuesta esto?
+Cuesta diez dólares.
+¿Cuál es el precio?
+El precio es de diez dólares.
+¿Aceptan tarjetas de crédito?
+Aceptamos tarjetas de crédito.
+¿Puedo pagar en efectivo?
+Puedes pagar en efectivo.
+¿Tenéis wifi aquí?
+Hay wifi aquí.
+¿Cuál es la contraseña?
+La contraseña está escrita aquí.
+¿Puedes enseñármelo?
+Te lo puedo enseñar.
+¿A qué distancia está?
+Está a unos cinco minutos.
+¿Qué tiempo hace hoy?
+Hoy hace buen tiempo.
+¿Hace calor fuera?
+Hace un poco de calor fuera.
+¿Está lloviendo?
+No está lloviendo.
+¿Te gusta este tiempo?
+Me gusta este tiempo.
+¿Has dormido bien?
+He dormido bien.
+¿Tienes planes para esta noche?
+No tengo planes para esta noche.
+¿Qué hiciste ayer?
+Ayer trabajé.
+¿Qué estás haciendo ahora?
+Ahora estoy hablando contigo.
+¿Estás libre este fin de semana?
+Estoy libre este fin de semana.
+¿Quieres quedar para tomar un café?
+Quiero quedar para tomar un café.
+¿Dónde quedamos?
+Podemos quedar en la cafetería.
+¿A qué hora?
+Podemos quedar a las cuatro.
+¿Cuánto tardará?
+Tardará diez minutos.
+¿Es tu primera vez aquí?
+Es mi primera vez aquí.
+¿Vienes aquí a menudo?
+No vengo aquí a menudo.
+¿Cómo conoces este sitio?
+Conozco este sitio por un amigo.
+¿Te gusta estar aquí?
+Me gusta estar aquí.

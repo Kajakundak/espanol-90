@@ -1,0 +1,300 @@
+Me despierto temprano.
+Me despierto tarde.
+Me despierto a las seis.
+Me despierto a las siete.
+Me despierto todos los días.
+Me levanto ahora.
+Me levanto temprano.
+Me levanto despacio.
+Salgo de la cama.
+Me quedo en la cama un rato.
+Apago la alarma.
+Reviso la hora.
+Reviso mi teléfono.
+Empiezo mi día.
+Me siento cansado por la mañana.
+Me siento descansado por la mañana.
+Me estiro un poco.
+Abro la ventana.
+Hago mi cama.
+Voy al baño.
+Me lavo la cara.
+Me cepillo los dientes.
+Me ducho.
+Me visto.
+Me pongo la ropa.
+Elijo mi ropa.
+Me preparo para el día.
+Preparo mis cosas.
+Preparo mi bolso.
+Salgo de casa.
+Desayuno.
+Desayuno en casa.
+Desayuno solo.
+Desayuno con otros.
+Bebo agua.
+Bebo café.
+Bebo té.
+No desayuno.
+Como algo pequeño.
+Como algo rápido.
+Voy al trabajo.
+Voy a la escuela.
+Voy a clase.
+Voy a la oficina.
+Voy a mi empleo.
+Trabajo cerca de casa.
+Trabajo lejos de casa.
+Trabajo desde casa.
+Estudio en casa.
+Estudio en línea.
+Camino al trabajo.
+Camino a la escuela.
+Tomo el autobús.
+Tomo el tren.
+Conduzco al trabajo.
+Monto en bicicleta.
+Viajo todos los días.
+Salgo temprano.
+Salgo a tiempo.
+Llego a tiempo.
+Llego al trabajo.
+Llego a la escuela.
+Empiezo a trabajar.
+Empiezo la clase.
+Me siento.
+Enciendo mi ordenador.
+Reviso mis mensajes.
+Reviso mi correo electrónico.
+Planifico mi día.
+Empiezo mis tareas.
+Trabajo por la mañana.
+Trabajo por la tarde.
+Trabajo todo el día.
+Trabajo parte del día.
+Estudio por la mañana.
+Estudio por la noche.
+Me concentro en mi trabajo.
+Tomo notas.
+Escucho atentamente.
+Hago preguntas.
+Tengo un descanso.
+Tomo un breve descanso.
+Tomo un descanso largo.
+Bebo agua durante los descansos.
+Hablo con colegas.
+Hablo con compañeros de clase.
+Trabajo con otros.
+Trabajo solo.
+Ayudo a otros.
+Pido ayuda.
+Almuerzo.
+Almuerzo en el trabajo.
+Almuerzo en casa.
+Almuerzo fuera.
+Como algo ligero.
+Como algo caliente.
+Como algo frío.
+Bebo agua en el almuerzo.
+Descanso después del almuerzo.
+Vuelvo al trabajo.
+Continúo trabajando.
+Continúo estudiando.
+Termino mis tareas.
+Termino mi trabajo.
+Termino la clase.
+Dejo de trabajar.
+Salgo del trabajo.
+Salgo de la escuela.
+Voy a casa.
+Regreso a casa.
+Llego a casa.
+Entro en la casa.
+Me quito los zapatos.
+Me relajo un poco.
+Me siento en casa.
+Bebo algo.
+Como una merienda.
+Descanso un rato.
+Me acuesto.
+Reviso mi teléfono otra vez.
+Paso tiempo con mi familia.
+Hablo con mi familia.
+Hablo con amigos.
+Me reúno con amigos.
+Me quedo en casa.
+Salgo por la noche.
+Doy un paseo.
+Hago algo de ejercicio.
+Voy al gimnasio.
+Muevo mi cuerpo.
+Cocino la cena.
+Preparo comida.
+Ceno.
+Ceno en casa.
+Ceno fuera.
+Ceno solo.
+Ceno con otros.
+Bebo agua con la cena.
+Limpio la mesa.
+Lavo los platos.
+Limpio la cocina.
+Limpio la casa.
+Hago las tareas del hogar.
+Organizo mis cosas.
+Me preparo para mañana.
+Reviso mis planes.
+Planifico el día siguiente.
+Preparo mi ropa.
+Preparo mi bolso.
+Pongo mi alarma.
+Me relajo por la noche.
+Veo algo.
+Leo algo.
+Escucho música.
+Uso mi teléfono.
+Uso mi ordenador.
+Paso tiempo en línea.
+Estudio un poco más.
+Reviso mis notas.
+Practico una habilidad.
+Me ducho por la noche.
+Me aseo.
+Me cepillo los dientes otra vez.
+Me cambio de ropa.
+Me pongo ropa cómoda.
+Me siento cansado.
+Me siento relajado.
+Bajo el ritmo.
+Me preparo para ir a la cama.
+Me acuesto temprano.
+Me acuesto tarde.
+Me acuesto a las diez.
+Me acuesto a las once.
+Me tumbo en la cama.
+Cierro los ojos.
+Me duermo rápido.
+Me duermo despacio.
+Duermo bien.
+Duermo mal.
+Me despierto durante la noche.
+Duermo toda la noche.
+Descanso bien.
+Descanso lo suficiente.
+Necesito dormir más.
+Me siento cansado al día siguiente.
+Me siento listo para el día siguiente.
+Repito esto todos los días.
+Esta es mi rutina diaria.
+Mi rutina es sencilla.
+Mi rutina es ajetreada.
+Mi rutina es estable.
+Mi rutina cambia a veces.
+Mi rutina depende del día.
+Sigo una rutina.
+Me gusta mi rutina.
+Cambio mi rutina.
+Mantengo un horario.
+Sigo mi horario.
+Gestiono mi tiempo.
+Planifico mi tiempo.
+Empiezo mi día temprano.
+Empiezo mi día despacio.
+Termino mi día tarde.
+Termino mi día temprano.
+Hago lo mismo todos los días.
+Hago cosas diferentes cada día.
+Me mantengo ocupado durante el día.
+Tomo las cosas paso a paso.
+Me enfoco en el día de hoy.
+Me concentro en mis tareas.
+Equilibro el trabajo y el descanso.
+Me cuido.
+Como regularmente.
+Bebo suficiente agua.
+Intento dormir bien.
+Intento descansar más.
+Intento despertarme más temprano.
+Intento acostarme más temprano.
+Intento mantener una rutina.
+Ajusto mi rutina.
+Trabajo durante la semana.
+Descanso algunos días.
+Mi día empieza temprano.
+Mi día termina tarde.
+Mi día está completo.
+Mi día es tranquilo.
+Mi día es ajetreado.
+Mi día pasa rápido.
+Mi día pasa despacio.
+Mi día es normal.
+Sigo la misma rutina los días de semana.
+Mi rutina es diferente algunos días.
+Me despierto a la misma hora todos los días.
+Como a horas regulares.
+Trabajo en horarios regulares.
+Tomo descansos durante el día.
+Me relajo después del trabajo.
+Descanso después de estudiar.
+Me preparo para el día siguiente.
+Repito esta rutina.
+Esta rutina me funciona.
+Esta rutina me ayuda.
+Esta rutina se siente bien.
+Estoy acostumbrado a esta rutina.
+Prefiero una rutina sencilla.
+Prefiero una rutina estable.
+Prefiero una rutina flexible.
+Cambio mi rutina cuando es necesario.
+Adapto mi rutina.
+Mantengo las cosas sencillas.
+Me despierto y empiezo de nuevo.
+Cada día es similar.
+Cada día es diferente.
+Mi rutina se adapta a mi vida.
+Mi rutina se adapta a mi trabajo.
+Mi rutina se adapta a mis estudios.
+Gestiono bien mi día.
+Organizo mi día.
+Sigo mis hábitos.
+Construyo buenos hábitos.
+Empiezo de nuevo mañana.
+Mañana es otro día.
+Hago esto cada mañana.
+Hago esto cada tarde.
+Hago esto cada noche.
+Hago esto cada semana.
+Esto es parte de mi vida.
+Esto es parte de mi rutina.
+Este es mi día normal.
+Este es un día típico.
+Me despierto y me muevo.
+Como y trabajo.
+Trabajo y descanso.
+Descanso y duermo.
+Repito el ciclo.
+Sigo este patrón.
+Esta rutina es familiar.
+Esta rutina es cómoda.
+Esta rutina se siente normal.
+Esta rutina es manejable.
+Me siento cómodo con mi rutina.
+Me siento en control de mi día.
+Sé qué hacer a continuación.
+Paso de una tarea a otra.
+Termino una cosa y empiezo otra.
+Tomo las cosas de una en una.
+Termino mi día relajándome.
+Me preparo para dormir.
+Descanso mi cuerpo.
+Descanso mi mente.
+Duermo y me recupero.
+Me despierto de nuevo.
+Comienza un nuevo día.
+Sigo mi rutina de nuevo.
+Mis días son repetitivos.
+Esta es mi vida diaria.
+Este es mi ritmo diario.
+Este es mi patrón diario.
+Así es como vivo.
+Esta es mi rutina.

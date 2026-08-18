@@ -1,0 +1,185 @@
+¿Cómo estás?
+Estoy bien, gracias.
+¿Cómo te llamas?
+Me llamo Alex.
+¿De dónde eres?
+Soy de Canadá.
+¿Dónde vives?
+Vivo en Toronto.
+¿Cuántos años tienes?
+Tengo 30 años.
+¿A qué te dedicas?
+Trabajo en una oficina.
+¿Eres estudiante?
+No soy estudiante.
+¿Trabajas?
+Trabajo a tiempo completo.
+¿Cuál es tu trabajo?
+¿Estás casado?
+No estoy casado.
+¿Tienes hijos?
+No tengo hijos.
+¿Tienes hermanos o hermanas?
+Tengo una hermana.
+¿Con quién vives?
+Vivo solo.
+¿Qué idiomas hablas?
+Hablo inglés y algo de español.
+¿Hablas inglés?
+Hablo inglés todos los días.
+¿Hablas español?
+Hablo un poco de español.
+¿Qué idioma estás aprendiendo?
+Estoy aprendiendo español.
+¿Cuánto tiempo llevas aprendiéndolo?
+Llevo aprendiendo español aproximadamente un año.
+¿Por qué lo estás aprendiendo?
+Estoy aprendiendo español para viajar y trabajar.
+¿Es difícil para ti?
+El español a veces me resulta difícil.
+¿A qué hora te levantas?
+Me levanto a las siete.
+¿Qué haces por la mañana?
+Me preparo y desayuno.
+¿Qué sueles desayunar?
+Suelo desayunar huevos o tostadas.
+¿Bebes café o té?
+Bebo café.
+¿Cómo vas al trabajo o a la escuela?
+Voy al trabajo en autobús.
+¿A qué hora empiezas a trabajar?
+Empiezo a trabajar a las nueve.
+¿A qué hora terminas?
+Termino de trabajar a las cinco.
+¿Almuerzas en casa o fuera?
+Suelo almorzar fuera.
+¿Qué haces por la tarde?
+Trabajo por la tarde.
+¿Te echas la siesta?
+No me echo la siesta.
+¿Qué haces después del trabajo?
+Voy a casa y me relajo.
+¿Ves la televisión por la noche?
+A veces veo la televisión por la noche.
+¿A qué hora te vas a la cama?
+Me voy a la cama sobre las once.
+¿Duermes bien?
+Suelo dormir bien.
+¿A qué hora te despiertas los fines de semana?
+Me despierto sobre las ocho los fines de semana.
+¿Trabajas los sábados?
+No trabajo los sábados.
+¿Qué haces los domingos?
+Me relajo o voy a caminar.
+¿Prefieres las mañanas o las noches?
+Prefiero las mañanas.
+¿Cuántas horas duermes?
+Duermo unas siete horas.
+¿Tienes una rutina diaria?
+Tengo una rutina diaria.
+Vivo en un apartamento en Toronto.
+¿Es una casa o un apartamento?
+Es un apartamento.
+¿Es grande o pequeño?
+Es pequeño.
+¿Cuántas habitaciones hay?
+Hay dos habitaciones.
+¿Tienes balcón?
+Tengo un balcón pequeño.
+¿Tienes jardín?
+No tengo jardín.
+¿Te gusta tu hogar?
+Me gusta mi hogar.
+¿Vives solo?
+¿Quién vive contigo?
+¿Es tranquilo tu barrio?
+Mi barrio es tranquilo.
+¿Te gusta tu barrio?
+Me gusta mi barrio.
+¿Conoces a tus vecinos?
+Conozco a algunos vecinos.
+¿A qué distancia está tu casa del trabajo?
+Mi casa está a unos treinta minutos del trabajo.
+¿Cómo vas a casa?
+Voy a casa en autobús.
+¿Cocinas en casa?
+A veces cocino en casa.
+¿Quién limpia la casa?
+Limpio la casa yo mismo.
+¿Cuál es tu habitación favorita?
+Mi habitación favorita es el salón.
+¿Tienes mascotas?
+Tengo un perro.
+¿Cómo se llama tu mascota?
+Mi perro se llama Max.
+¿Qué edad tiene tu mascota?
+Mi perro tiene tres años.
+¿Dónde trabajas?
+¿Qué haces exactamente?
+Trabajo en un escritorio.
+¿Te gusta tu trabajo?
+Me gusta mi trabajo.
+¿Cuánto tiempo llevas trabajando allí?
+Llevo cinco años trabajando allí.
+¿Trabajas a tiempo completo o a tiempo parcial?
+¿Tienes jefe?
+Tengo jefe.
+¿Cuántas horas trabajas?
+Trabajo ocho horas al día.
+¿Te gustan tus compañeros?
+Me gustan mis compañeros.
+¿Trabajas desde casa?
+A veces trabajo desde casa.
+¿Sueles trabajar los fines de semana?
+No trabajo los fines de semana.
+¿Es estresante tu trabajo?
+Mi trabajo a veces es estresante.
+¿Qué te gusta de tu trabajo?
+Me gusta la gente con la que trabajo.
+¿Qué no te gusta de tu trabajo?
+No me gustan las reuniones largas.
+¿Qué estudiaste en la escuela?
+Estudié empresariales.
+¿Dónde estudiaste?
+Estudié en Canadá.
+¿Te gusta estudiar?
+Me gusta estudiar.
+¿Haces clases por internet?
+A veces hago clases por internet.
+¿Quién era tu profesor favorito?
+Mi profesor favorito era mi profesor de inglés.
+¿Cuál era tu asignatura favorita?
+Mi asignatura favorita era inglés.
+¿Quieres cambiar de trabajo?
+No quiero cambiar de trabajo ahora.
+¿Te gusta cocinar?
+A veces me gusta cocinar.
+¿Sabes cocinar?
+Sé cocinar comidas sencillas.
+¿Qué sabes cocinar bien?
+Sé cocinar bien la pasta.
+¿Cuál es tu comida favorita?
+Mi comida favorita es la pizza.
+¿Cuál es tu bebida favorita?
+Mi bebida favorita es el café.
+¿Desayunas todos los días?
+Desayuno todos los días.
+¿Qué sueles comer al mediodía?
+Suelo comer arroz o pollo.
+¿Comes fuera a menudo?
+A veces como fuera.
+¿Qué restaurante te gusta?
+Me gustan los restaurantes italianos.
+¿Te gusta la comida rápida?
+A veces me gusta la comida rápida.
+¿Cuál es tu fruta favorita?
+Mi fruta favorita son las manzanas.
+¿Cuál es tu verdura favorita?
+Mi verdura favorita son las zanahorias.
+¿Te gusta la comida picante?
+No me gusta la comida picante.
+¿Bebes café?
+Bebo café todos los días.
+¿Cuántos cafés bebes al día?
+Bebo dos cafés al día.
+¿Bebes alcohol?

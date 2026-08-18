@@ -1,0 +1,100 @@
+Disculpe, ¿dónde está la estación de tren más cercana?
+¿Puede decirme cómo llegar al centro de la ciudad?
+¿Hay alguna farmacia cerca?
+Siga recto por esta calle durante dos manzanas.
+Gire a la izquierda en el siguiente semáforo.
+Tome la primera a la derecha después del banco.
+Está en el lado izquierdo de la carretera.
+Verá un edificio azul grande en la esquina.
+¿Está el museo a poca distancia de aquí?
+¿A qué distancia está el aeropuerto de este lugar?
+Está a unos diez minutos a pie de aquí.
+Deberías tomar el autobús para llegar allí.
+¿Dónde está la parada de autobús para la línea del centro?
+Cruza la calle por el paso de peatones.
+La entrada está a la vuelta de la esquina.
+Está ubicado justo enfrente del parque.
+Pasa el supermercado y sigue caminando.
+Vas por el camino equivocado.
+Tienes que volver hacia el puente.
+¿Dónde está el cajero automático más cercano?
+Está dentro del centro comercial en la planta baja.
+Sube las escaleras hasta el segundo piso.
+Los baños se encuentran en la planta de abajo.
+Toma el ascensor hasta el quinto piso.
+Gira a la derecha al salir del ascensor.
+La oficina está al final del pasillo.
+Es la tercera puerta a tu izquierda.
+¿Hay un estacionamiento cerca de la entrada?
+¿Dónde puedo encontrar una parada de taxis?
+La oficina de correos está entre la panadería y la biblioteca.
+Está justo detrás de la catedral principal.
+¿Está de este lado de la calle o del otro lado?
+Cruza el parque para llegar al museo.
+La biblioteca está directamente frente a la fuente.
+¿Cómo llego a la autopista desde aquí?
+Sigue las señales hacia el hospital de la ciudad.
+La gasolinera está a solo una milla por la carretera.
+Sigue adelante hasta llegar a la rotonda.
+Toma la segunda salida en la rotonda.
+Está a una distancia muy corta de aquí.
+¿Dónde está el centro de información turística?
+Lo encontrará al lado de la comisaría de policía.
+¿Está el castillo situado en la cima de la colina?
+Camine hacia el río y gire a la izquierda.
+El puente está actualmente cerrado por reparaciones.
+¿Hay un atajo para llegar al estadio?
+Vaya por el callejón entre los dos edificios.
+La sala de reuniones está en la planta del sótano.
+Por favor, espéreme en el vestíbulo.
+¿Está el restaurante en la azotea?
+¿Dónde se encuentra la salida de emergencia?
+Siga las flechas verdes del suelo.
+El gimnasio está situado al lado de la piscina.
+¿Hay un mapa del edificio cerca de la entrada?
+¿Hacia dónde está el norte desde aquí?
+El sol sale por las montañas en el este.
+¿Dónde está la taquilla para el ferry?
+Está justo al final del muelle.
+Pase por debajo del puente y continúe recto.
+El hotel está situado en un barrio muy tranquilo.
+¿Está el teatro lejos de la estación de metro?
+No te lo puedes perder, tiene un letrero muy brillante.
+¿Cuál es la dirección de la oficina principal?
+Se encuentra en el número cien de la calle Main.
+¿Dónde está la oficina de objetos perdidos?
+Está en la entreplanta, encima de las tiendas.
+Sube por la rampa para llegar al andén.
+El balcón ofrece una gran vista de la plaza.
+¿Estamos ya cerca de los límites de la ciudad?
+La escuela está situada frente a la iglesia.
+Gira a la izquierda en la intersección de Oak y Pine.
+Está escondido en una pequeña calle lateral.
+¿Hay un parque público en esta zona?
+El parque infantil está detrás del centro comunitario.
+¿Dónde está la estación de carga para coches más cercana?
+Lo verá a su derecha después del túnel.
+Pase por las puertas giratorias hacia el vestíbulo.
+El guardarropa está a la izquierda del mostrador de recepción.
+¿Hay un mostrador de información en esta terminal?
+Su puerta está al final del vestíbulo.
+Tome la escalera mecánica hacia la zona de recogida de equipaje.
+El mostrador de coches de alquiler está fuera del edificio.
+¿Está la playa cerca en coche?
+Está a unos veinte minutos en coche de aquí.
+¿Cuál es el mejor lugar para aparcar mi bicicleta?
+Hay portabicicletas junto a la entrada de la biblioteca.
+Mantén la tienda a tu derecha mientras caminas.
+La panadería está a solo dos puertas de la farmacia.
+¿Hay una tienda de comestibles en esta manzana?
+Está ubicada en el sótano de los grandes almacenes.
+Pasa la fuente y gira a la derecha.
+El cine se encuentra en el último piso del centro comercial.
+¿Dónde puedo encontrar el mapa del metro?
+El mapa está pegado en la pared cerca de las máquinas de billetes.
+¿Qué andén va hacia el centro de la ciudad?
+Quédate en este tren durante tres paradas más.
+Bájate en la estación llamada Central Square.
+¿Hay un ascensor para personas con cochecitos?
+La salida está marcada con un gran cartel rojo.
+Gracias por ayudarme a encontrar mi camino.

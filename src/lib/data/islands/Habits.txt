@@ -1,0 +1,296 @@
+Tengo un hábito.
+Tengo buenos hábitos.
+Tengo malos hábitos.
+Intento crear buenos hábitos.
+Intento cambiar mis hábitos.
+Sigo mis hábitos todos los días.
+Hago las mismas cosas todos los días.
+Hago algunas cosas todos los días.
+Hago esto a menudo.
+Hago esto todos los días.
+Hago esto cada mañana.
+Hago esto cada tarde.
+Hago esto por la noche.
+Hago esto durante el día.
+Hago esto después del trabajo.
+Hago esto antes del trabajo.
+Hago esto antes de acostarme.
+Hago esto después de despertarme.
+Hago esto cuando tengo tiempo.
+Hago esto cuando puedo.
+Normalmente hago esto.
+Hago esto a menudo.
+A veces hago esto.
+Raramente hago esto.
+Nunca hago esto.
+Hago esto con regularidad.
+Hago esto de vez en cuando.
+Hago esto los días de semana.
+Hago esto los fines de semana.
+Hago esto en casa.
+Hago esto en el trabajo.
+Hago esto afuera.
+Hago esto solo.
+Hago esto con otros.
+Hago esto con amigos.
+Hago esto con mi familia.
+Empiezo mi día con esto.
+Termino mi día con esto.
+Esto es parte de mi rutina.
+Esto es parte de mi vida.
+Me despierto y hago esto.
+Como y hago esto.
+Trabajo y hago esto.
+Descanso y hago esto.
+Hago esto antes de comer.
+Hago esto después de comer.
+Hago esto antes de dormir.
+Hago esto después de dormir.
+Repito esto a menudo.
+Repito esto todos los días.
+Me gusta este hábito.
+No me gusta este hábito.
+Este hábito me ayuda.
+Este hábito se siente bien.
+Este hábito es útil.
+Este hábito es simple.
+Este hábito es fácil.
+Este hábito es difícil.
+Este hábito toma tiempo.
+Este hábito ahorra tiempo.
+Estoy acostumbrado a esto.
+Me estoy acostumbrando a esto.
+Quiero mantener este hábito.
+Quiero dejar este hábito.
+Quiero cambiar este hábito.
+Estoy trabajando en este hábito.
+Intento hacer esto a diario.
+Intento hacer esto regularmente.
+Intento ser constante.
+A veces me olvido.
+A veces me lo salto.
+A veces me lo pierdo.
+A veces cambio esto.
+A veces hago otra cosa.
+Mis hábitos cambian con el tiempo.
+Mis hábitos son estables.
+Mis hábitos dependen del día.
+Mis hábitos dependen de mi horario.
+Mis hábitos dependen de mi estado de ánimo.
+Mis hábitos me ayudan a mantenerme organizado.
+Reviso mi teléfono a menudo.
+Reviso los mensajes con regularidad.
+Miro mi teléfono por la mañana.
+Miro mi teléfono por la noche.
+Leo los mensajes.
+Envío mensajes.
+Respondo a los mensajes.
+Reviso las actualizaciones.
+Paso tiempo en línea.
+Limito mi tiempo de pantalla.
+Leo todos los días.
+Leo por la tarde.
+Leo antes de acostarme.
+Leo en mi tiempo libre.
+Veo vídeos.
+Veo algo en línea.
+Veo algo en casa.
+Escucho música.
+Escucho audio.
+Escucho mientras hago otras cosas.
+Camino todos los días.
+Camino por la mañana.
+Camino por la tarde.
+Camino después del trabajo.
+Doy paseos cortos.
+Doy paseos largos.
+Muevo mi cuerpo.
+Me estiro regularmente.
+Hago ejercicio ligero.
+Intento mantenerme activo.
+Paso mucho tiempo sentado.
+Me levanto a menudo.
+Tomo descansos cortos.
+Descanso cuando es necesario.
+Bebo agua a menudo.
+Bebo agua con regularidad.
+Como a horas fijas.
+Hago comidas ligeras.
+Como despacio.
+Como rápido.
+Cocino de vez en cuando.
+Preparo comida sencilla.
+Limpio con regularidad.
+Limpio un poco cada día.
+Organizo mis cosas.
+Mantengo el orden.
+Guardo las cosas en su sitio.
+Planifico mi día.
+Hago planes pequeños.
+Sigo mis planes.
+Anoto las cosas.
+Hago listas.
+Reviso mi agenda.
+Sigo un horario.
+Cambio los planes a veces.
+Me adapto cuando es necesario.
+Me concentro en una sola cosa.
+Hago una sola cosa a la vez.
+Termino mis tareas.
+Empiezo tareas nuevas.
+Trabajo en bloques cortos.
+Descanso entre tareas.
+Descanso la vista.
+Relajo el cuerpo.
+Bajo el ritmo a veces.
+Acelero cuando es necesario.
+Administro mi tiempo.
+Intento usar bien el tiempo.
+Evito perder el tiempo.
+Mantengo las cosas simples.
+Me gustan los hábitos sencillos.
+Prefiero las actividades sencillas.
+Evito las rutinas complejas.
+Repito lo que funciona.
+Detengo lo que no funciona.
+Mejoro mis hábitos poco a poco.
+Hago pequeños cambios.
+Construyo hábitos paso a paso.
+Me mantengo constante.
+Lo intento de nuevo al día siguiente.
+Empiezo de nuevo después de los descansos.
+No me rindo fácilmente.
+Sigo intentándolo.
+Practico con regularidad.
+Practico un poco todos los días.
+Practico cuando tengo tiempo.
+Repaso lo que aprendí.
+Repito acciones sencillas.
+Aprendo a través de la repetición.
+La repetición me ayuda.
+Me siento cómodo con mis hábitos.
+Me siento mejor con una estructura.
+Me siento tranquilo con las rutinas.
+Me siento estresado sin rutinas.
+Mis hábitos me dan estructura.
+Mis hábitos me ayudan a concentrarme.
+Mis hábitos ahorran energía.
+Mis hábitos reducen el estrés.
+Mis hábitos apoyan mi vida.
+Mis hábitos se adaptan a mi vida.
+Sigo hábitos durante la semana.
+Mis hábitos cambian los fines de semana.
+Descanso más algunos días.
+Hago menos los días ocupados.
+Hago más los días libres.
+Ajusto mis hábitos.
+Presto atención a mi cuerpo.
+Tomo descansos cuando estoy cansado.
+Paro cuando es necesario.
+Continúo cuando es posible.
+Hago actividades simples.
+Hago actividades diarias.
+Hago actividades familiares.
+Estas actividades son normales para mí.
+Estas actividades se sienten naturales.
+Estas actividades son fáciles.
+Estas actividades me ayudan a relajarme.
+Estas actividades me ayudan a concentrarme.
+Estas actividades son parte de mi rutina.
+Estas actividades se repiten todos los días.
+Me despierto y comienzo mis hábitos.
+Sigo mis hábitos durante el día.
+Termino el día con hábitos.
+Repito los hábitos al día siguiente.
+Construyo hábitos con el tiempo.
+A veces pierdo los hábitos.
+Vuelvo a empezar los hábitos.
+Mantengo la paciencia conmigo mismo.
+Acepto el pequeño progreso.
+Valoro la constancia.
+Noto mis hábitos.
+Observo mi comportamiento.
+Reflexiono sobre mis hábitos.
+Pienso en mejoras.
+Elijo mejores hábitos.
+Dejo los malos hábitos.
+Reemplazo los malos hábitos.
+Me enfoco en los buenos hábitos.
+Mantengo lo que funciona.
+Simplifico mi rutina.
+Mis hábitos dan forma a mi día.
+Mis hábitos dan forma a mi vida.
+Mis hábitos reflejan mis elecciones.
+Mis hábitos cambian lentamente.
+Mis hábitos se sienten naturales ahora.
+Mis hábitos apoyan mis metas.
+Mis hábitos guían mis acciones.
+Mis hábitos se sienten automáticos.
+Mis hábitos se repiten a diario.
+Mis hábitos se repiten semanalmente.
+Sigo los mismos hábitos.
+Cambio los hábitos cuando es necesario.
+Mantengo los hábitos flexibles.
+Mantengo los hábitos sencillos.
+Confío en mi rutina.
+Confío en los hábitos.
+Uso los hábitos para mantenerme concentrado.
+Uso los hábitos para mantener la calma.
+Uso los hábitos para ser productivo.
+Uso los hábitos para mantenerme equilibrado.
+Soy consciente de mis hábitos.
+Trabajo en mis hábitos a diario.
+Practico buenos hábitos.
+Construyo hábitos lentamente.
+Repito los hábitos con paciencia.
+Acepto los errores.
+Corrijo los errores.
+Sigo adelante.
+Continúo avanzando.
+Mantengo la constancia a lo largo del tiempo.
+Mis hábitos son parte de lo que soy.
+Mis hábitos apoyan mi rutina.
+Mis hábitos guían mi día.
+Mis hábitos me ayudan a vivir mejor.
+Mis hábitos facilitan la vida.
+Mis hábitos reducen el esfuerzo.
+Mis hábitos crean estructura.
+Mis hábitos dan dirección.
+Mis hábitos aportan estabilidad.
+Hago cosas pequeñas cada día.
+Los pequeños hábitos importan.
+Los hábitos sencillos son eficaces.
+La constancia es importante.
+Me concentro en las acciones diarias.
+Confío en los pasos pequeños.
+Progreso lentamente.
+Mantengo la paciencia.
+Continúo mañana.
+Repito el proceso.
+Este es mi hábito.
+Esto es parte de mi rutina.
+Esto es algo que hago a menudo.
+Esto es algo que hago a diario.
+Esto es normal para mí.
+Esto me resulta natural.
+Esto me funciona.
+Esto me ayuda todos los días.
+Esto es parte de mi vida.
+Así es como vivo.
+Sigo haciendo esto.
+Dejo de hacer esto.
+Cambio esto lentamente.
+Mejoro paso a paso.
+Construyo hábitos con el tiempo.
+Sigo rutinas sencillas.
+Confío en los hábitos diarios.
+Me mantengo constante a diario.
+Confío en el proceso.
+Continúo con mis hábitos.
+Empiezo de nuevo mañana.
+Mañana repito esto.
+Empieza un nuevo día.
+Sigo mis hábitos de nuevo.
+Mis hábitos continúan.
+Mi rutina se repite.
+Estos son mis hábitos diarios.

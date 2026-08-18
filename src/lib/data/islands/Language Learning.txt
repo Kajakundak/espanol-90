@@ -1,0 +1,196 @@
+Estoy aprendiendo español.
+Estoy aprendiendo inglés.
+Estoy aprendiendo portugués.
+Estoy aprendiendo francés.
+Estoy aprendiendo alemán.
+Estoy aprendiendo japonés.
+Soy principiante.
+Estoy en el nivel A1.
+Estoy en el nivel A2.
+Estudio todos los días.
+Estudio cinco días a la semana.
+Estudio los fines de semana también.
+Estudio por la mañana.
+Estudio por la noche.
+Estudio quince minutos al día.
+Estudio treinta minutos al día.
+Estudio una hora al día.
+Llevo aprendiendo una semana.
+Llevo aprendiendo un mes.
+Llevo aprendiendo tres meses.
+Llevo aprendiendo seis meses.
+Llevo aprendiendo un año.
+Empecé la semana pasada.
+Empecé el mes pasado.
+Empecé este año.
+Quiero hablar bien.
+Quiero hablar con confianza.
+Quiero entender películas.
+Quiero entender podcasts.
+Quiero viajar.
+Quiero vivir en el extranjero.
+Quiero trabajar en otro país.
+Quiero un mejor trabajo.
+Quiero conocer a gente nueva.
+Quiero hablar con mis amigos.
+Quiero hablar con mi familia.
+Me gustan los idiomas.
+Los idiomas son importantes para mí.
+Aprender un idioma es una meta para mí.
+Estoy motivado.
+Estoy muy motivado.
+A veces me siento cansado.
+A veces me siento ocupado.
+No tengo mucho tiempo.
+Aún así estudio.
+Intento ser constante.
+Quiero hablar con fluidez.
+Quiero hablar con naturalidad.
+Quiero tener un buen acento.
+La pronunciación es importante para mí.
+A veces es difícil.
+No es fácil.
+Se necesita paciencia.
+Se necesita repetición.
+Cometo errores.
+Los errores son normales.
+Aprendo de los errores.
+No tengo miedo a los errores.
+A veces me siento tímido.
+A veces me siento nervioso.
+Estoy mejorando.
+Mejoro cada semana.
+Ahora puedo entender más.
+Ahora puedo hablar más.
+Puedo decir frases sencillas.
+Puedo presentarme.
+Puedo hacer preguntas sencillas.
+Puedo entender el habla pausada.
+Necesito más práctica.
+Utilizo un sistema sencillo.
+Aprendo con “islas de idiomas”.
+Aprendo un tema a la vez.
+Primero aprendo frases útiles.
+Aprendo frases, no reglas.
+Aprendo con frases cortas.
+Repito las mismas frases muchas veces.
+La repetición te ayuda a aprender.
+Escucho y repito.
+Escucho el audio.
+Copio el ritmo.
+Copio la pronunciación.
+Hablo en voz alta.
+Practico todos los días.
+Leo y escucho al mismo tiempo.
+Uso mucho el audio.
+Aprendo con mis propios guiones.
+Aprendo con mis historias personales.
+Aprendo frases sobre mi vida.
+Aprendo frases sobre mi trabajo.
+Aprendo frases sobre mis pasatiempos.
+Aprendo frases para viajar.
+Aprendo frases para restaurantes.
+Aprendo frases para entablar conversación.
+Aprendo frases para llamadas telefónicas.
+Aprendo frases para reuniones.
+Aprendo frases para la vida diaria.
+Aprendo frases que realmente usaré.
+Aprendo traduciendo.
+Traduzco de mi idioma al español.
+Intento decirlo de memoria.
+Luego compruebo la frase correcta.
+Luego repito de nuevo.
+Me centro en las palabras más comunes.
+Me centro en la gramática sencilla.
+Lo mantengo simple.
+No estudio reglas gramaticales.
+No memorizo tablas de gramática.
+Aprendo gramática dentro de las frases.
+Aprendo patrones de frases.
+Aprendo grupos de palabras.
+Aprendo frases cortas.
+Reutilizo las mismas frases.
+Hago un seguimiento de mis repeticiones.
+Cuento mis repeticiones.
+Hago 100 repeticiones al día.
+Quiero hacer 300 repeticiones al día.
+Quiero 1.000 repeticiones por semana.
+Hago un poco cada día.
+Los pasos pequeños funcionan.
+La constancia es la clave.
+Confío en el proceso.
+El sistema es sencillo.
+El sistema me funciona.
+Uso una aplicación para practicar.
+Uso lecciones de audio.
+No uso vídeos.
+Uso pódcasts.
+A veces uso subtítulos.
+Hablo conmigo mismo.
+Grabo mi voz.
+Escucho mi voz.
+Corrijo mi pronunciación.
+Repito las palabras difíciles.
+Repito las frases difíciles.
+Así aprendo más rápido.
+Lo intento de nuevo.
+Hablo un idioma.
+Hablo dos idiomas.
+Hablo tres idiomas.
+Hablo cuatro idiomas.
+Hablo cinco idiomas.
+Puedo hablar un poco de español.
+Puedo hablar un poco de francés.
+Puedo entender un poco de italiano.
+Quiero aprender muchos idiomas.
+Primero quiero aprender bien un idioma.
+Mi objetivo es el A2.
+Mi objetivo es el B1.
+Mi objetivo es el B2.
+Mi objetivo es hablar con fluidez.
+Quiero hablar con fluidez en seis meses.
+Quiero hablar en un año.
+Establezco metas claras.
+Tengo un plan.
+Sigo mi plan.
+No me rindo.
+Estudio incluso cuando estoy ocupado.
+Estudio incluso cuando estoy cansado.
+Estudio incluso cuando viajo.
+Escucho en el tren.
+Escucho en el coche.
+Escucho mientras camino.
+Escucho mientras hago ejercicio.
+Escucho mientras cocino.
+Escucho mientras limpio.
+Uso pequeños intervalos de tiempo.
+Hoy practicaré cien frases.
+Hoy practicaré doscientas frases.
+Hoy practicaré una isla de idiomas.
+Hoy repetiré la misma lección.
+Mañana repetiré de nuevo.
+Esta semana revisaré.
+La próxima semana añadiré una nueva isla.
+Reviso las frases viejas.
+No las olvido.
+El repaso es importante.
+Me gusta este método.
+Este método es fácil de seguir.
+Este método ahorra tiempo.
+Este método es práctico.
+Este método es claro.
+Siento progreso.
+Me siento con más confianza ahora.
+Ahora disfruto aprendiendo.
+Estoy orgulloso de mi progreso.
+Continuaré.
+¿Por qué estoy aprendiendo?
+Porque quiero una vida mejor.
+Aprendo porque amo la cultura.
+Aprendo porque quiero viajar.
+Aprendo porque quiero trabajar en el extranjero.
+Aprenderé paso a paso.
+Aprenderé rápido.
+No dejaré de aprender.
+Seguiré adelante.
+Hablaré con fluidez pronto.

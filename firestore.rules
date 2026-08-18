@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User profile documents (Karel & Lucka)
+    match /users/{userId} {
+      allow read, write: if true;
+
+      // Custom islands created by user
+      match /customIslands/{islandId} {
+        allow read, write: if true;
+      }
+
+      // Island mastery progress per category
+      match /islandProgress/{categoryId} {
+        allow read, write: if true;
+      }
+    }
+
+    // Daily progress tracking documents ({userId}_day_{dayNumber})
+    match /progress/{progressId} {
+      allow read, write: if true;
+    }
+
+    // Global custom islands fallback
+    match /customIslands/{islandId} {
+      allow read, write: if true;
+    }
+  }
+}
+

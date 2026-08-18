@@ -1,0 +1,234 @@
+Quiero café ahora.
+Quieres agua ahora.
+Él quiere la respuesta ahora.
+Ella quiere el plan hoy.
+Queremos resultados pronto.
+Ellos quieren tiempo hoy.
+No quiero eso.
+¿Quieres esto ahora?
+¿Qué quieren ellos hoy?
+Lo quería ayer.
+Lo querré mañana.
+Me gusta esto.
+Te gusta esto.
+Le gusta el vídeo.
+Le gusta el libro.
+Nos gusta la idea.
+Les gusta el plan.
+No me gusta eso.
+¿Te gusta esto?
+¿Por qué le gusta?
+Me gustó ayer.
+Me gustará más tarde.
+Me encanta mi trabajo.
+Te encanta la ciudad.
+Le encanta el libro.
+Le encanta el café.
+Nos encanta aprender.
+Les encanta el tiempo en casa.
+No me encanta eso.
+¿Te encanta esta idea?
+¿Qué te encanta?
+Me encantó antes.
+Me encantará de nuevo.
+Odio este problema.
+Odias esta regla.
+Él odia el ruido.
+Ella odia esperar.
+Odiamos la confusión.
+Odian las reuniones tarde.
+No te odio.
+¿Odias esto?
+¿Por qué lo odian?
+Lo odié antes.
+Lo odiaré menos después.
+Prefiero el café.
+Prefieres el agua.
+Él prefiere el libro.
+Ella prefiere el vídeo.
+Preferimos planes sencillos.
+Ellos prefieren la ciudad.
+No prefiero eso.
+¿Prefieres esto o aquello?
+¿Cuál prefieres?
+Lo prefería antes.
+Lo preferiré después.
+Elijo esto ahora.
+Eliges eso ahora.
+Él elige el plan hoy.
+Ella elige la idea hoy.
+Elegimos la hora de la reunión.
+Ellos eligen el lugar.
+No elijo eso.
+¿Eliges esto?
+¿Por qué elegiste eso?
+Lo elegí ayer.
+Lo elegiré mañana.
+Compro comida hoy.
+Compras agua hoy.
+Él compra el libro hoy.
+Ella compra café hoy.
+Comparamos lo que necesitamos.
+Ellos lo compran en la tienda.
+No compro eso.
+¿Lo compras hoy?
+¿Qué compraste ayer?
+Lo compré ayer.
+Lo compraré mañana.
+Vendo el libro hoy.
+Vendes el documento hoy.
+Él vende comida hoy.
+Ella vende café hoy.
+Vendemos por internet hoy.
+Venden en la ciudad.
+No vendo eso.
+¿Vendes esto?
+¿Qué vendió él ayer?
+Lo vendí ayer.
+Lo venderé después.
+Pago ahora.
+Pagas ahora.
+Él paga hoy.
+Ella paga mañana.
+Pagamos todos los meses.
+Pagan en la tienda.
+No pago hoy.
+¿Pagas ahora?
+¿Cómo pagas?
+Pagué ayer.
+Pagaré mañana.
+Paso tiempo hoy.
+Gastas dinero hoy.
+Él pasa tiempo en el trabajo.
+Ella pasa tiempo en casa.
+Pasamos tiempo en la ciudad.
+Ellos gastan dinero en la tienda.
+No gasto dinero ahora.
+¿Pasas tiempo en esto?
+¿Qué gastaste ayer?
+Gasté dinero ayer.
+Gastaré menos la próxima semana.
+Como comida ahora.
+Comes comida ahora.
+Él come comida hoy.
+Ella come comida esta noche.
+Comemos en casa hoy.
+Comen en la ciudad hoy.
+No como ahora.
+¿Comes en el trabajo?
+¿Qué comiste ayer?
+Comí ayer.
+Comeré más tarde.
+Bebo agua ahora.
+Bebes agua ahora.
+Él bebe café hoy.
+Ella bebe agua hoy.
+Bebemos agua todos los días.
+Beben café en el trabajo.
+No bebo café ahora.
+¿Bebes agua hoy?
+¿Qué bebiste ayer?
+Bebí agua ayer.
+Beberé agua más tarde.
+Duermo esta noche.
+Duermes esta noche.
+Él duerme en casa.
+Ella duerme temprano esta noche.
+Dormimos después del trabajo.
+Duermen tarde a veces.
+No duermo bien esta noche.
+¿Duermes bien?
+¿Cuándo duermes?
+Dormí ayer.
+Dormiré temprano mañana.
+Me despierto ahora.
+Te despiertas ahora.
+Él se despierta temprano hoy.
+Ella se despierta tarde hoy.
+Nos despertamos en casa hoy.
+Se despiertan en la ciudad hoy.
+No me despierto temprano hoy.
+¿Te despiertas temprano?
+¿Cuándo te despertaste ayer?
+Me desperté ayer.
+Me despertaré temprano mañana.
+Camino ahora.
+Caminas ahora.
+Él camina hoy.
+Ella camina hoy.
+Caminamos por la ciudad hoy.
+Ellos caminan al trabajo hoy.
+No camino hoy.
+¿Caminas todos los días?
+¿Por dónde caminas?
+Caminé ayer.
+Caminaré mañana.
+Hay un problema aquí.
+Hay un plan hoy.
+Hay una idea ahora.
+Hay una respuesta ahora.
+Hay una reunión hoy.
+Hay tiempo hoy.
+Hay dinero aquí.
+Hay ayuda aquí.
+Hay información en el correo electrónico.
+Hay reuniones la próxima semana.
+¿Hay un problema aquí?
+¿Hay tiempo hoy?
+No hay tiempo hoy.
+No hay una respuesta ahora.
+Si tengo tiempo, leeré el libro.
+Si tienes tiempo, leerás el libro.
+Si él tiene tiempo, leerá el libro.
+Si ella tiene tiempo, leerá el libro.
+Si tenemos tiempo, leeremos el libro.
+Si ellos tienen tiempo, leerán el libro.
+Si hablas despacio, puedo entenderte.
+Si hablo despacio, puedes entenderme.
+Cuando terminamos el trabajo, paramos.
+Cuando terminas, me llamas.
+Cuando tenga la respuesta, te lo diré.
+Pienso que esto es bueno.
+Pienso que esto es útil.
+Sé que estás ocupado.
+Sé que esto lleva tiempo.
+Entiendo que quieres resultados.
+Quiero aprender este idioma.
+Necesito aprender este idioma.
+Tengo que aprender este idioma.
+No tengo que trabajar hoy.
+No necesito trabajar hoy.
+No quiero trabajar hoy.
+Puedo hacerlo ahora.
+No puedo hacerlo ahora.
+¿Puedes hacerlo ahora?
+Debo empezar ahora.
+No debo parar ahora.
+Debería empezar hoy.
+No debería parar hoy.
+Escucha ahora.
+Mira aquí.
+Lee esto.
+Escribe esto.
+Llámame ahora.
+Queda conmigo hoy.
+¡Ve ahora!
+Ven aquí ahora.
+Para ahora.
+Empieza ahora.
+Prueba esto ahora.
+No digas eso.
+No pares ahora.
+Quiero la respuesta, así que pregunto ahora.
+Pregunto ahora, porque necesito la respuesta.
+Tengo tiempo hoy, pero tengo trabajo hoy.
+Trabajo hoy, así que me quedo en la oficina.
+Me quedo en casa hoy, porque estoy cansado.
+Estoy aquí ahora, y estoy listo.
+Estoy listo ahora, pero tú no estás listo.
+Quiero café ahora, así que voy a la tienda.
+Voy a la tienda ahora, porque necesito agua.
+Recibo el mensaje ahora, y lo leo.
+Lo leo ahora, así que lo entiendo.
+Lo entiendo, así que respondo ahora.
+Respondo ahora, porque me preguntaste.

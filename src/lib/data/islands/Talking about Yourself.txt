@@ -1,0 +1,77 @@
+Me llamo Alex.
+Mi nombre es Alex.
+Mi apellido es García.
+Soy de España.
+No soy de Francia.
+Vivo en Madrid.
+No vivo en Barcelona.
+Tengo 28 años.
+No tengo 40 años.
+Soy un hombre.
+No soy una mujer.
+Estoy soltero.
+No estoy casado.
+Tengo un trabajo.
+No trabajo los fines de semana.
+Trabajo en una oficina.
+No trabajo al aire libre.
+A veces trabajo desde casa.
+No trabajo por la noche.
+Soy estudiante.
+No soy profesor.
+Estudio todos los días.
+No estudio los domingos.
+Estoy aprendiendo español.
+No estoy aprendiendo chino ahora mismo.
+Hablo inglés.
+No hablo japonés.
+Hablo un poco de español.
+Todavía no hablo español muy bien.
+Entiendo frases sencillas.
+No entiendo cuando hablan rápido.
+Me gustan los idiomas.
+No me gustan las lecciones aburridas.
+Me gusta la música.
+No me gustan las discotecas ruidosas.
+Me gusta el café.
+No me gusta el té.
+Me gustan los deportes.
+No me gusta el boxeo.
+Me gusta viajar.
+No viajo todos los meses.
+Tengo una familia.
+No tengo hijos.
+Tengo un hermano.
+No tengo una hermana.
+Tengo un perro.
+No tengo un gato.
+Vivo en un apartamento.
+No vivo en una casa.
+Vivo solo.
+No vivo con mis padres.
+Estoy feliz hoy.
+No estoy triste hoy.
+Estoy cansado hoy.
+No estoy enfermo.
+Tengo hambre.
+No tengo sed.
+Me siento bien.
+No me siento estresado hoy.
+Necesito practicar más.
+No tengo mucho tiempo.
+Me levanto a las siete.
+No me levanto tarde.
+Voy al trabajo a las ocho.
+No voy al trabajo en coche.
+Tomo el autobús.
+No tomo el tren.
+Camino a veces.
+No camino todos los días.
+Desayuno en casa.
+No desayuno en una cafetería.
+Almuerzo a la una.
+No almuerzo tarde.
+Ceno a las ocho.
+No ceno a medianoche.
+Me acuesto a las once.
+No me acuesto temprano.

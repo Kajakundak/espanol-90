@@ -1,0 +1,242 @@
+Te pregunto ahora.
+Me preguntas ahora.
+Él le pregunta ahora.
+Ella nos pregunta ahora.
+Les preguntamos ahora.
+Ellos me preguntan ahora.
+No pregunto eso.
+¿Preguntas esto a menudo?
+¿Qué preguntas ahora?
+Pregunté ayer.
+Preguntaré mañana.
+Respondo ahora.
+Respondes ahora.
+Él responde ahora.
+Ella responde ahora.
+Respondemos ahora.
+Ellos responden ahora.
+No respondo ahora.
+¿Respondes correos electrónicos hoy?
+¿Qué respondió ayer?
+Respondí ayer.
+Responderé más tarde.
+Lo digo ahora.
+Lo dices ahora.
+Él lo dice ahora.
+Ella lo dice ahora.
+Lo decimos ahora.
+Ellos lo dicen ahora.
+No digo eso.
+¿Dices eso a menudo?
+¿Qué dijo ella?
+Lo dije ayer.
+Lo diré más tarde.
+Te oigo ahora.
+Me oyes ahora.
+Él oye el ruido ahora.
+Ella oye el mensaje ahora.
+Lo oímos hoy.
+Lo oyen mañana.
+No lo oigo bien.
+¿Me oyes ahora?
+¿Qué oíste ayer?
+Lo oí ayer.
+Lo oiré más tarde.
+Escucho ahora.
+Escuchas ahora.
+Él escucha todos los días.
+Ella escucha a menudo.
+Escuchamos el vídeo.
+Ellos escuchan en casa.
+No escucho ahora.
+¿Escuchas en el trabajo?
+¿Qué escuchan?
+Escuché ayer.
+Escucharé más tarde.
+Lo veo ahora.
+Lo ves ahora.
+Él ve el problema ahora.
+Ella ve el plan ahora.
+Vemos resultados hoy.
+Lo ven mañana.
+No lo veo.
+¿Ves la respuesta?
+¿Qué ves ahora?
+Lo vi ayer.
+Te veré mañana.
+Veo el vídeo ahora.
+Ves el vídeo hoy.
+Él ve el vídeo a menudo.
+Ella ve el vídeo en casa.
+Vemos la reunión en línea.
+Ellos ven en la oficina.
+No lo veo ahora.
+¿Ves esto a menudo?
+¿Qué viste ayer?
+Lo vi ayer.
+Lo veré más tarde.
+Miro aquí ahora.
+Miras allí ahora.
+Él mira el documento ahora.
+Ella mira el correo electrónico ahora.
+Buscamos la llave ahora.
+Ellos buscan ayuda hoy.
+No miro hacia atrás.
+¿Miras esto ahora?
+¿Dónde miraste ayer?
+Miré ayer.
+Miraré más tarde.
+Leo el libro hoy.
+Lees el libro hoy.
+Él lee el documento hoy.
+Ella lee el correo electrónico hoy.
+Leemos todos los días.
+Ellos leen en la oficina.
+No leo hoy.
+¿Lees esto ahora?
+¿Qué lees todos los días?
+Lo leí ayer.
+Lo leeré mañana.
+Escribo un correo electrónico ahora.
+Escribes un correo electrónico hoy.
+Él escribe el documento hoy.
+Ella escribe el plan hoy.
+Escribimos todos los días.
+Ellos escriben en el trabajo.
+No escribo ahora.
+¿Escribes esto a menudo?
+¿Qué escribiste ayer?
+Lo escribí ayer.
+Lo escribiré más tarde.
+Te llamo ahora.
+Me llamas ahora.
+Él la llama hoy.
+Ella nos llama hoy.
+Los llamamos hoy.
+Me llaman hoy.
+No llamo hoy.
+¿Lo llamas ahora?
+¿Cuándo la llamaste?
+Llamé ayer.
+Llamaré mañana.
+Quedo contigo hoy.
+Quedas conmigo hoy.
+Él queda con ella hoy.
+Ella queda con nosotros hoy.
+Quedamos con ellos hoy.
+Quedan conmigo hoy.
+No quedo hoy.
+¿Quedas con él en el trabajo?
+¿Dónde quedaste con ella?
+Quedé con ella ayer.
+Quedaré contigo mañana.
+Visito la ciudad hoy.
+Visitas la tienda hoy.
+Él nos visita hoy.
+Ella los visita hoy.
+Visitamos a amigos hoy.
+Visitan a la familia hoy.
+No visito hoy.
+¿Visitas la ciudad a menudo?
+¿Cuándo los visitaste?
+Visité ayer.
+Visitaré la próxima semana.
+Vivo aquí ahora.
+Vives aquí ahora.
+Él vive en la ciudad.
+Ella vive cerca de la oficina.
+Vivimos en casa.
+Viven allí.
+No vivo allí.
+¿Vives aquí?
+¿Dónde viven?
+Viví allí el año pasado.
+Viviré aquí el año que viene.
+Me quedo aquí hoy.
+Te quedas en casa hoy.
+Él se queda en el trabajo hoy.
+Ella se queda en la ciudad hoy.
+Nos quedamos en la oficina hoy.
+Se quedan allí hoy.
+No me quedo mucho tiempo.
+¿Te quedas aquí esta noche?
+¿Cuánto tiempo se quedan?
+Me quedé ayer.
+Me quedaré mañana.
+Trabajo hoy.
+Trabajas hoy.
+Él trabaja en la oficina.
+Ella trabaja en casa.
+Trabajamos todos los días.
+Ellos trabajan en la ciudad.
+No trabajo hoy.
+¿Trabajas mañana?
+¿Dónde trabaja él?
+Trabajé ayer.
+Trabajaré mañana.
+Empiezo ahora.
+Empiezas ahora.
+Él empieza hoy.
+Ella empieza mañana.
+Empezamos la próxima semana.
+Ellos empiezan pronto.
+No empiezo hoy.
+¿Empiezas ahora?
+¿Cuándo empezamos?
+Empecé ayer.
+Empezaré mañana.
+Paro ahora.
+Paras ahora.
+Él para hoy.
+Ella para mañana.
+Paramos aquí.
+Ellos paran allí.
+No paro ahora.
+¿Paras en la tienda?
+¿Por qué paró él?
+Paré ayer.
+Pararé más tarde.
+Termino ahora.
+Terminas ahora.
+Él termina hoy.
+Ella termina mañana.
+Terminamos pronto.
+Ellos terminan la próxima semana.
+No termino hoy.
+¿Terminas ahora?
+¿Cuándo terminaremos?
+Terminé ayer.
+Terminaré mañana.
+Lo intento ahora.
+Lo intentas ahora.
+Él lo intenta hoy.
+Ella lo intenta mañana.
+Lo intentamos cada día.
+Ellos intentan a menudo.
+No intento eso.
+¿Lo intentas de nuevo?
+¿Por qué intentaste eso?
+Lo intenté ayer.
+Lo intentaré mañana.
+Uso esto ahora.
+Usas esto ahora.
+Él usa esto hoy.
+Ella usa esto hoy.
+Usamos esto todos los días.
+Ellos usan esto en el trabajo.
+No uso eso.
+¿Usas esto a menudo?
+¿Cómo usas esto?
+Lo usé ayer.
+Lo usaré mañana.
+Necesito ayuda ahora.
+Necesitas ayuda ahora.
+Él necesita tiempo hoy.
+Ella necesita información hoy.
+Necesitamos un plan hoy.
+Ellos necesitan dinero hoy.
+No necesito eso.
+¿Necesitas ayuda ahora?
+¿Qué necesitas hoy?
+Necesité ayuda ayer.
+Necesitaré ayuda mañana.

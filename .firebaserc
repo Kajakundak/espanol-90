@@ -1,0 +1,13 @@
+{
+  "projects": {},
+  "targets": {
+    "espanol90-karel": {
+      "hosting": {
+        "espanol90-karel": [
+          "espanol90-karel"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
