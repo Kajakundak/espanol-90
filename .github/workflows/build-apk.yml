@@ -27,9 +27,9 @@ jobs:
       - name: Instalace závislostí
         run: npm install --legacy-peer-deps
 
-      - name: Sestavení Next.js (statický export)
+      - name: Sestavení Next.js se skutečným API klíčem
         env:
-          NEXT_PUBLIC_GEMINI_API_KEY: "dummy_build_key"
+          NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
         run: npm run build
 
       - name: Příprava a synchronizace Capacitoru
